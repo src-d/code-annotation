@@ -21,7 +21,7 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  reduxValue: state.noop.value
+  reduxValue: state.noop.value,
 });
 
 export default connect(mapStateToProps)(App);
