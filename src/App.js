@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import logo from './logo.svg';
 import './App.css';
 
@@ -13,9 +14,14 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
+        <p>Test redux: {this.props.reduxValue}</p>
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  reduxValue: state.noop.value
+});
+
+export default connect(mapStateToProps)(App);
