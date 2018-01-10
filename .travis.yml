@@ -1,0 +1,15 @@
+language: go
+
+go:
+  - 1.9
+
+before_install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install 8
+  - nvm use 8
+  - npm install -g yarn
+  - yarn -prod false
+
+script:
+  - yarn lint
+  - yarn test
