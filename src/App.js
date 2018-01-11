@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Button } from 'react-bootstrap';
 import logo from './logo.svg';
 import './App.css';
 import Noop from './components/Noop';
@@ -17,6 +18,7 @@ class App extends Component {
         </p>
         <Noop />
         <p>Test redux: {this.props.reduxValue}</p>
+        <Button bsStyle="primary">bootstrap button</Button>
       </div>
     );
   }
