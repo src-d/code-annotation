@@ -1,0 +1,33 @@
+@import '../../../node_modules/bootstrap/less/variables.less';
+
+.ex-progress {
+    display: flex;
+
+    &__percent {
+        width: 35px;
+    }
+
+    &__bar {
+        width: 150px;
+        padding: 5px 0;
+
+        /* make it smaller */
+        .progress {
+            height: 10px;
+            margin: 0;
+        }
+    }
+
+    &__similar,
+    &__different {
+        padding: 0 10px;
+    }
+
+    &___similar {
+        color: @brand-success;
+    }
+
+    &__different {
+        color: @brand-danger;
+    }
+}

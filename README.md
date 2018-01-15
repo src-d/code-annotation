@@ -10,6 +10,15 @@ cd $GOPATH/<here will be path>
 make serve
 ```
 
+## Development
+
+Frontend:
+
+```
+yarn
+yarn start
+```
+
 ## Contributing
 
 Please take a look at [CONTRIBUTING](CONTRIBUTING.md) file to see how to contribute in this project, get more information about the dashboard [architecture](CONTRIBUTING.md#Architecture) and how to launch it for [development](CONTRIBUTING.md#Development) purposes.

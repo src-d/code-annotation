@@ -1,11 +1,8 @@
 import { combineReducers } from 'redux';
-
-const initialState = {
-  value: 'hello from redux',
-};
-
-const noop = (state = initialState) => state;
+import user from './user';
+import experiment from './experiment';
 
 export default combineReducers({
-  noop,
+  user,
+  experiment,
 });
