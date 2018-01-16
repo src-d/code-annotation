@@ -22,6 +22,7 @@ const initialState = {
   filePairs: {},
 
   currentAssigment: null,
+  currentAssigmentStartTime: null,
 };
 
 export const LOAD = 'ca/experiment/LOAD';
@@ -78,13 +79,18 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         currentAssigment: action.assigment,
+        currentAssigmentStartTime: new Date(),
       };
     case MARK_ASSIGNMENT:
       return {
         ...state,
         assignments: state.assignments.map(a => {
           if (a.id === action.id) {
-            return { ...a, answer: action.answer };
+            return {
+              ...a,
+              answer: action.answer,
+              duration: (new Date() - state.currentAssigmentStartTime) * 1000,
+            };
           }
           return a;
         }),
