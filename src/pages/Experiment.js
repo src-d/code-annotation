@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { push } from 'redux-little-router';
 import PageHeader from '../components/PageHeader';
 import Loader from '../components/Loader';
 import Progress from '../components/Experiment/Progress';
 import Diff from '../components/Experiment/Diff';
 import Footer from '../components/Experiment/Footer';
-import { load, selectAssigment, markCurrent } from '../state/experiment';
+import {
+  load,
+  markCurrent,
+  ANSWER_SIMILAR,
+  ANSWER_MAYBE,
+  ANSWER_DIFFERENT,
+  ANSWER_SKIP,
+  experimentId,
+} from '../state/experiment';
+import { makeUrl } from '../state/routes';
 import './Experiment.less';
 
 class Experiment extends Component {
-  componentDidMount() {
-    this.props.load();
-  }
-
   render() {
     const {
       loading,
@@ -72,10 +78,11 @@ class Experiment extends Component {
 
 const mapStateToProps = state => {
   const { experiment, user } = state;
-  const { loading, assignments, currentAssigment } = experiment;
+  const { loading, fileLoading, assignments, currentAssigment } = experiment;
 
-  const similar = assignments.filter(a => a.answer === 'Yes').length;
-  const different = assignments.filter(a => a.answer === 'No').length;
+  const similar = assignments.filter(a => a.answer === ANSWER_SIMILAR).length;
+  const different = assignments.filter(a => a.answer === ANSWER_DIFFERENT)
+    .length;
   const stat = {
     similar,
     different,
@@ -83,7 +90,7 @@ const mapStateToProps = state => {
   };
 
   let diff = null;
-  if (!loading && currentAssigment) {
+  if (!loading && !fileLoading) {
     const filePair = experiment.filePairs[currentAssigment.pairId];
     ({ diff } = filePair);
   }
@@ -96,7 +103,7 @@ const mapStateToProps = state => {
   return {
     loading,
     stat,
-    fileLoading: experiment.fileLoading,
+    fileLoading,
     diffString: diff,
     currentAssigmentId: currentAssigment ? currentAssigment.id : null,
     assignmentsOptions,
@@ -106,11 +113,14 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   load: () => dispatch(load()),
-  markSimilar: () => dispatch(markCurrent('Yes')),
-  markMaybe: () => dispatch(markCurrent('Maybe')),
-  markDifferent: () => dispatch(markCurrent('No')),
-  skip: () => dispatch(markCurrent('Skip')),
-  selectAssigmentId: id => dispatch(selectAssigment(id)),
+  markSimilar: () => dispatch(markCurrent(ANSWER_SIMILAR)),
+  markMaybe: () => dispatch(markCurrent(ANSWER_MAYBE)),
+  markDifferent: () => dispatch(markCurrent(ANSWER_DIFFERENT)),
+  skip: () => dispatch(markCurrent(ANSWER_SKIP)),
+  selectAssigmentId: id =>
+    dispatch(
+      push(makeUrl('question', { experiment: experimentId, question: id }))
+    ),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Experiment);

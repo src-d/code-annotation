@@ -1,20 +1,29 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { Fragment } from 'redux-little-router';
 import Index from './pages/Index';
 import Experiment from './pages/Experiment';
 
 class App extends Component {
   render() {
-    const { loggedIn } = this.props;
-    if (!loggedIn) {
-      return <Index />;
-    }
-    return <Experiment />;
+    return (
+      <Fragment forRoute="/">
+        <div style={{ height: '100%' }}>
+          <Fragment forRoute="/">
+            <Index />
+          </Fragment>
+          <Fragment forRoute="/exp/:id">
+            <Experiment />
+          </Fragment>
+          <Fragment forRoute="/exp/:id/:question">
+            <Experiment />
+          </Fragment>
+          <Fragment forNoMatch>
+            <div>not found</div>
+          </Fragment>
+        </div>
+      </Fragment>
+    );
   }
 }
 
-const mapStateToProps = state => ({
-  loggedIn: state.user.loggedIn,
-});
-
-export default connect(mapStateToProps)(App);
+export default App;

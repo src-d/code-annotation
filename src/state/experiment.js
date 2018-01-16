@@ -1,4 +1,13 @@
+import { LOCATION_CHANGED, replace, push } from 'redux-little-router';
 import api from '../api';
+import { namedRoutes, makeUrl } from './routes';
+
+export const ANSWER_SIMILAR = 'Yes';
+export const ANSWER_MAYBE = 'Maybe';
+export const ANSWER_DIFFERENT = 'No';
+export const ANSWER_SKIP = 'Skip';
+
+export const experimentId = 1; // hard-coded id for only experiment
 
 const initialState = {
   loading: true,
@@ -106,15 +115,14 @@ export const loadFilePairIfNeeded = id => (dispatch, getState) => {
 export const selectAssigment = id => (dispatch, getState) => {
   const { experiment } = getState();
   const assigment = experiment.assignments.find(a => a.id === +id);
-  return dispatch(loadFilePairIfNeeded(assigment.pairId)).then(() =>
-    dispatch({
-      type: SET_CURRENT_ASSIGMENT,
-      assigment,
-    })
-  );
+  dispatch({
+    type: SET_CURRENT_ASSIGMENT,
+    assigment,
+  });
+  return dispatch(loadFilePairIfNeeded(assigment.pairId));
 };
 
-export const next = () => (dispatch, getState) => {
+export const nextAssigment = (op = push) => (dispatch, getState) => {
   const { experiment } = getState();
   const noAnswer = experiment.assignments.find(a => a.answer === null);
   if (!noAnswer) {
@@ -122,13 +130,15 @@ export const next = () => (dispatch, getState) => {
     return Promise.resolve();
   }
 
-  return dispatch(selectAssigment(noAnswer.id));
+  return dispatch(
+    op(makeUrl('question', { experiment: experimentId, question: noAnswer.id }))
+  );
 };
 
-export const load = id => dispatch => {
+export const load = (expId, assigmentId) => dispatch => {
   dispatch({ type: LOAD });
   return api
-    .getExperiment(id)
+    .getExperiment(expId)
     .then(res => {
       dispatch({
         type: SET_EXPERIMENT,
@@ -143,7 +153,12 @@ export const load = id => dispatch => {
         assignments: res,
       });
     })
-    .then(() => dispatch(next()))
+    .then(() => {
+      if (!assigmentId) {
+        return dispatch(nextAssigment(replace));
+      }
+      return dispatch(selectAssigment(assigmentId));
+    })
     .then(() => {
       dispatch({ type: LOAD_SUCCESS });
     })
@@ -159,10 +174,31 @@ export const mark = (assignmentId, answer) => dispatch => {
     id: assignmentId,
     answer,
   });
-  return dispatch(next());
+  return dispatch(nextAssigment());
 };
 
 export const markCurrent = answer => (dispatch, getState) => {
   const { experiment } = getState();
   return dispatch(mark(experiment.currentAssigment.id, answer));
+};
+
+export const middleware = store => next => action => {
+  if (action.type !== LOCATION_CHANGED) {
+    return next(action);
+  }
+
+  const result = next(action);
+  const { payload } = action;
+  const { experiment } = store.getState();
+  switch (payload.route) {
+    case namedRoutes.experiment:
+      return next(load(experimentId));
+    case namedRoutes.question:
+      if (experiment.id === +payload.params.experiment) {
+        return next(selectAssigment(+payload.params.question));
+      }
+      return next(load(experimentId, +payload.params.question));
+    default:
+      return result;
+  }
 };

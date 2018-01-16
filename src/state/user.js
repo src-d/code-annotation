@@ -1,3 +1,4 @@
+import { LOCATION_CHANGED, replace, push } from 'redux-little-router';
 import api from '../api';
 
 const initialState = {
@@ -8,6 +9,18 @@ const initialState = {
 };
 
 export const LOG_IN = 'ca/user/LOG_IN';
+
+export const authMiddleware = store => next => action => {
+  if (action.type !== LOCATION_CHANGED) {
+    return next(action);
+  }
+  // redirect to / if try to access not public route wihout being logged in
+  const { user } = store.getState();
+  if (!user.loggedIn && !action.payload.result.public) {
+    return next(replace('/'));
+  }
+  return next(action);
+};
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -35,6 +48,7 @@ export const logIn = () => dispatch =>
         username: resp.username,
         avatarUrl: resp.avatarUrl,
       });
+      dispatch(push('/exp/1'));
     })
     .catch(e => {
       console.error(e);
