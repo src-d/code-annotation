@@ -14,6 +14,9 @@ import {
   ANSWER_DIFFERENT,
   ANSWER_SKIP,
   experimentId,
+  getSimilarCount,
+  getDifferentCount,
+  getProgressPercent,
 } from '../state/experiment';
 import { makeUrl } from '../state/routes';
 import './Experiment.less';
@@ -33,6 +36,7 @@ class Experiment extends Component {
       markMaybe,
       markDifferent,
       skip,
+      finish,
     } = this.props;
     return (
       <div className="ex-page">
@@ -66,6 +70,7 @@ class Experiment extends Component {
                   markMaybe={markMaybe}
                   markDifferent={markDifferent}
                   skip={skip}
+                  finish={finish}
                 />
               </div>
             )}
@@ -80,13 +85,10 @@ const mapStateToProps = state => {
   const { experiment, user } = state;
   const { loading, fileLoading, assignments, currentAssigment } = experiment;
 
-  const similar = assignments.filter(a => a.answer === ANSWER_SIMILAR).length;
-  const different = assignments.filter(a => a.answer === ANSWER_DIFFERENT)
-    .length;
   const stat = {
-    similar,
-    different,
-    percent: 100 / assignments.length * (similar + different),
+    similar: getSimilarCount(state),
+    different: getDifferentCount(state),
+    percent: getProgressPercent(state),
   };
 
   let diff = null;
@@ -121,6 +123,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       push(makeUrl('question', { experiment: experimentId, question: id }))
     ),
+  finish: () => dispatch(push(makeUrl('finish', { experiment: experimentId }))),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Experiment);

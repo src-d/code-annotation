@@ -11,6 +11,9 @@ const routes = {
     public: true,
     '/exp/:experiment': {
       name: 'experiment',
+      '/finish': {
+        name: 'finish',
+      },
       '/:question': {
         name: 'question',
       },

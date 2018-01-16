@@ -9,6 +9,8 @@ export const ANSWER_SKIP = 'Skip';
 
 export const experimentId = 1; // hard-coded id for only experiment
 
+/* reducer */
+
 const initialState = {
   loading: true,
   fileLoading: false,
@@ -95,6 +97,8 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
+/* Actions */
+
 export const loadFilePairIfNeeded = id => (dispatch, getState) => {
   const { experiment } = getState();
   if (experiment.filePairs[id]) {
@@ -126,8 +130,7 @@ export const nextAssigment = (op = push) => (dispatch, getState) => {
   const { experiment } = getState();
   const noAnswer = experiment.assignments.find(a => a.answer === null);
   if (!noAnswer) {
-    // FIXME finish
-    return Promise.resolve();
+    return dispatch(op(makeUrl('finish', { experiment: experimentId })));
   }
 
   return dispatch(
@@ -182,6 +185,8 @@ export const markCurrent = answer => (dispatch, getState) => {
   return dispatch(mark(experiment.currentAssigment.id, answer));
 };
 
+/* Routing */
+
 export const middleware = store => next => action => {
   if (action.type !== LOCATION_CHANGED) {
     return next(action);
@@ -202,3 +207,22 @@ export const middleware = store => next => action => {
       return result;
   }
 };
+
+/* Selectors (we might need to use reselect in future) */
+
+export const getAssignmentsCount = state => state.experiment.assignments.length;
+
+export const getSimilarCount = state =>
+  state.experiment.assignments.filter(a => a.answer === ANSWER_SIMILAR).length;
+
+export const getDifferentCount = state =>
+  state.experiment.assignments.filter(a => a.answer === ANSWER_DIFFERENT)
+    .length;
+
+export const getSkipCount = state =>
+  state.experiment.assignments.filter(a => a.answer === ANSWER_SKIP).length;
+
+export const getProgressPercent = state =>
+  100 /
+  getAssignmentsCount(state) *
+  (getSimilarCount(state) + getDifferentCount(state));
