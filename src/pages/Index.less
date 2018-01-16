@@ -1,3 +1,52 @@
 .index-page {
-    text-align: center;
+    height: 100%;
+    min-height: 660px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__header,
+    &__description,
+    &__preview,
+    &__actions {
+        text-align: center;
+    }
+
+    &__header {
+        color: #ccc;
+        margin: 0 0 20px;
+    }
+
+    &__description {
+        font-size: 20px;
+        margin-bottom: 30px;
+    }
+
+    &__actions {
+        margin-bottom: 40px;
+    }
+
+    &__github-button {
+        padding: 10px 16px;
+        color: #fff;
+        background-color: #444;
+        border-color: rgba(0, 0, 0, 0.2);
+        text-transform: uppercase;
+
+        &:focus,
+        &:hover,
+        &:active {
+            background-color: #2b2b2b;
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    &__github-icon {
+        display: block;
+        float: right;
+        width: 26px;
+        height: 26px;
+        margin: -3px -3px -3px 7px;
+    }
 }
