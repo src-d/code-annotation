@@ -89,7 +89,7 @@ const reducer = (state = initialState, action) => {
             return {
               ...a,
               answer: action.answer,
-              duration: (new Date() - state.currentAssigmentStartTime) * 1000,
+              duration: new Date() - state.currentAssigmentStartTime,
             };
           }
           return a;
@@ -232,3 +232,10 @@ export const getProgressPercent = state =>
   100 /
   getAssignmentsCount(state) *
   (getSimilarCount(state) + getDifferentCount(state));
+
+export const getOverallTime = state =>
+  state.experiment.assignments.reduce((acc, a) => acc + (a.duration || 0), 0);
+
+export const getAverageTime = state =>
+  getOverallTime(state) /
+  state.experiment.assignments.filter(a => a.duration).length;

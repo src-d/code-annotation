@@ -2,11 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Table } from 'react-bootstrap';
 import PageHeader from '../components/PageHeader';
+import HumanDuration from '../components/HumanDuration';
 import {
   getSimilarCount,
   getDifferentCount,
   getProgressPercent,
   getSkipCount,
+  getAverageTime,
+  getOverallTime,
 } from '../state/experiment';
 import './Final.less';
 
@@ -48,11 +51,15 @@ class Final extends Component {
             </tr>
             <tr>
               <td>Average Time per Annotation</td>
-              <td>{averageTime}</td>
+              <td>
+                <HumanDuration value={averageTime} />
+              </td>
             </tr>
             <tr>
               <td>Experiment Overall Time</td>
-              <td>{overallTime}</td>
+              <td>
+                <HumanDuration value={overallTime} />
+              </td>
             </tr>
           </tbody>
         </Table>
@@ -70,8 +77,8 @@ const mapStateToProps = state => {
     similarCount: getSimilarCount(state),
     differentCount: getDifferentCount(state),
     skipCount: getSkipCount(state),
-    averageTime: 0,
-    overallTime: 0,
+    averageTime: getAverageTime(state),
+    overallTime: getOverallTime(state),
   };
 };
 
