@@ -9,7 +9,7 @@ class Index extends Component {
     const { logIn: onClick } = this.props;
     return (
       <div className="index-page">
-        <h1>Welcome! We&#39;re glad you make it this far.</h1>
+        <h1>Welcome! We&#39;re glad you made it this far.</h1>
         <p>
           source{'{d}'} code annotation brings together state-of-art insights
           from<br />machine learning and user experience, for source code
