@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Glyphicon } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import './Footer.less';
 
 function Footer({
@@ -27,13 +27,13 @@ function Footer({
         </div>
         <div className="ex-footer__actions">
           <Button bsSize="large" bsStyle="success" onClick={markSimilar}>
-            <Glyphicon glyph="ok" />
+            Identical
           </Button>
           <Button bsSize="large" onClick={markMaybe}>
-            <span className="ex-footer__question">?</span>
+            Similar
           </Button>
           <Button bsSize="large" bsStyle="danger" onClick={markDifferent}>
-            <Glyphicon glyph="remove" />
+            Different
           </Button>
         </div>
         <div className="ex-footer__buttons">
