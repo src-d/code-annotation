@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`errors/reducer ADD 1`] = `
+Array [
+  "test error",
+]
+`;
+
+exports[`errors/reducer REMOVE 1`] = `
+Array [
+  "error 1",
+  "error 3",
+]
+`;

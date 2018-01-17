@@ -22,9 +22,11 @@
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-jest": "^21.6.1",
     "eslint-plugin-prettier": "^2.4.0",
+    "jest-fetch-mock": "^1.4.0",
     "prettier": "^1.10.1",
     "react-app-rewire-less": "^2.1.0",
-    "react-app-rewired": "^1.4.0"
+    "react-app-rewired": "^1.4.0",
+    "redux-mock-store": "^1.4.0"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -32,5 +34,9 @@
     "test": "react-app-rewired test --env=jsdom",
     "lint": "eslint 'src/**/*.js' && prettier -l 'src/**/*.js'",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "automock": false,
+    "setupFiles": ["./setupJest.js"]
   }
 }

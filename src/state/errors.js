@@ -1,4 +1,4 @@
-const initialState = [];
+export const initialState = [];
 
 export const ADD = 'ca/errors/ADD';
 export const REMOVE = 'ca/errors/REMOVE';
@@ -17,12 +17,21 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-export const add = error => {
+export const add = error => dispatch => {
   console.error(error);
-  return {
+  if (Array.isArray(error)) {
+    error.forEach(e =>
+      dispatch({
+        type: ADD,
+        error: e,
+      })
+    );
+    return;
+  }
+  dispatch({
     type: ADD,
     error,
-  };
+  });
 };
 
 export const remove = index => ({

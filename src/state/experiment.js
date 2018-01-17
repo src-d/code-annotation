@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import { LOCATION_CHANGED, replace, push } from 'redux-little-router';
 import api from '../api';
 import { namedRoutes, makeUrl } from './routes';
-import { add as addError } from './errors';
+import { add as addErrors } from './errors';
 
 export const ANSWER_SIMILAR = 'Yes';
 export const ANSWER_MAYBE = 'Maybe';
@@ -13,7 +13,7 @@ export const experimentId = 1; // hard-coded id for only experiment
 
 /* reducer */
 
-const initialState = {
+export const initialState = {
   loading: true,
   fileLoading: false,
   error: null,
@@ -108,7 +108,7 @@ export default reducer;
 
 /* Actions */
 
-export const loadFilePairIfNeeded = id => (dispatch, getState) => {
+const loadFilePairIfNeeded = id => (dispatch, getState) => {
   const { experiment } = getState();
   if (experiment.filePairs[id]) {
     return Promise.resolve();
@@ -116,7 +116,7 @@ export const loadFilePairIfNeeded = id => (dispatch, getState) => {
 
   dispatch({ type: LOAD_FILE_PAIR });
 
-  return api.getFilePair(id).then(res =>
+  return api.getFilePair(experiment.id, id).then(res =>
     dispatch({
       type: SET_FILE_PAIR,
       id: res.id,
@@ -133,7 +133,7 @@ export const selectAssigment = id => (dispatch, getState) => {
     assigment,
   });
   return dispatch(loadFilePairIfNeeded(assigment.pairId)).catch(e => {
-    dispatch(addError(e));
+    dispatch(addErrors(e));
     dispatch({ type: LOAD_ERROR, error: e });
   });
 };
@@ -176,7 +176,7 @@ export const load = (expId, assigmentId) => dispatch => {
       return dispatch(selectAssigment(assigmentId));
     })
     .catch(e => {
-      dispatch(addError(e));
+      dispatch(addErrors(e));
       dispatch({ type: LOAD_ERROR, error: e });
     });
 };
@@ -243,7 +243,7 @@ export const getProgressPercent = createSelector(
   getAssignmentsCount,
   getSimilarCount,
   getDifferentCount,
-  (total, similar, different) => 100 / total * (similar + different)
+  (total, similar, different) => Math.round(100 / total * (similar + different))
 );
 
 export const getOverallTime = createSelector(getAssignments, assignments =>
@@ -254,7 +254,7 @@ export const getAverageTime = createSelector(
   getOverallTime,
   getAssignments,
   (overallTime, assignments) =>
-    overallTime / assignments.filter(a => a.duration).length
+    Math.round(overallTime / assignments.filter(a => a.duration).length)
 );
 
 export const getCurrentFilePair = state => {

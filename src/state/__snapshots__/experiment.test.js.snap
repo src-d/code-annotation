@@ -1,0 +1,143 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`experiment/reducer LOAD 1`] = `
+Object {
+  "assignments": Array [],
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "fileLoading": false,
+  "filePairs": Object {},
+  "id": null,
+  "loading": true,
+  "name": null,
+}
+`;
+
+exports[`experiment/reducer LOAD_ERROR 1`] = `
+Object {
+  "assignments": Array [],
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": "test error",
+  "fileLoading": false,
+  "filePairs": Object {},
+  "id": null,
+  "loading": false,
+  "name": null,
+}
+`;
+
+exports[`experiment/reducer LOAD_FILE_PAIR 1`] = `
+Object {
+  "assignments": Array [],
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "fileLoading": true,
+  "filePairs": Object {},
+  "id": null,
+  "loading": true,
+  "name": null,
+}
+`;
+
+exports[`experiment/reducer LOAD_SUCCESS 1`] = `
+Object {
+  "assignments": Array [],
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "fileLoading": false,
+  "filePairs": Object {},
+  "id": null,
+  "loading": false,
+  "name": null,
+}
+`;
+
+exports[`experiment/reducer MARK_ASSIGNMENT 1`] = `
+Object {
+  "assignments": Array [
+    Object {
+      "answer": "Yes",
+      "duration": 90267,
+      "id": 1,
+    },
+  ],
+  "currentAssigment": null,
+  "currentAssigmentStartTime": 2018-01-17T11:26:49.733Z,
+  "error": null,
+  "fileLoading": false,
+  "filePairs": Object {},
+  "id": null,
+  "loading": true,
+  "name": null,
+}
+`;
+
+exports[`experiment/reducer SET_ASSIGNMENTS 1`] = `
+Object {
+  "assignments": Array [
+    1,
+    2,
+  ],
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "fileLoading": false,
+  "filePairs": Object {},
+  "id": null,
+  "loading": true,
+  "name": null,
+}
+`;
+
+exports[`experiment/reducer SET_CURRENT_ASSIGMENT 1`] = `
+Object {
+  "assignments": Array [],
+  "currentAssigment": Object {
+    "id": 1,
+    "name": "test",
+  },
+  "currentAssigmentStartTime": 2018-01-17T11:26:49.733Z,
+  "error": null,
+  "fileLoading": false,
+  "filePairs": Object {},
+  "id": null,
+  "loading": true,
+  "name": null,
+}
+`;
+
+exports[`experiment/reducer SET_EXPERIMENT 1`] = `
+Object {
+  "assignments": Array [],
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "fileLoading": false,
+  "filePairs": Object {},
+  "id": 1,
+  "loading": true,
+  "name": "test name",
+}
+`;
+
+exports[`experiment/reducer SET_FILE_PAIR 1`] = `
+Object {
+  "assignments": Array [],
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "fileLoading": false,
+  "filePairs": Object {
+    "1": Object {
+      "diff": "test diff",
+    },
+  },
+  "id": null,
+  "loading": true,
+  "name": null,
+}
+`;
