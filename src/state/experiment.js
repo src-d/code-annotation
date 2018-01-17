@@ -1,3 +1,4 @@
+import { createSelector } from 'reselect';
 import { LOCATION_CHANGED, replace, push } from 'redux-little-router';
 import api from '../api';
 import { namedRoutes, makeUrl } from './routes';
@@ -217,31 +218,44 @@ export const middleware = store => next => action => {
   }
 };
 
-/* Selectors (we might need to use reselect in future) */
+/* Selectors */
+
+const getAssignments = state => state.experiment.assignments;
 
 export const getAssignmentsCount = state => state.experiment.assignments.length;
 
-export const getSimilarCount = state =>
-  state.experiment.assignments.filter(a => a.answer === ANSWER_SIMILAR).length;
+export const getSimilarCount = createSelector(
+  getAssignments,
+  assignments => assignments.filter(a => a.answer === ANSWER_SIMILAR).length
+);
 
-export const getDifferentCount = state =>
-  state.experiment.assignments.filter(a => a.answer === ANSWER_DIFFERENT)
-    .length;
+export const getDifferentCount = createSelector(
+  getAssignments,
+  assignments => assignments.filter(a => a.answer === ANSWER_DIFFERENT).length
+);
 
-export const getSkipCount = state =>
-  state.experiment.assignments.filter(a => a.answer === ANSWER_SKIP).length;
+export const getSkipCount = createSelector(
+  getAssignments,
+  assignments => assignments.filter(a => a.answer === ANSWER_SKIP).length
+);
 
-export const getProgressPercent = state =>
-  100 /
-  getAssignmentsCount(state) *
-  (getSimilarCount(state) + getDifferentCount(state));
+export const getProgressPercent = createSelector(
+  getAssignmentsCount,
+  getSimilarCount,
+  getDifferentCount,
+  (total, similar, different) => 100 / total * (similar + different)
+);
 
-export const getOverallTime = state =>
-  state.experiment.assignments.reduce((acc, a) => acc + (a.duration || 0), 0);
+export const getOverallTime = createSelector(getAssignments, assignments =>
+  assignments.reduce((acc, a) => acc + (a.duration || 0), 0)
+);
 
-export const getAverageTime = state =>
-  getOverallTime(state) /
-  state.experiment.assignments.filter(a => a.duration).length;
+export const getAverageTime = createSelector(
+  getOverallTime,
+  getAssignments,
+  (overallTime, assignments) =>
+    overallTime / assignments.filter(a => a.duration).length
+);
 
 export const getCurrentFilePair = state => {
   const { currentAssigment, filePairs } = state.experiment;
