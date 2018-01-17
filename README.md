@@ -4,7 +4,16 @@ In order to evaluate quality of ML models, as well as to create “ImageNet for 
 
 ## Installation
 
+### Docker
+
+```bash
+docker build -t code-annotation .
+docker run --rm -p 8080:8080 code-annotation
 ```
+
+### Non-docker
+
+```bash
 go get <here will be path>
 cd $GOPATH/<here will be path>
 make serve
