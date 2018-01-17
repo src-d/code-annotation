@@ -15,8 +15,6 @@ import {
   ANSWER_DIFFERENT,
   ANSWER_SKIP,
   experimentId,
-  getSimilarCount,
-  getDifferentCount,
   getProgressPercent,
   getCurrentFilePair,
 } from '../state/experiment';
@@ -67,7 +65,7 @@ class Experiment extends Component {
   }
 
   renderMain() {
-    const { error, loading, stat } = this.props;
+    const { error, loading, percent } = this.props;
 
     if (error) {
       return (
@@ -88,12 +86,7 @@ class Experiment extends Component {
     return (
       <div className="ex-page__main">
         <div className="ex-page__progress">
-          <Progress
-            percent={stat.percent}
-            similar={stat.similar}
-            different={stat.different}
-            className="pull-right"
-          />
+          <Progress percent={percent} className="pull-right" />
         </div>
         {this.renderContent()}
       </div>
@@ -187,12 +180,6 @@ const mapStateToProps = state => {
     currentAssigment,
   } = experiment;
 
-  const stat = {
-    similar: getSimilarCount(state),
-    different: getDifferentCount(state),
-    percent: getProgressPercent(state),
-  };
-
   const filePair = getCurrentFilePair(state);
   const diff = filePair ? filePair.diff : null;
 
@@ -204,7 +191,7 @@ const mapStateToProps = state => {
   return {
     error,
     loading,
-    stat,
+    percent: getProgressPercent(state),
     fileLoading,
     diffString: diff,
     currentAssigmentId: currentAssigment ? currentAssigment.id : null,
