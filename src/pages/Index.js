@@ -26,7 +26,11 @@ class Index extends Component {
               className="index-page__github-button"
             >
               Sign in with Github
-              <img src="/github.png" className="index-page__github-icon" />
+              <img
+                src="/github.png"
+                alt="github"
+                className="index-page__github-icon"
+              />
             </Button>
           </div>
 

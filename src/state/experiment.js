@@ -1,6 +1,7 @@
 import { LOCATION_CHANGED, replace, push } from 'redux-little-router';
 import api from '../api';
 import { namedRoutes, makeUrl } from './routes';
+import { add as addError } from './errors';
 
 export const ANSWER_SIMILAR = 'Yes';
 export const ANSWER_MAYBE = 'Maybe';
@@ -48,6 +49,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+        fileLoading: false,
         error: action.error,
       };
     case SET_EXPERIMENT:
@@ -129,7 +131,10 @@ export const selectAssigment = id => (dispatch, getState) => {
     type: SET_CURRENT_ASSIGMENT,
     assigment,
   });
-  return dispatch(loadFilePairIfNeeded(assigment.pairId));
+  return dispatch(loadFilePairIfNeeded(assigment.pairId)).catch(e => {
+    dispatch(addError(e));
+    dispatch({ type: LOAD_ERROR, error: e });
+  });
 };
 
 export const nextAssigment = (op = push) => (dispatch, getState) => {
@@ -156,23 +161,21 @@ export const load = (expId, assigmentId) => dispatch => {
       });
       return api.getAssignments(res.id);
     })
-    .then(res => {
+    .then(res =>
       dispatch({
         type: SET_ASSIGNMENTS,
         assignments: res,
-      });
-    })
+      })
+    )
+    .then(() => dispatch({ type: LOAD_SUCCESS }))
     .then(() => {
       if (!assigmentId) {
         return dispatch(nextAssigment(replace));
       }
       return dispatch(selectAssigment(assigmentId));
     })
-    .then(() => {
-      dispatch({ type: LOAD_SUCCESS });
-    })
     .catch(e => {
-      console.error(e);
+      dispatch(addError(e));
       dispatch({ type: LOAD_ERROR, error: e });
     });
 };
@@ -239,3 +242,11 @@ export const getOverallTime = state =>
 export const getAverageTime = state =>
   getOverallTime(state) /
   state.experiment.assignments.filter(a => a.duration).length;
+
+export const getCurrentFilePair = state => {
+  const { currentAssigment, filePairs } = state.experiment;
+  if (!currentAssigment) {
+    return null;
+  }
+  return filePairs[currentAssigment.pairId];
+};

@@ -18,6 +18,7 @@ import {
   getSimilarCount,
   getDifferentCount,
   getProgressPercent,
+  getCurrentFilePair,
 } from '../state/experiment';
 import { makeUrl } from '../state/routes';
 import './Experiment.less';
@@ -54,14 +55,57 @@ class Experiment extends Component {
   }
 
   render() {
+    const { user } = this.props;
+
+    return (
+      <div className="ex-page">
+        <PageHeader {...user} />
+        {this.renderMain()}
+        {this.renderModal()}
+      </div>
+    );
+  }
+
+  renderMain() {
+    const { error, loading, stat } = this.props;
+
+    if (error) {
+      return (
+        <div className="ex-page__oops">
+          Oops.<br />Something went wrong.
+        </div>
+      );
+    }
+
+    if (loading) {
+      return (
+        <div className="ex-page__loader">
+          <Loader />
+        </div>
+      );
+    }
+
+    return (
+      <div className="ex-page__main">
+        <div className="ex-page__progress">
+          <Progress
+            percent={stat.percent}
+            similar={stat.similar}
+            different={stat.different}
+            className="pull-right"
+          />
+        </div>
+        {this.renderContent()}
+      </div>
+    );
+  }
+
+  renderContent() {
     const {
-      loading,
-      stat,
       fileLoading,
       diffString,
       assignmentsOptions,
       currentAssigmentId,
-      user,
       selectAssigmentId,
       markSimilar,
       markMaybe,
@@ -69,84 +113,79 @@ class Experiment extends Component {
       skip,
       finish,
     } = this.props;
+
+    if (fileLoading || !diffString) {
+      return (
+        <div className="ex-page__loader">
+          <Loader />
+        </div>
+      );
+    }
+
     return (
-      <div className="ex-page">
-        <PageHeader {...user} />
-        {loading ? (
-          <div className="ex-page__loader">
-            <Loader />
-          </div>
-        ) : (
-          <div className="ex-page__main">
-            <div className="ex-page__progress">
-              <Progress
-                percent={stat.percent}
-                similar={stat.similar}
-                different={stat.different}
-                className="pull-right"
-              />
-            </div>
-            {fileLoading ? (
-              <div className="ex-page__loader">
-                <Loader />
-              </div>
-            ) : (
-              <div className="ex-page__content">
-                <Diff diffString={diffString} className="ex-page__diff" />
-                <Footer
-                  options={assignmentsOptions}
-                  value={currentAssigmentId}
-                  select={selectAssigmentId}
-                  markSimilar={markSimilar}
-                  markMaybe={markMaybe}
-                  markDifferent={markDifferent}
-                  skip={() =>
-                    this.state.alwaysAllowSkip ? skip() : this.showModal()
-                  }
-                  finish={finish}
-                />
-              </div>
-            )}
-          </div>
-        )}
-        <Modal show={this.state.showModal} onHide={this.hideModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>
-              Are you sure you want to skip this question?
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>You can always come back to this question later.</p>
-            <label>
-              <input
-                type="checkbox"
-                checked={this.state.alwaysAllowSkip}
-                onChange={this.onAllowSkipChange}
-              />{' '}
-              always allow skiping questions
-            </label>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={this.hideModal}>No</Button>
-            <Button
-              bsStyle="primary"
-              onClick={() => {
-                this.hideModal();
-                skip();
-              }}
-            >
-              Yes
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      <div className="ex-page__content">
+        <Diff diffString={diffString} className="ex-page__diff" />
+        <Footer
+          options={assignmentsOptions}
+          value={currentAssigmentId}
+          select={selectAssigmentId}
+          markSimilar={markSimilar}
+          markMaybe={markMaybe}
+          markDifferent={markDifferent}
+          skip={() => (this.state.alwaysAllowSkip ? skip() : this.showModal())}
+          finish={finish}
+        />
       </div>
+    );
+  }
+
+  renderModal() {
+    const { skip } = this.props;
+
+    return (
+      <Modal show={this.state.showModal} onHide={this.hideModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Are you sure you want to skip this question?
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>You can always come back to this question later.</p>
+          <label>
+            <input
+              type="checkbox"
+              checked={this.state.alwaysAllowSkip}
+              onChange={this.onAllowSkipChange}
+            />{' '}
+            always allow skiping questions
+          </label>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={this.hideModal}>No</Button>
+          <Button
+            bsStyle="primary"
+            onClick={() => {
+              this.hideModal();
+              skip();
+            }}
+          >
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 }
 
 const mapStateToProps = state => {
   const { experiment, user } = state;
-  const { loading, fileLoading, assignments, currentAssigment } = experiment;
+  const {
+    error,
+    loading,
+    fileLoading,
+    assignments,
+    currentAssigment,
+  } = experiment;
 
   const stat = {
     similar: getSimilarCount(state),
@@ -154,11 +193,8 @@ const mapStateToProps = state => {
     percent: getProgressPercent(state),
   };
 
-  let diff = null;
-  if (!loading && !fileLoading) {
-    const filePair = experiment.filePairs[currentAssigment.pairId];
-    ({ diff } = filePair);
-  }
+  const filePair = getCurrentFilePair(state);
+  const diff = filePair ? filePair.diff : null;
 
   const assignmentsOptions = assignments.map((a, i) => {
     const status = a.answer ? ` (${a.answer})` : '';
@@ -166,6 +202,7 @@ const mapStateToProps = state => {
   });
 
   return {
+    error,
     loading,
     stat,
     fileLoading,

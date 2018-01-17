@@ -17,10 +17,13 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-export const add = error => ({
-  type: ADD,
-  error,
-});
+export const add = error => {
+  console.error(error);
+  return {
+    type: ADD,
+    error,
+  };
+};
 
 export const remove = index => ({
   type: REMOVE,
