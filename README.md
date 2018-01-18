@@ -7,8 +7,8 @@ In order to evaluate quality of ML models, as well as to create “ImageNet for 
 ### Docker
 
 ```bash
-docker build -t code-annotation .
-docker run --rm -p 8080:8080 code-annotation
+docker build -t src-d/code-annotation .
+docker run --rm -p 8080:8080 src-d/code-annotation
 ```
 
 ### Non-docker
