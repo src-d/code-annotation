@@ -1,0 +1,28 @@
+@import '../../../node_modules/bootstrap/less/variables.less';
+
+.ex-footer {
+    border-top: @navbar-default-border;
+    margin-bottom: 20px;
+
+    .container {
+        display: flex;
+        justify-content: space-between;
+
+        &:before,
+        &:after {
+            display: none;
+        }
+    }
+
+    &__actions {
+        .btn {
+            margin: 0 10px;
+        }
+    }
+
+    &__buttons {
+        .btn {
+            margin-left: 10px;
+        }
+    }
+}

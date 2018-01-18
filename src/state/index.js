@@ -1,11 +1,14 @@
 import { combineReducers } from 'redux';
+import user, { authMiddleware } from './user';
+import experiment, { middleware as expMiddleware } from './experiment';
+import router, { middleware as routerMiddleware } from './routes';
+import errors from './errors';
 
-const initialState = {
-  value: 'hello from redux',
-};
-
-const noop = (state = initialState) => state;
+export const middlewares = [authMiddleware, expMiddleware, routerMiddleware];
 
 export default combineReducers({
-  noop,
+  router,
+  errors,
+  user,
+  experiment,
 });
