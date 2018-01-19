@@ -1,4 +1,5 @@
 import mocks from './mocks';
+import TokenService from '../services/token';
 
 const defaultServerUrl =
   process.env.REACT_APP_SERVER_URL || 'http://127.0.0.1:8080/api';
@@ -6,6 +7,10 @@ const defaultServerUrl =
 const apiUrl = url => `${defaultServerUrl}${url}`;
 
 function checkStatus(resp) {
+  // when server return Unauthorized we need to remove token
+  if (resp.status === 401) {
+    TokenService.remove();
+  }
   if (resp.status < 200 || resp.status >= 300) {
     const error = new Error(resp.statusText);
     error.response = resp;
@@ -40,8 +45,16 @@ function normalizeErrors(err) {
   return [normalizeError(err)];
 }
 
-function apiCall(url, options) {
-  return fetch(apiUrl(url), options)
+function apiCall(url, options = {}) {
+  const token = TokenService.get();
+
+  return fetch(apiUrl(url), {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+    },
+  })
     .then(checkStatus)
     .then(resp => resp.json())
     .then(json => {
@@ -53,14 +66,8 @@ function apiCall(url, options) {
     .catch(err => Promise.reject(normalizeErrors(err)));
 }
 
-function signIn() {}
-
-function login() {
-  return Promise.resolve({
-    userId: 1,
-    username: 'Maxim',
-    avatarUrl: 'https://avatars3.githubusercontent.com/u/406916?s=40&v=4',
-  });
+function me() {
+  return apiCall(`/me`);
 }
 
 function getExperiment(experimentId) {
@@ -77,16 +84,18 @@ function getFilePair(experimentId, pairId) {
 
 // eslint-disable-next-line
 let exportObject = {
-  signIn,
-  login,
+  me,
 
   getExperiment,
   getAssignments,
   getFilePair,
 };
-
 if (process.env.NODE_ENV !== 'test') {
-  exportObject = mocks;
+  exportObject = {
+    ...mocks,
+    me,
+  };
 }
 
+// eslint-disable-next-line
 export default exportObject;

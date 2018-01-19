@@ -20,6 +20,10 @@ $(MAKEFILE):
 
 -include $(MAKEFILE)
 
+# set enviroment variables from .env file
+include .env
+export $(shell sed 's/=.*//' .env)
+
 dependencies-frontend: dependencies
 	$(YARN)	install
 
@@ -34,4 +38,7 @@ build: dependencies-frontend
 
 ## Compiles the dashboard assets, and serve the dashboard through its API
 serve: build
+	go run server/cmd/code-annotation/*
+
+gorun:
 	go run server/cmd/code-annotation/*

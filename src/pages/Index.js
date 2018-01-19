@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import { Button } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import { logIn } from '../state/user';
 import './Index.less';
 
 class Index extends Component {
   render() {
-    const { logIn: onClick } = this.props;
     return (
       <div className="index-page">
         <div className="index-page__wrapper">
@@ -21,7 +18,7 @@ class Index extends Component {
 
           <div className="index-page__actions">
             <Button
-              onClick={onClick}
+              href="/login"
               bsStyle="primary"
               className="index-page__github-button"
             >
@@ -43,4 +40,4 @@ class Index extends Component {
   }
 }
 
-export default connect(undefined, { logIn })(Index);
+export default Index;

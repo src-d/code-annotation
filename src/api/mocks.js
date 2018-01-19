@@ -8,9 +8,7 @@ function mock(res) {
   });
 }
 
-function signIn() {}
-
-function login() {
+function me() {
   return Promise.resolve({
     userId: 1,
     username: 'Maxim',
@@ -63,8 +61,7 @@ function getFilePair(experimentId, id) {
 }
 
 export default {
-  signIn,
-  login,
+  me,
 
   getExperiment,
   getAssignments,
