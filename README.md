@@ -4,18 +4,26 @@ In order to evaluate quality of ML models, as well as to create “ImageNet for 
 
 ## Installation
 
+### Github OAuth tokens
+
+First you need OAuth application on github. [Read how to create it](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
+
+On a [page](https://github.com/settings/developers) with your application you will need `Client ID` and `Client Secret`
+
+Copy `.env.tpl` to `.env` and set tokens there.
+
 ### Docker
 
 ```bash
 docker build -t srcd/code-annotation .
-docker run --rm -p 8080:8080 srcd/code-annotation
+docker run --env-file .env --rm -p 8080:8080 srcd/code-annotation
 ```
 
 ### Non-docker
 
 ```bash
-go get <here will be path>
-cd $GOPATH/<here will be path>
+go get github.com/src-d/code-annotation/...
+cd $GOPATH/github.com/src-d/code-annotation
 make serve
 ```
 
