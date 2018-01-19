@@ -29,7 +29,23 @@ make serve
 
 ## Development
 
+Backend:
+
+```
+make gorun
+```
+
 Frontend:
+
+If you want to benifit from frontend hot reloading feature this line in your `.env` file:
+
+```
+UI_DOMAIN=http://127.0.0.1:3000
+```
+
+And then restart server.
+
+To run frontend in dev mode:
 
 ```
 yarn

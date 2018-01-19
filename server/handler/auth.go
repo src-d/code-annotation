@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -17,7 +18,7 @@ func Login(oAuth *service.OAuth) http.HandlerFunc {
 }
 
 // OAuthCallback makes exchange with oauth provider, gets&creates user and redirects to index page with JWT token
-func OAuthCallback(oAuth *service.OAuth, jwt *service.JWT, userRepo *repository.Users) http.HandlerFunc {
+func OAuthCallback(oAuth *service.OAuth, jwt *service.JWT, userRepo *repository.Users, uiDomain string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := oAuth.ValidateState(r.FormValue("state")); err != nil {
 			writeResponse(w, respErr(http.StatusBadRequest, err.Error()))
@@ -46,7 +47,7 @@ func OAuthCallback(oAuth *service.OAuth, jwt *service.JWT, userRepo *repository.
 			writeResponse(w, respInternalErr())
 			return
 		}
-		url := "/?token=" + token
+		url := fmt.Sprintf("%s/?token=%s", uiDomain, token)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	}
 }
