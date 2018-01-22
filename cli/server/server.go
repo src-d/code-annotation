@@ -38,7 +38,6 @@ func main() {
 	envconfig.MustProcess("jwt", &jwtConfig)
 	jwt := service.NewJWT(jwtConfig.SigningKey)
 
-	// routing
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -61,8 +60,18 @@ func main() {
 	// protected handlers
 	r.Route("/api", func(r chi.Router) {
 		r.Use(jwt.Middleware)
-
 		r.Get("/me", handler.Me(userRepo))
+	})
+
+	r.Route("/experiments/{experimentId}", func(r chi.Router) {
+		r.Get("/", handler.GetExperimentDetails)
+
+		r.Route("/assignments", func(r chi.Router) {
+			r.Get("/", handler.GetAssignmentsForUserExperiment)
+			r.Put("/{assignmentId}", handler.SaveAssignment)
+		})
+
+		r.Get("/filePairs/{pairId}", handler.GetFilePairDetails)
 	})
 
 	// frontend
@@ -75,6 +84,7 @@ func main() {
 		http.ServeFile(w, r, "build/index.html")
 	})
 
+	//TODO: logging
 	logrus.Info("running...")
 	http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), r)
 }

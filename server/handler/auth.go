@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/service"
 )

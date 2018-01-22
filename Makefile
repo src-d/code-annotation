@@ -1,6 +1,6 @@
 # Package configuration
 PROJECT = code-annotation
-COMMANDS = server/cmd/code-annotation
+COMMANDS = cli/server
 
 # Including ci Makefile
 MAKEFILE = Makefile.main
@@ -38,7 +38,7 @@ build: dependencies-frontend
 
 ## Compiles the dashboard assets, and serve the dashboard through its API
 serve: build
-	go run server/cmd/code-annotation/*
+	go run cli/server/server.go
 
 gorun:
-	go run server/cmd/code-annotation/*
+	go run cli/server/server.go
