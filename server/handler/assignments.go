@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/src-d/code-annotation/server/model"
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/serializer"
+	"github.com/src-d/code-annotation/server/service"
 )
 
 func GetAssignmentsForUserExperiment(w http.ResponseWriter, r *http.Request) {
@@ -67,8 +67,7 @@ func SaveAssignment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//TODO: use chi logger
-	log.Printf("\nstored: %#v", model.Assignment{
+	service.NewLogger().Printf("\nstored: %#v", model.Assignment{
 		ID:       assignmentId,
 		Answer:   assignment.Answer,
 		Duration: assignment.Duration},

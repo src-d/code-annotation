@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/sirupsen/logrus"
 
 	"github.com/src-d/code-annotation/server/handler"
 	"github.com/src-d/code-annotation/server/repository"
@@ -45,10 +44,13 @@ func main() {
 		AllowedHeaders: []string{"Location", "Authorization"},
 	}
 
+	// loger
+	logger := service.NewLogger()
+
 	r := chi.NewRouter()
-	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(cors.New(corsOptions).Handler)
+	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger}))
 
 	r.Get("/login", handler.Login(oauth))
 	r.Get("/oauth-callback", handler.OAuthCallback(oauth, jwt, userRepo, conf.UIDomain))
@@ -71,7 +73,6 @@ func main() {
 
 	r.Get("/*", handler.FrontendStatics)
 
-	//TODO: logging
-	logrus.Info("running...")
+	logger.Info("running...")
 	http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), r)
 }
