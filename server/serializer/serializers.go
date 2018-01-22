@@ -3,9 +3,9 @@ package serializer
 import (
 	"net/http"
 
-	"github.com/go-chi/render"
-
 	"github.com/src-d/code-annotation/server/model"
+
+	"github.com/go-chi/render"
 )
 
 type ResponseErrors struct {

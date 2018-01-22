@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi"
-	renderer "github.com/go-chi/render"
-
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/serializer"
+
+	"github.com/go-chi/chi"
+	renderer "github.com/go-chi/render"
 )
 
 func GetExperimentDetails(w http.ResponseWriter, r *http.Request) {

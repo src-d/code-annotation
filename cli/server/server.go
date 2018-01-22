@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/src-d/code-annotation/server/handler"
+	"github.com/src-d/code-annotation/server/repository"
+	"github.com/src-d/code-annotation/server/service"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/kelseyhightower/envconfig"
-
-	"github.com/src-d/code-annotation/server/handler"
-	"github.com/src-d/code-annotation/server/repository"
-	"github.com/src-d/code-annotation/server/service"
 )
 
 type appConfig struct {
