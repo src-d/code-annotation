@@ -29,8 +29,11 @@ func GetAssignmentsForUserExperiment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	assignments, err := repository.GetAssignmentsFor(userID, experimentID)
+	if err == repository.ErrNoAssignmentsInitialized {
+		assignments, err = repository.CreateAssignmentsFor(userID, experimentID)
+	}
+
 	if err != nil {
-		//TODO: Create assignments
 		renderer.Render(w, r, serializer.NewErrors(err))
 		return
 	}
