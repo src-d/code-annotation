@@ -181,11 +181,17 @@ export const load = (expId, assigmentId) => dispatch => {
     });
 };
 
-export const mark = (assignmentId, answer) => dispatch => {
+export const mark = (assignmentId, answer) => (dispatch, getState) => {
   dispatch({
     type: MARK_ASSIGNMENT,
     id: assignmentId,
     answer,
+  });
+  const { experiment } = getState();
+  const asignment = experiment.assignments.find(a => a.id === assignmentId);
+  api.putAssigment(assignmentId, {
+    answer,
+    duration: asignment.duration,
   });
   return dispatch(nextAssigment());
 };

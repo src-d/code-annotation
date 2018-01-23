@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/kelseyhightower/envconfig"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
 
 	"github.com/src-d/code-annotation/server/handler"
@@ -38,6 +40,12 @@ func main() {
 	envconfig.MustProcess("jwt", &jwtConfig)
 	jwt := service.NewJWT(jwtConfig.SigningKey)
 
+	// DB
+	db, err := sql.Open("sqlite3", "data.db")
+	if err != nil {
+		panic(err)
+	}
+
 	// routing
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -46,8 +54,8 @@ func main() {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			headers := w.Header()
 			headers.Set("Access-Control-Allow-Origin", "*")
-			headers.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-			headers.Set("Access-Control-Allow-Headers", "Location, Authorization")
+			headers.Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+			headers.Set("Access-Control-Allow-Headers", "Location, Authorization,Content-Type")
 			if r.Method == "OPTIONS" {
 				return
 			}
@@ -63,6 +71,10 @@ func main() {
 		r.Use(jwt.Middleware)
 
 		r.Get("/me", handler.Me(userRepo))
+		r.Get("/experiments/{expId}/file-pairs/{id}", handler.FilePair(db))
+		r.Put("/experiments/{expId}/assignments/{id}", handler.UpdateAssignment(db))
+		r.Get("/experiments/{id}/assignments", handler.Assignments(db))
+		r.Get("/experiments/{id}", handler.Experiment(db))
 	})
 
 	// frontend
