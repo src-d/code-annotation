@@ -1,10 +1,10 @@
 import mocks from './mocks';
 import TokenService from '../services/token';
 
-const defaultServerUrl =
-  process.env.REACT_APP_SERVER_URL || 'http://127.0.0.1:8080/api';
+export const serverUrl =
+  process.env.REACT_APP_SERVER_URL || 'http://127.0.0.1:8080';
 
-const apiUrl = url => `${defaultServerUrl}${url}`;
+const apiUrl = url => `${serverUrl}${url}`;
 
 function checkStatus(resp) {
   // when server return Unauthorized we need to remove token
@@ -67,19 +67,19 @@ function apiCall(url, options = {}) {
 }
 
 function me() {
-  return apiCall(`/me`);
+  return apiCall(`/api/me`);
 }
 
 function getExperiment(experimentId) {
-  return apiCall(`/experiments/${experimentId}`);
+  return apiCall(`/api/experiments/${experimentId}`);
 }
 
 function getAssignments(experimentId) {
-  return apiCall(`/experiments/${experimentId}/assignments`);
+  return apiCall(`/api/experiments/${experimentId}/assignments`);
 }
 
 function getFilePair(experimentId, pairId) {
-  return apiCall(`/experiments/${experimentId}/filePairs/${pairId}`);
+  return apiCall(`/api/experiments/${experimentId}/filePairs/${pairId}`);
 }
 
 // eslint-disable-next-line

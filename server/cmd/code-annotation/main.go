@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -14,7 +15,17 @@ import (
 	"github.com/src-d/code-annotation/server/service"
 )
 
+type appConfig struct {
+	Host     string `envconfig:"HOST"`
+	Port     int    `envconfig:"PORT" default:"8080"`
+	UIDomain string `envconfig:"UI_DOMAIN" default:"http://127.0.0.1:8080"`
+}
+
 func main() {
+	// main configuration
+	var conf appConfig
+	envconfig.MustProcess("", &conf)
+
 	// create repos
 	userRepo := &repository.Users{}
 
@@ -45,7 +56,7 @@ func main() {
 	})
 
 	r.Get("/login", handler.Login(oauth))
-	r.Get("/oauth-callback", handler.OAuthCallback(oauth, jwt, userRepo))
+	r.Get("/oauth-callback", handler.OAuthCallback(oauth, jwt, userRepo, conf.UIDomain))
 
 	// protected handlers
 	r.Route("/api", func(r chi.Router) {
@@ -65,5 +76,5 @@ func main() {
 	})
 
 	logrus.Info("running...")
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), r)
 }
