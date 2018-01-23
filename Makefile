@@ -1,7 +1,10 @@
 # Config
 PROJECT = code-annotation
 COMMANDS = cli/server
-SERVER_URL ?= /api
+
+HOST ?= 127.0.0.1
+PORT ?= 8080
+SERVER_URL ?= //$(HOST):$(PORT)
 
 # Including ci Makefile
 CI_REPOSITORY ?= https://github.com/src-d/ci.git

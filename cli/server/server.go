@@ -41,38 +41,57 @@ func main() {
 	corsOptions := cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "OPTIONS"},
-		AllowedHeaders: []string{"Location", "Authorization"},
+		AllowedHeaders: []string{"Location", "Authorization", "Content-Type"},
 	}
 
 	// loger
 	logger := service.NewLogger()
 
 	r := chi.NewRouter()
-	r.Use(middleware.Recoverer)
-	r.Use(cors.New(corsOptions).Handler)
-	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger}))
 
-	r.Get("/login", handler.Login(oauth))
-	r.Get("/oauth-callback", handler.OAuthCallback(oauth, jwt, userRepo, conf.UIDomain))
+	ms := []func(http.Handler) http.Handler{
+		middleware.Recoverer,
+		cors.New(corsOptions).Handler,
+		middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger}),
+	}
 
-	r.Route("/api", func(r chi.Router) {
-		r.Use(jwt.Middleware)
-		r.Get("/me", handler.Me(userRepo))
+	msProtected := append(ms, jwt.Middleware)
+
+	r.Group(func(r chi.Router) {
+		r.Use(ms...)
+
+		r.Get("/login", GetHandler(handler.Login(oauth)))
+		r.Get("/oauth-callback", GetHandler(handler.OAuthCallback(oauth, jwt, userRepo, conf.UIDomain, logger)))
 	})
 
-	r.Route("/experiments/{experimentId}", func(r chi.Router) {
-		r.Get("/", handler.GetExperimentDetails)
+	r.Route("/api", func(r chi.Router) {
+		r.Use(msProtected...)
 
-		r.Route("/assignments", func(r chi.Router) {
-			r.Get("/", handler.GetAssignmentsForUserExperiment)
-			r.Put("/{assignmentId}", handler.SaveAssignment)
+		r.Get("/me", GetHandler(handler.Me(userRepo)))
+
+		r.Route("/experiments/{experimentId}", func(r chi.Router) {
+
+			r.Get("/", GetHandler(handler.GetExperimentDetails()))
+
+			r.Route("/assignments", func(r chi.Router) {
+
+				r.Get("/", GetHandler(handler.GetAssignmentsForUserExperiment()))
+				r.Put("/{assignmentId}", GetHandler(handler.SaveAssignment()))
+			})
+
+			r.Get("/file-pairs/{pairId}", GetHandler(handler.GetFilePairDetails()))
 		})
-
-		r.Get("/filePairs/{pairId}", handler.GetFilePairDetails)
 	})
 
 	r.Get("/*", handler.FrontendStatics)
 
 	logger.Info("running...")
 	http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), r)
+}
+
+func GetHandler(rp handler.RequestProcessFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		response, errors := rp(r)
+		handler.Write(w, r, response, errors)
+	}
 }

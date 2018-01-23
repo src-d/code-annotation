@@ -6,72 +6,66 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/src-d/code-annotation/server/model"
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/serializer"
-	"github.com/src-d/code-annotation/server/service"
 
 	"github.com/go-chi/chi"
-	renderer "github.com/go-chi/render"
 )
 
-func GetAssignmentsForUserExperiment(w http.ResponseWriter, r *http.Request) {
-	experimentID, err := strconv.Atoi(chi.URLParam(r, "experimentId"))
-	if err != nil {
-		renderer.Render(w, r, serializer.NewErrors(err))
+func GetAssignmentsForUserExperiment() RequestProcessFunc {
+	return func(r *http.Request) (resp *serializer.Response, errs []*serializer.Error) {
+		experimentID, err := strconv.Atoi(chi.URLParam(r, "experimentId"))
+		if err != nil {
+			errs = append(errs, &serializer.Error{500, "Wrong format in experiment ID sent", err.Error()})
+			return
+		}
+
+		userID, err := strconv.Atoi("1")
+		if err != nil {
+			errs = append(errs, &serializer.Error{500, "Wrong format in user ID sent", err.Error()})
+			return
+		}
+
+		assignments, err := repository.GetAssignmentsFor(userID, experimentID)
+		if err == repository.ErrNoAssignmentsInitialized {
+			assignments, err = repository.CreateAssignmentsFor(userID, experimentID)
+		}
+		if err != nil {
+			errs = append(errs, &serializer.Error{500, "No assignments retrieved", err.Error()})
+			return
+		}
+
+		resp = serializer.NewAssignmentsResponse(assignments)
 		return
 	}
-
-	userID, err := strconv.Atoi("1")
-	if err != nil {
-		renderer.Render(w, r, serializer.NewErrors(err))
-		return
-	}
-
-	assignments, err := repository.GetAssignmentsFor(userID, experimentID)
-	if err == repository.ErrNoAssignmentsInitialized {
-		assignments, err = repository.CreateAssignmentsFor(userID, experimentID)
-	}
-
-	if err != nil {
-		renderer.Render(w, r, serializer.NewErrors(err))
-		return
-	}
-
-	renderer.Render(w, r, &serializer.ResponseMany{Data: serializer.NewAssignments(assignments)})
 }
 
-func SaveAssignment(w http.ResponseWriter, r *http.Request) {
-	assignmentId, err := strconv.Atoi(chi.URLParam(r, "assignmentId"))
-	if err != nil {
-		renderer.Render(w, r, serializer.NewErrors(err))
+func SaveAssignment() RequestProcessFunc {
+	return func(r *http.Request) (resp *serializer.Response, errs []*serializer.Error) {
+		assignmentId, err := strconv.Atoi(chi.URLParam(r, "assignmentId"))
+		if err != nil {
+			errs = append(errs, &serializer.Error{500, "Wrong format in assignment ID sent", err.Error()})
+			return
+		}
+
+		var assignmentRequest serializer.AssignmentRequest
+		body, err := ioutil.ReadAll(r.Body)
+		defer r.Body.Close()
+		if err == nil {
+			err = json.Unmarshal(body, &assignmentRequest)
+		}
+		if err != nil {
+			errs = append(errs, &serializer.Error{500, "Payload could not be read", err.Error()})
+			return
+		}
+
+		assignmentCandidate := serializer.NewAssignmentsFromRequest(&assignmentRequest)
+		if err := repository.UpdateAssignment(assignmentId, assignmentCandidate); err != nil {
+			errs = append(errs, &serializer.Error{500, "Answer could not be saved", err.Error()})
+			return
+		}
+
+		resp = serializer.NewCountResponse(1)
 		return
 	}
-
-	body, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		renderer.Render(w, r, serializer.NewErrors(err))
-		return
-	}
-
-	var assignment serializer.Assignment
-	if err := json.Unmarshal(body, &assignment); err != nil {
-		renderer.Render(w, r, serializer.NewErrors(err))
-		return
-	}
-
-	assignmentCandidate := serializer.NewAssignmentUpdateRequest(assignment)
-	if err := repository.UpdateAssignment(assignmentId, assignmentCandidate); err != nil {
-		renderer.Render(w, r, serializer.NewErrors(err))
-		return
-	}
-
-	service.NewLogger().Printf("\nstored: %#v", model.Assignment{
-		ID:       assignmentId,
-		Answer:   assignment.Answer,
-		Duration: assignment.Duration},
-	)
-
-	renderer.Render(w, r, &serializer.ResponseStored{1})
 }

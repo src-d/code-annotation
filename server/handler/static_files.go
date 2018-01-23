@@ -10,5 +10,6 @@ func FrontendStatics(w http.ResponseWriter, r *http.Request) {
 	if _, err := os.Stat(filepath); err == nil {
 		http.ServeFile(w, r, filepath)
 	}
+
 	http.ServeFile(w, r, "build/index.html")
 }

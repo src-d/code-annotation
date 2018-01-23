@@ -1,10 +1,10 @@
 package model
 
 type User struct {
-	ID        int    `json:"id"`
-	Login     string `json:"login"`
-	Username  string `json:"username"`
-	AvatarURL string `json:"avatarURL"`
+	ID        int
+	Login     string
+	Username  string
+	AvatarURL string
 	Role      Role
 }
 
