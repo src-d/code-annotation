@@ -1,0 +1,74 @@
+workspace:
+  base: /go
+  path: src/github.com/src-d/code-annotation
+
+branches: [master, staging, release/*]
+
+pipeline:
+
+  clone:
+    image: plugins/git
+    debug: true
+
+
+  # build on pull requests
+
+  build:
+    image: golang:1.8-alpine3.6
+    environment:
+      - REACT_APP_SERVER_URL="//code-annotation.sourced.tech"
+    commands:
+      - apk --update upgrade
+      - apk add --no-cache make git curl ca-certificates bash build-base libxml2-dev protobuf nodejs=6.10.3-r1 nodejs-npm
+      - npm install -g yarn
+      - make build
+      - make packages
+    debug: true
+    when:
+      event: [pull_request]
+
+
+  # deployment to staging environment
+
+  build_stg:
+    image: golang:1.8-alpine3.6
+    environment:
+      - REACT_APP_SERVER_URL="//code-annotation-staging.srcd.run"
+    commands:
+      - apk --update upgrade
+      - apk add --no-cache make git curl ca-certificates bash build-base libxml2-dev protobuf nodejs=6.10.3-r1 nodejs-npm
+      - npm install -g yarn
+      - make build
+      - make packages
+    debug: true
+    when:
+      branch: [staging]
+      event: [push]
+
+  docker_stg:
+    group: docker
+    image: plugins/docker
+    registry: docker.io
+    repo: srcd/code-annotation
+    secrets: [ docker_username, docker_password ]
+    # workaround for bug https://github.com/kubernetes/helm/issues/1707
+    tag: 'commit-${DRONE_COMMIT_SHA:0:7}'
+    dockerfile: Dockerfile
+    debug: true
+    when:
+      branch: [staging]
+      event: [push]
+
+  helm_deploy_stg:
+    image: quay.io/ipedrazas/drone-helm
+    skip_tls_verify: true
+    chart: ./helm-charts/code-annotation
+    release: code-annotation
+    prefix: STG
+    secrets: [ STG_API_SERVER, STG_KUBERNETES_TOKEN ]
+    values: ingress.globalStaticIpName=code-annotation-staging,ingress.hostname=code-annotation-staging.srcd.run,image.tag=commit-${DRONE_COMMIT_SHA:0:7}
+    tiller_ns: kube-system
+    wait: true
+    when:
+      branch: [staging]
+      event: [push]
