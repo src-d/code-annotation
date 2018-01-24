@@ -59,8 +59,7 @@ func SaveAssignment() RequestProcessFunc {
 			return
 		}
 
-		assignmentCandidate := serializer.NewAssignmentsFromRequest(&assignmentRequest)
-		if err := repository.UpdateAssignment(assignmentId, assignmentCandidate); err != nil {
+		if err := repository.UpdateAssignment(assignmentId, assignmentRequest.Answer, assignmentRequest.Duration); err != nil {
 			errs = append(errs, &serializer.Error{500, "Answer could not be saved", err.Error()})
 			return
 		}

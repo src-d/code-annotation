@@ -48,14 +48,14 @@ func NewExperimentResponse(e *model.Experiment) *Response {
 	return newResponse(ExperimentResponse{e.ID, e.Name, e.Description})
 }
 
-type AssignmentResponse struct {
-	ID       int    `json:"id"`
-	PairID   int    `json:"pairId"`
+type AssignmentRequest struct {
 	Answer   string `json:"answer"`
 	Duration int    `json:"duration"`
 }
 
-type AssignmentRequest struct {
+type AssignmentResponse struct {
+	ID       int    `json:"id"`
+	PairID   int    `json:"pairId"`
 	Answer   string `json:"answer"`
 	Duration int    `json:"duration"`
 }
@@ -67,13 +67,6 @@ func NewAssignmentsResponse(as []*model.Assignment) *Response {
 	}
 
 	return newResponse(assignments)
-}
-
-func NewAssignmentsFromRequest(as *AssignmentRequest) *model.Assignment {
-	return &model.Assignment{
-		Answer:   as.Answer,
-		Duration: as.Duration,
-	}
 }
 
 type FilePairsResponse struct {

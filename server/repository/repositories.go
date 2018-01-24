@@ -42,17 +42,17 @@ func CreateAssignmentsFor(userID int, experimentID int) ([]*model.Assignment, er
 	return assignments, nil
 }
 
-func UpdateAssignment(assignmentId int, assignment *model.Assignment) error {
-	if _, ok := model.Answers[assignment.Answer]; !ok {
-		return fmt.Errorf("Wrong answer provided: '%s'", assignment.Answer)
+func UpdateAssignment(assignmentId int, answer string, duration int) error {
+	if _, ok := model.Answers[answer]; !ok {
+		return fmt.Errorf("Wrong answer provided: '%s'", answer)
 	}
 
 	if assignmentId > len(assignments) {
 		return fmt.Errorf("Assignment #%d does not exist", assignmentId)
 	}
 
-	assignments[assignmentId-1].Answer = assignment.Answer
-	assignments[assignmentId-1].Duration = assignment.Duration
+	assignments[assignmentId-1].Answer = answer
+	assignments[assignmentId-1].Duration = duration
 	return nil
 }
 
