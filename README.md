@@ -1,16 +1,23 @@
-# Source Code Annotation application
+[![Build Status](https://travis-ci.org/src-d/go-git.svg)](https://travis-ci.org/src-d/go-git)
+![unstable](https://svg-badge.appspot.com/badge/stability/unstable?a)
+
+# Source Code Annotation Tool
 
 In order to evaluate quality of ML models, as well as to create “ImageNet for source core” there is a need for tools to automate the data collection/labeling/annotation.
+
+![Screenshot](.github/screenshot.png?raw=true)
 
 ## Installation
 
 ### Github OAuth tokens
 
-First you need OAuth application on github. [Read how to create it](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
+1. You need OAuth application on github. [Read how to create it](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
 
-On a [page](https://github.com/settings/developers) with your application you will need `Client ID` and `Client Secret`
+    `Authorization callback URL: http://127.0.0.1:8080/oauth-callback`
 
-Copy `.env.tpl` to `.env` and set tokens there.
+2. Copy `.env.tpl` to `.env`.
+
+3. On a [page](https://github.com/settings/developers) with your application find `Client ID` and `Client Secret` and put them in `.env` file.
 
 ### Docker
 
@@ -27,34 +34,18 @@ cd $GOPATH/github.com/src-d/code-annotation
 make serve
 ```
 
-## Development
+## Import files for annotation
 
-Backend:
-
-```
-make gorun
-```
-
-Frontend:
-
-If you want to benifit from frontend hot reloading feature this line in your `.env` file:
-
-```
-UI_DOMAIN=http://127.0.0.1:3000
-```
-
-And then restart server.
-
-To run frontend in dev mode:
-
-```
-yarn
-yarn start
-```
+TODO
 
 ## Contributing
 
-Please take a look at [CONTRIBUTING](CONTRIBUTING.md) file to see how to contribute in this project, get more information about the dashboard [architecture](CONTRIBUTING.md#Architecture) and how to launch it for [development](CONTRIBUTING.md#Development) purposes.
+[Contributions](https://github.com/src-d/code-annotation/issues) are more than welcome, if you are interested please take a look to
+our [Contributing Guidelines](CONTRIBUTING.md).
+
+# Code of Conduct
+
+All activities source{d} projects are governed by the [source{d} code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
