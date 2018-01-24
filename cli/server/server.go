@@ -49,23 +49,15 @@ func main() {
 
 	r := chi.NewRouter()
 
-	ms := []func(http.Handler) http.Handler{
-		middleware.Recoverer,
-		cors.New(corsOptions).Handler,
-		middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger}),
-	}
+	r.Use(middleware.Recoverer)
+	r.Use(cors.New(corsOptions).Handler)
+	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger}))
 
-	msProtected := append(ms, jwt.Middleware)
-
-	r.Group(func(r chi.Router) {
-		r.Use(ms...)
-
-		r.Get("/login", GetHandler(handler.Login(oauth)))
-		r.Get("/oauth-callback", GetHandler(handler.OAuthCallback(oauth, jwt, userRepo, conf.UIDomain, logger)))
-	})
+	r.Get("/login", GetHandler(handler.Login(oauth)))
+	r.Get("/oauth-callback", GetHandler(handler.OAuthCallback(oauth, jwt, userRepo, conf.UIDomain, logger)))
 
 	r.Route("/api", func(r chi.Router) {
-		r.Use(msProtected...)
+		r.Use(jwt.Middleware)
 
 		r.Get("/me", GetHandler(handler.Me(userRepo)))
 
