@@ -5,15 +5,17 @@ import (
 	"os"
 )
 
-// FrontendStatics handles the static-files requests, serving the files under the given path
-func FrontendStatics(staticsPath string) http.HandlerFunc {
+// FrontendStatics handles the static-files requests, serving the files under the given staticsPath
+// if useIndexFallback is set to true and the requested file does not exist, the staticsPath/index.html will be served
+func FrontendStatics(staticsPath string, useIndexFallback bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		filepath := staticsPath + r.URL.Path
-		if _, err := os.Stat(filepath); err == nil {
-			http.ServeFile(w, r, filepath)
-			return
+		if useIndexFallback {
+			if _, err := os.Stat(filepath); err != nil {
+				filepath = staticsPath + "/index.html"
+			}
 		}
 
-		http.ServeFile(w, r, staticsPath+"/index.html")
+		http.ServeFile(w, r, filepath)
 	}
 }

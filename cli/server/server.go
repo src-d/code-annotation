@@ -98,7 +98,8 @@ func router(
 		})
 	})
 
-	r.Get("/*", handler.FrontendStatics(staticsPath))
+	r.Get("/static/*", handler.FrontendStatics(staticsPath, false))
+	r.Get("/*", handler.FrontendStatics(staticsPath, true))
 
 	return r
 }
