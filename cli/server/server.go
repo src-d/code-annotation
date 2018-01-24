@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/sirupsen/logrus"
 	"github.com/src-d/code-annotation/server/handler"
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/service"
@@ -37,15 +38,37 @@ func main() {
 	envconfig.MustProcess("jwt", &jwtConfig)
 	jwt := service.NewJWT(jwtConfig.SigningKey)
 
+	// loger
+	logger := service.NewLogger()
+
+	// start the router
+	router := router(logger, jwt, oauth, conf.UIDomain, userRepo, "build")
+	logger.Info("running...")
+	http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), router)
+}
+
+func GetHandler(rp handler.RequestProcessFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		response, errors := rp(r)
+		handler.Write(w, r, response, errors)
+	}
+}
+
+func router(
+	logger logrus.FieldLogger,
+	jwt *service.JWT,
+	oauth *service.OAuth,
+	redirectUrl string,
+	userRepo *repository.Users,
+	staticsPath string,
+) http.Handler {
+
 	// cors options
 	corsOptions := cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "OPTIONS"},
 		AllowedHeaders: []string{"Location", "Authorization", "Content-Type"},
 	}
-
-	// loger
-	logger := service.NewLogger()
 
 	r := chi.NewRouter()
 
@@ -54,7 +77,7 @@ func main() {
 	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger}))
 
 	r.Get("/login", GetHandler(handler.Login(oauth)))
-	r.Get("/oauth-callback", GetHandler(handler.OAuthCallback(oauth, jwt, userRepo, conf.UIDomain, logger)))
+	r.Get("/oauth-callback", GetHandler(handler.OAuthCallback(oauth, jwt, userRepo, redirectUrl, logger)))
 
 	r.Route("/api", func(r chi.Router) {
 		r.Use(jwt.Middleware)
@@ -75,15 +98,7 @@ func main() {
 		})
 	})
 
-	r.Get("/*", handler.FrontendStatics)
+	r.Get("/*", handler.FrontendStatics(staticsPath))
 
-	logger.Info("running...")
-	http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), r)
-}
-
-func GetHandler(rp handler.RequestProcessFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		response, errors := rp(r)
-		handler.Write(w, r, response, errors)
-	}
+	return r
 }
