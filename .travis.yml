@@ -8,8 +8,11 @@ before_install:
   - nvm install 8
   - nvm use 8
   - npm install -g yarn
-  - yarn -prod false
+  - yarn install -prod false
 
 script:
   - yarn lint
   - yarn test
+  - touch .env
+  - make dependencies
+  - make test
