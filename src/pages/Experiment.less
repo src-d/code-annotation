@@ -1,3 +1,5 @@
+@import '../../node_modules/bootstrap/less/variables.less';
+
 .ex-page {
     display: flex;
     flex-direction: column;
@@ -19,9 +21,25 @@
         flex-direction: column;
     }
 
+    &__header {
+        display: flex;
+        flex: 0 0 auto;
+        justify-content: space-between;
+        margin: 0 30px;
+    }
+
+    &__name {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    &__description {
+        color: @gray;
+    }
+
     &__progress {
         margin-bottom: 20px;
-        margin-right: 30px;
     }
 
     &__content {

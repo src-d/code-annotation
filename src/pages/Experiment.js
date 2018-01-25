@@ -65,7 +65,7 @@ class Experiment extends Component {
   }
 
   renderMain() {
-    const { error, loading, percent } = this.props;
+    const { error, loading, name, description, percent } = this.props;
 
     if (error) {
       return (
@@ -85,8 +85,14 @@ class Experiment extends Component {
 
     return (
       <div className="ex-page__main">
-        <div className="ex-page__progress">
-          <Progress percent={percent} className="pull-right" />
+        <div className="ex-page__header">
+          <div className="ex-page__info">
+            <span className="ex-page__name">{name}</span>
+            <span className="ex-page__description">{description}asd</span>
+          </div>
+          <div className="ex-page__progress">
+            <Progress percent={percent} />
+          </div>
         </div>
         {this.renderContent()}
       </div>
@@ -176,6 +182,8 @@ const mapStateToProps = state => {
     error,
     loading,
     fileLoading,
+    name,
+    description,
     assignments,
     currentAssigment,
   } = experiment;
@@ -191,6 +199,8 @@ const mapStateToProps = state => {
   return {
     error,
     loading,
+    name,
+    description,
     percent: getProgressPercent(state),
     fileLoading,
     diffString: diff,
