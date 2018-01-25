@@ -2,18 +2,17 @@ package service
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/http"
 
+	"github.com/gorilla/sessions"
 	"github.com/src-d/code-annotation/server/model"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )
-
-// State is a token to protect the user from CSRF attacks.
-// You must always provide a non-empty string and validate that it matches the the state query parameter on your redirect callback
-// FIXME issue: https://github.com/src-d/code-annotation/issues/21
-const oauthStateString = "state"
 
 // OAuthConfig defines enviroment variables for OAuth
 type OAuthConfig struct {
@@ -24,6 +23,7 @@ type OAuthConfig struct {
 // OAuth service abstracts OAuth implementation
 type OAuth struct {
 	config *oauth2.Config
+	store  *sessions.CookieStore
 }
 
 // NewOAuth return new OAuth service
@@ -36,6 +36,7 @@ func NewOAuth(clientID, clientSecret string) *OAuth {
 	}
 	return &OAuth{
 		config: config,
+		store:  sessions.NewCookieStore([]byte(clientSecret)),
 	}
 }
 
@@ -47,13 +48,25 @@ type githubUser struct {
 }
 
 // MakeAuthURL returns string for redirect to provider
-func (o *OAuth) MakeAuthURL() string {
-	return o.config.AuthCodeURL(oauthStateString)
+func (o *OAuth) MakeAuthURL(w http.ResponseWriter, r *http.Request) string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	state := base64.URLEncoding.EncodeToString(b)
+
+	session, _ := o.store.Get(r, "sess")
+	session.Values["state"] = state
+	session.Save(r, w)
+
+	return o.config.AuthCodeURL(state)
 }
 
 // ValidateState protects the user from CSRF attacks
-func (o *OAuth) ValidateState(state string) error {
-	if state != oauthStateString {
+func (o *OAuth) ValidateState(r *http.Request, state string) error {
+	session, err := o.store.Get(r, "sess")
+	if err != nil {
+		return fmt.Errorf("can't get session: %s", err)
+	}
+	if state != session.Values["state"] {
 		return fmt.Errorf("incorrect state: %s", state)
 	}
 	return nil

@@ -12,7 +12,7 @@ import (
 // Login handler redirects user to oauth provider
 func Login(oAuth *service.OAuth) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		url := oAuth.MakeAuthURL()
+		url := oAuth.MakeAuthURL(w, r)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	}
 }
@@ -20,7 +20,7 @@ func Login(oAuth *service.OAuth) http.HandlerFunc {
 // OAuthCallback makes exchange with oauth provider, gets&creates user and redirects to index page with JWT token
 func OAuthCallback(oAuth *service.OAuth, jwt *service.JWT, userRepo *repository.Users, uiDomain string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := oAuth.ValidateState(r.FormValue("state")); err != nil {
+		if err := oAuth.ValidateState(r, r.FormValue("state")); err != nil {
 			writeResponse(w, respErr(http.StatusBadRequest, err.Error()))
 			return
 		}
