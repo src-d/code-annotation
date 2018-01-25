@@ -13,3 +13,6 @@ before_install:
 script:
   - yarn lint
   - yarn test
+  - touch .env
+  - make dependencies
+  - make test
