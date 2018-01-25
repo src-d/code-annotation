@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/src-d/go-git.svg)](https://travis-ci.org/src-d/go-git)
+[![Build Status](https://travis-ci.org/src-d/code-annotation.svg)](https://travis-ci.org/src-d/code-annotation)
 ![unstable](https://svg-badge.appspot.com/badge/stability/unstable?a)
 
 # Source Code Annotation Tool
@@ -64,6 +64,7 @@ Where both `DSN` (Data Source Name) arguments must be one of:
 * `postgresql://[user[:password]@][netloc][:port][,...][/dbname]`
 
 Some usage examples:
+
 ```bash
 $ import sqlite://./input.db sqlite:///home/user/input.db
 
@@ -85,7 +86,6 @@ The arguments use the same format as the `import` tool, see the previous section
 In this case, origin will be the internal database, and destination the new database. The new database will have the same contents are the internal database.
 
 To study the user annotation results, focus on the **`assignments`** table.
-
 
 ## Contributing
 
