@@ -21,6 +21,7 @@ import reducer, {
   load,
   mark,
   markCurrent,
+  getIdenticalCount,
   getSimilarCount,
   getDifferentCount,
   getSkipCount,
@@ -358,8 +359,13 @@ describe('experiment/selectors', () => {
       ],
     },
   };
+
+  it('getIdenticalCount', () => {
+    expect(getIdenticalCount(state)).toEqual(2);
+  });
+
   it('getSimilarCount', () => {
-    expect(getSimilarCount(state)).toEqual(2);
+    expect(getSimilarCount(state)).toEqual(1);
   });
 
   it('getDifferentCount', () => {
@@ -371,7 +377,7 @@ describe('experiment/selectors', () => {
   });
 
   it('getProgressPercent', () => {
-    expect(getProgressPercent(state)).toEqual(38);
+    expect(getProgressPercent(state)).toEqual(50);
   });
 
   it('getOverallTime', () => {
