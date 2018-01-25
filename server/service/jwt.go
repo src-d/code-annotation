@@ -8,7 +8,7 @@ import (
 
 	"github.com/src-d/code-annotation/server/model"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 )
 

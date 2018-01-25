@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/src-d/code-annotation/server/model"
+
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )

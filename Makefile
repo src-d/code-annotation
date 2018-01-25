@@ -1,28 +1,25 @@
-# Package configuration
+# Config
 PROJECT = code-annotation
-COMMANDS = server/cmd/code-annotation
+COMMANDS = cli/server
+
+HOST ?= 127.0.0.1
+PORT ?= 8080
+SERVER_URL ?= //$(HOST):$(PORT)
 
 # Including ci Makefile
-MAKEFILE = Makefile.main
-CI_REPOSITORY = https://github.com/src-d/ci.git
-CI_FOLDER = .ci
-
-# Tools
-YARN = yarn
-REMOVE = rm -rf
-
-SERVER_URL ?= /api
-API_PORT ?= 8080
-
+CI_REPOSITORY ?= https://github.com/src-d/ci.git
+CI_PATH ?= $(shell pwd)/.ci
+MAKEFILE := $(CI_PATH)/Makefile.main
 $(MAKEFILE):
-	@git clone --quiet $(CI_REPOSITORY) $(CI_FOLDER); \
-	cp $(CI_FOLDER)/$(MAKEFILE) .;
-
+	git clone --quiet --depth 1 $(CI_REPOSITORY) $(CI_PATH);
 -include $(MAKEFILE)
 
 # set enviroment variables from .env file
 include .env
 export $(shell sed 's/=.*//' .env)
+
+# Tools
+YARN = yarn
 
 dependencies-frontend: dependencies
 	$(YARN)	install
@@ -38,7 +35,7 @@ build: dependencies-frontend
 
 ## Compiles the dashboard assets, and serve the dashboard through its API
 serve: build
-	go run server/cmd/code-annotation/*
+	go run cli/server/server.go
 
 gorun:
-	go run server/cmd/code-annotation/*
+	go run cli/server/server.go
