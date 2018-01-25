@@ -1,6 +1,7 @@
 # Package configuration
 PROJECT = code-annotation
 COMMANDS = server/cmd/code-annotation
+DEPENDENCIES = github.com/golang/dep/cmd/dep
 
 # Including ci Makefile
 MAKEFILE = Makefile.main
@@ -24,7 +25,10 @@ $(MAKEFILE):
 include .env
 export $(shell sed 's/=.*//' .env)
 
-dependencies-frontend: dependencies
+godep:
+	dep ensure
+
+dependencies-frontend: godep
 	$(YARN)	install
 
 test-frontend: dependencies-frontend
