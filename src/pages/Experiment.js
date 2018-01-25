@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { push } from 'redux-little-router';
-import { Modal, Button } from 'react-bootstrap';
 import PageHeader from '../components/PageHeader';
 import Loader from '../components/Loader';
 import Progress from '../components/Experiment/Progress';
@@ -21,37 +20,7 @@ import {
 import { makeUrl } from '../state/routes';
 import './Experiment.less';
 
-const ALWAYS_ALLOW_SKIP_KEY = 'ca/ALWAYS_ALLOW_SKIP';
-
 class Experiment extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showModal: !!window.localStorage.getItem(ALWAYS_ALLOW_SKIP_KEY),
-      alwaysAllowSkip: false,
-    };
-    this.showModal = this.showModal.bind(this);
-    this.hideModal = this.hideModal.bind(this);
-    this.onAllowSkipChange = this.onAllowSkipChange.bind(this);
-  }
-
-  showModal() {
-    this.setState({ showModal: true });
-  }
-
-  hideModal() {
-    this.setState({ showModal: false });
-  }
-
-  onAllowSkipChange(e) {
-    this.setState({ alwaysAllowSkip: e.target.checked });
-    if (e.target.checked) {
-      window.localStorage.setItem(ALWAYS_ALLOW_SKIP_KEY, e.target.checked);
-    } else {
-      window.localStorage.removeItem(ALWAYS_ALLOW_SKIP_KEY);
-    }
-  }
-
   render() {
     const { user } = this.props;
 
@@ -59,7 +28,6 @@ class Experiment extends Component {
       <div className="ex-page">
         <PageHeader {...user} />
         {this.renderMain()}
-        {this.renderModal()}
       </div>
     );
   }
@@ -131,47 +99,10 @@ class Experiment extends Component {
           markSimilar={markSimilar}
           markMaybe={markMaybe}
           markDifferent={markDifferent}
-          skip={() => (this.state.alwaysAllowSkip ? skip() : this.showModal())}
+          skip={skip}
           finish={finish}
         />
       </div>
-    );
-  }
-
-  renderModal() {
-    const { skip } = this.props;
-
-    return (
-      <Modal show={this.state.showModal} onHide={this.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Are you sure you want to skip this question?
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>You can always come back to this question later.</p>
-          <label>
-            <input
-              type="checkbox"
-              checked={this.state.alwaysAllowSkip}
-              onChange={this.onAllowSkipChange}
-            />{' '}
-            always allow skiping questions
-          </label>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={this.hideModal}>No</Button>
-          <Button
-            bsStyle="primary"
-            onClick={() => {
-              this.hideModal();
-              skip();
-            }}
-          >
-            Yes
-          </Button>
-        </Modal.Footer>
-      </Modal>
     );
   }
 }
