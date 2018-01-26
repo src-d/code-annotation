@@ -1,5 +1,6 @@
-//TODO: use "user.go" as a example, not this one ;)
 package repository
+
+//TODO: use "user.go" as a example, not this one ;)
 
 import (
 	"fmt"
@@ -9,8 +10,11 @@ import (
 
 var assignments []*model.Assignment
 
+// ErrNoAssignmentsInitialized is the error returned when the Assignments of a User are requested
+// for a given Experiment, but they have not been yet created
 var ErrNoAssignmentsInitialized = fmt.Errorf("No assignments initialized")
 
+// GetExperimentByID returns the Experiment identified by the passed ID
 func GetExperimentByID(id int) (*model.Experiment, error) {
 	return &model.Experiment{
 		ID:          id,
@@ -19,6 +23,8 @@ func GetExperimentByID(id int) (*model.Experiment, error) {
 	}, nil
 }
 
+// GetAssignmentsFor returns the Assignments of a given user for a certain experiment,
+// and returns an ErrNoAssignmentsInitialized if they does not yet exist
 func GetAssignmentsFor(userID int, experimentID int) ([]*model.Assignment, error) {
 	if len(assignments) == 0 {
 		return []*model.Assignment{}, ErrNoAssignmentsInitialized
@@ -27,6 +33,7 @@ func GetAssignmentsFor(userID int, experimentID int) ([]*model.Assignment, error
 	return assignments, nil
 }
 
+// CreateAssignmentsFor creates the assignments for the Experiment and User identified by the passed IDs
 func CreateAssignmentsFor(userID int, experimentID int) ([]*model.Assignment, error) {
 	assignments = []*model.Assignment{
 		&model.Assignment{ID: 1, UserID: userID, PairID: 1, ExperimentID: experimentID},
@@ -42,6 +49,7 @@ func CreateAssignmentsFor(userID int, experimentID int) ([]*model.Assignment, er
 	return assignments, nil
 }
 
+// UpdateAssignment updates the Assignment identified by the passed ID, with the passed answer and duration
 func UpdateAssignment(assignmentID int, answer string, duration int) error {
 	if _, ok := model.Answers[answer]; !ok {
 		return fmt.Errorf("Wrong answer provided: '%s'", answer)
@@ -56,6 +64,7 @@ func UpdateAssignment(assignmentID int, answer string, duration int) error {
 	return nil
 }
 
+// GetFilePairFor returns the FilePairs identified by the passed ID
 func GetFilePairFor(pairID int) (*model.FilePairs, error) {
 	name := fmt.Sprintf("filePair-%d", pairID)
 	return &model.FilePairs{

@@ -9,8 +9,10 @@ import (
 	"regexp"
 	"strings"
 
+	// loads the driver
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/pmezard/go-difflib/difflib"
 )
 

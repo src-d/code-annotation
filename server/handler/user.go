@@ -9,7 +9,8 @@ import (
 	"github.com/src-d/code-annotation/server/service"
 )
 
-// Me handler returns information about current user
+// Me handler returns a function that returns a *serializer.Response
+// with the information about the current user
 func Me(usersRepo *repository.Users) RequestProcessFunc {
 	return func(r *http.Request) (*serializer.Response, error) {
 		uID := service.GetUserID(r.Context())

@@ -13,6 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Router returns a Handler to serve the code-anotation backend
 func Router(
 	logger logrus.FieldLogger,
 	jwt *service.JWT,
