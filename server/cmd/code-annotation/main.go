@@ -76,5 +76,7 @@ func main() {
 	})
 
 	logrus.Info("running...")
-	http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), r)
+	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), r); err != nil {
+		panic(err)
+	}
 }
