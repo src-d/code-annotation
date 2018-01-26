@@ -38,20 +38,19 @@ $ make serve
 
 ### Import File Pairs for Annotation
 
-The file pairs must be initially provided via a database, either [SQLite](https://sqlite.org/) or [PostgreSQL](https://www.postgresql.org/). The database **must follow the expected schema**, please [follow this link](./cli/examples/import/example.sql) to see an example.
+The file pairs must be initially provided via an [SQLite](https://sqlite.org/) database. The database **must follow the expected schema**, please [follow this link](./cli/examples/import/example.sql) to see an example.
 
-The `import` command will use those file pairs to create a new database that will be used internally by the Annotation Tool. The destination database does not need to be empty, new imported file pairs can
-be added to previous imports.
+The `import` command will use those file pairs to create a new [SQLite](https://sqlite.org/) or [PostgreSQL](https://www.postgresql.org/) database that will be used internally by the Annotation Tool. The destination database does not need to be empty, new imported file pairs can be added to previous imports.
 
 _Please note_: if a file pair is identical to an existing one it will not be detected. A new pair entry will be created with the same contents.
 
 To use it, run it as:
 
 ```bash
-$ import <origin-DSN> <destination-DSN>
+$ import <path-to-sqlite.db> <destination-DSN>
 ```
 
-Where both `DSN` (Data Source Name) arguments must be one of:
+Where the `DSN` (Data Source Name) argument must be one of:
 
 * `sqlite:///path/to/db.db`
 * `postgresql://[user[:password]@][netloc][:port][,...][/dbname]`
@@ -59,24 +58,24 @@ Where both `DSN` (Data Source Name) arguments must be one of:
 Some usage examples:
 
 ```bash
-$ import sqlite://./input.db sqlite:///home/user/input.db
+$ import ./input.db sqlite:///home/user/internal.db
 
-$ import sqlite://input.db postgres://testing:testing@localhost:5432/input?sslmode=disable
+$ import /home/user/input.db postgres://testing:testing@localhost:5432/input?sslmode=disable
 ```
 
 For a complete reference of the PostgreSQL connection string, see the [documentation for the lib/pq Go package](https://godoc.org/github.com/lib/pq#hdr-Connection_String_Parameters).
 
 ### Export Annotation Results
 
-To work with the annotation results, the internal data can be extracted in a new database using the `export` command.
+To work with the annotation results, the internal data can be extracted into a new SQLite database using the `export` command.
 
 ```bash
-$ export <origin-DSN> <destination-DSN>
+$ export <origin-DSN> <path-to-sqlite.db>
 ```
 
-The arguments use the same format as the `import` tool, see the previous section.
+The DSN argument uses the same format as the `import` tool, see the previous section.
 
-In this case, origin will be the internal database, and destination the new database. The new database will have the same contents are the internal database.
+In this case, origin will be the internal database, and destination the new database. This new database will have the same contents as the internal one.
 
 To study the user annotation results, focus on the **`assignments`** table.
 
