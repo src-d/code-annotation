@@ -22,16 +22,16 @@ In order to evaluate quality of ML models, as well as to create “ImageNet for 
 ### Docker
 
 ```bash
-docker build -t srcd/code-annotation .
-docker run --env-file .env --rm -p 8080:8080 srcd/code-annotation
+$ docker build -t srcd/code-annotation .
+$ docker run --env-file .env --rm -p 8080:8080 srcd/code-annotation
 ```
 
 ### Non-docker
 
 ```bash
-go get github.com/src-d/code-annotation/...
-cd $GOPATH/github.com/src-d/code-annotation
-make serve
+$ go get github.com/src-d/code-annotation/...
+$ cd $GOPATH/github.com/src-d/code-annotation
+$ make serve
 ```
 
 ## Importing and Exporting Data

@@ -46,25 +46,33 @@ plumbing: packp, Skip argument validations for unknown capabilities. Fixes #623
 
 ## Development
 
-Backend:
-
+```bash
+$ go get -d -u github.com/src-d/code-annotation/...
+$ cd $GOPATH/github.com/src-d/code-annotation
+$ make serve
 ```
-make gorun
-```
 
-Frontend:
+### Frontend:
 
-If you want to benifit from frontend hot reloading feature this line in your `.env` file:
+If you want to benifit from frontend hot reloading feature put this line in your `.env` file:
 
-```
+```bash
 UI_DOMAIN=http://127.0.0.1:3000
 ```
 
-And then restart server.
+Ant then run frontend in dev mode. Execute:
 
-To run frontend in dev mode:
-
+```bash
+$ go get -d -u github.com/src-d/code-annotation/...
+$ cd $GOPATH/github.com/src-d/code-annotation
+$ make serve
+$ yarn start
 ```
-yarn
-yarn start
+
+### Backend:
+
+Shortcut to run `go run` with environment variables
+
+```bash
+$ make gorun
 ```
