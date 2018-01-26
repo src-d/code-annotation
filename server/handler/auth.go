@@ -6,6 +6,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/src-d/code-annotation/server/repository"
+	"github.com/src-d/code-annotation/server/serializer"
 	"github.com/src-d/code-annotation/server/service"
 )
 
@@ -18,33 +19,39 @@ func Login(oAuth *service.OAuth) http.HandlerFunc {
 }
 
 // OAuthCallback makes exchange with oauth provider, gets&creates user and redirects to index page with JWT token
-func OAuthCallback(oAuth *service.OAuth, jwt *service.JWT, userRepo *repository.Users, uiDomain string) http.HandlerFunc {
+func OAuthCallback(
+	oAuth *service.OAuth,
+	jwt *service.JWT,
+	userRepo *repository.Users,
+	uiDomain string,
+	logger logrus.FieldLogger,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := oAuth.ValidateState(r, r.FormValue("state")); err != nil {
-			writeResponse(w, respErr(http.StatusBadRequest, err.Error()))
+			write(w, r, serializer.NewEmptyResponse(), serializer.NewHTTPError(http.StatusBadRequest))
 			return
 		}
 
 		code := r.FormValue("code")
 		user, err := oAuth.GetUser(r.Context(), code)
 		if err != nil {
-			logrus.Errorf("oauth get user error: %s", err)
+			logger.Errorf("oauth get user error: %s", err)
 			// FIXME can it be not server error? for wrong code
-			writeResponse(w, respInternalErr())
+			write(w, r, serializer.NewEmptyResponse(), err)
 			return
 		}
 
 		// FIXME with real repo we need to check does user exists already or not
 		if err := userRepo.Create(user); err != nil {
-			logrus.Errorf("can't create user: %s", err)
-			writeResponse(w, respInternalErr())
+			logger.Errorf("can't create user: %s", err)
+			write(w, r, serializer.NewEmptyResponse(), err)
 			return
 		}
 
 		token, err := jwt.MakeToken(user)
 		if err != nil {
-			logrus.Errorf("make jwt token error: %s", err)
-			writeResponse(w, respInternalErr())
+			logger.Errorf("make jwt token error: %s", err)
+			write(w, r, serializer.NewEmptyResponse(), err)
 			return
 		}
 		url := fmt.Sprintf("%s/?token=%s", uiDomain, token)
