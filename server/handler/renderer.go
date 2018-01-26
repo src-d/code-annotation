@@ -9,6 +9,13 @@ import (
 	"github.com/src-d/code-annotation/server/service"
 )
 
+func Get(rp RequestProcessFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		response, errors := rp(r)
+		Write(w, r, response, errors)
+	}
+}
+
 func Write(w http.ResponseWriter, r *http.Request, response *serializer.Response, errs []*serializer.Error) {
 	//TODO: Responses and Redirects should implement Serializable{Serialize(w)}
 	if response.RedirectURL != "" {
