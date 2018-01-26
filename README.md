@@ -38,14 +38,7 @@ $ make serve
 
 ### Import File Pairs for Annotation
 
-The file pairs must be initially provided via a database, either [SQLite](https://sqlite.org/) or [PostgreSQL](https://www.postgresql.org/). The database should contain rows of file pairs in the following table:
-
-```SQL
-CREATE TABLE files (
-    blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT,
-    blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT,
-    score DOUBLE PRECISION);
-```
+The file pairs must be initially provided via a database, either [SQLite](https://sqlite.org/) or [PostgreSQL](https://www.postgresql.org/). The database **must follow the expected schema**, please [follow this link](./cli/examples/import/example.sql) to see an example.
 
 The `import` command will use those file pairs to create a new database that will be used internally by the Annotation Tool. The destination database does not need to be empty, new imported file pairs can
 be added to previous imports.
