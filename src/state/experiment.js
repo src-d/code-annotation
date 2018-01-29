@@ -224,9 +224,14 @@ const getAssignments = state => state.experiment.assignments;
 
 export const getAssignmentsCount = state => state.experiment.assignments.length;
 
-export const getSimilarCount = createSelector(
+export const getIdenticalCount = createSelector(
   getAssignments,
   assignments => assignments.filter(a => a.answer === ANSWER_SIMILAR).length
+);
+
+export const getSimilarCount = createSelector(
+  getAssignments,
+  assignments => assignments.filter(a => a.answer === ANSWER_MAYBE).length
 );
 
 export const getDifferentCount = createSelector(
@@ -241,9 +246,11 @@ export const getSkipCount = createSelector(
 
 export const getProgressPercent = createSelector(
   getAssignmentsCount,
+  getIdenticalCount,
   getSimilarCount,
   getDifferentCount,
-  (total, similar, different) => Math.round(100 / total * (similar + different))
+  (total, indentical, similar, different) =>
+    Math.round(100 / total * (indentical + similar + different))
 );
 
 export const getOverallTime = createSelector(getAssignments, assignments =>

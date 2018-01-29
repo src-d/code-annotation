@@ -4,6 +4,7 @@ import { Table } from 'react-bootstrap';
 import PageHeader from '../components/PageHeader';
 import HumanDuration from '../components/HumanDuration';
 import {
+  getIdenticalCount,
   getSimilarCount,
   getDifferentCount,
   getProgressPercent,
@@ -19,6 +20,7 @@ class Final extends Component {
       user,
       expName,
       procent,
+      identicalCount,
       similarCount,
       differentCount,
       skipCount,
@@ -36,6 +38,10 @@ class Final extends Component {
             <tr>
               <td>Completion</td>
               <td>{procent}%</td>
+            </tr>
+            <tr>
+              <td>Identical Annotations</td>
+              <td>{identicalCount}</td>
             </tr>
             <tr>
               <td>Similar Annotations</td>
@@ -74,6 +80,7 @@ const mapStateToProps = state => {
     user: state.user,
     expName: experiment.name,
     procent: getProgressPercent(state),
+    identicalCount: getIdenticalCount(state),
     similarCount: getSimilarCount(state),
     differentCount: getDifferentCount(state),
     skipCount: getSkipCount(state),
