@@ -1,26 +1,39 @@
 /*
 Tool to export annotation results from the internal DB to an output DB.
+It does a simple copy&paste of the internal DB. The annotation results are
+stored in the assignments table.
 
-Usage: export <path-to-origin.db> <path-to-destination.db>
+Usage: import <origin-DSN> <path-to-sqlite.db>
+
+Where DSN can be one of:
+sqlite:///path/to/db.db
+postgresql://[user[:password]@][netloc][:port][,...][/dbname]
 */
 package main
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"os"
+
+	"github.com/src-d/code-annotation/server/dbutil"
 
 	"github.com/jessevdk/go-flags"
 )
 
 const desc = `Exports annotation results from the internal input database to a new output
-database.
-The destination file must not exist.`
+database. The destination database must be empty.
+
+The Input argument must be one of:
+sqlite:///path/to/db.db
+postgresql://[user[:password]@][netloc][:port][,...][/dbname]
+
+For a complete reference of the PostgreSQL connection string, see
+https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING`
 
 var opts struct {
 	Args struct {
-		Input  string `description:"SQLite database filepath"`
+		Input  string `description:"SQLite or PostgreSQL Data Source Name"`
 		Output string `description:"SQLite database filepath"`
 	} `positional-args:"yes" required:"yes"`
 }
@@ -42,35 +55,23 @@ func main() {
 		os.Exit(1)
 	}
 
-	if _, err := os.Stat(opts.Args.Input); os.IsNotExist(err) {
-		log.Fatalf("File %q does not exist", opts.Args.Input)
-	}
-
-	// TODO: until we have more information about the output schema needed,
-	// this tool does a simple copy&paste of the internal DB. The annotation
-	// results are stored in the assignments table.
-
-	if err := copy(opts.Args.Input, opts.Args.Output); err != nil {
+	originDB, err := dbutil.Open(opts.Args.Input, true)
+	if err != nil {
 		log.Fatal(err)
 	}
-}
+	defer originDB.Close()
 
-func copy(source, destination string) error {
-	src, err := os.Open(source)
+	destDB, err := dbutil.OpenSQLite(opts.Args.Output, false)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	defer src.Close()
+	defer destDB.Close()
 
-	dst, err := os.OpenFile(destination, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-
-	if _, err := io.Copy(dst, src); err != nil {
-		return err
+	if err = dbutil.Bootstrap(destDB); err != nil {
+		log.Fatal(err)
 	}
 
-	return nil
+	if err := dbutil.Copy(originDB, destDB, dbutil.Options{}); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -6,23 +6,47 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
+	"strings"
 
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pmezard/go-difflib/difflib"
 )
 
-const defaultExperimentID = 1
+type driver int
 
 const (
+	none driver = iota
+	sqlite
+	postgres
+)
+
+// DB groups a sql.DB and the driver used to initialize it
+type DB struct {
+	sqlDB  *sql.DB
+	driver driver
+}
+
+// Close closes the database, releasing any open resources.
+func (db *DB) Close() error {
+	return db.sqlDB.Close()
+}
+
+const (
+	incrementTypePlaceholder = "<INCREMENT_TYPE>"
+	sqliteIncrementType      = "INTEGER"
+	posgresIncrementType     = "SERIAL"
+
 	createUsers = `CREATE TABLE IF NOT EXISTS users (
-			id INTEGER, github_username TEXT, auth TEXT, role INTEGER,
+			id <INCREMENT_TYPE>, github_username TEXT, auth TEXT, role INTEGER,
 			PRIMARY KEY (id))`
 	createExperiments = `CREATE TABLE IF NOT EXISTS experiments (
-			id INTEGER, name TEXT UNIQUE, description TEXT,
+			id <INCREMENT_TYPE>, name TEXT UNIQUE, description TEXT,
 			PRIMARY KEY (id))`
 	// TODO: consider a unique constrain to avoid importing identical pairs
 	createFilePairs = `CREATE TABLE IF NOT EXISTS file_pairs (
-		id INTEGER,
+		id <INCREMENT_TYPE>,
 		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, hash_a TEXT,
 		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, hash_b TEXT,
 		score DOUBLE PRECISION, diff TEXT, experiment_id INTEGER,
@@ -37,9 +61,15 @@ const (
 			FOREIGN KEY (experiment_id) REFERENCES experiments(id))`
 )
 
-const insertExperiments = `INSERT OR IGNORE INTO experiments
-	(id, name, description)
-	VALUES ($1, 'default', 'Default experiment')`
+const (
+	defaultExperimentID = 1
+
+	insertExperiments = `INSERT INTO experiments
+		(id, name, description)
+		VALUES ($1, 'default', 'Default experiment')`
+
+	alterExperimentsSequence = `ALTER SEQUENCE experiments_id_seq RESTART WITH 2`
+)
 
 const selectFiles = `SELECT * FROM files`
 
@@ -49,14 +79,72 @@ const insertFilePairs = `INSERT INTO file_pairs (
 		score, diff, experiment_id ) VALUES
 		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
 
+var (
+	sqliteReg = regexp.MustCompile(`^sqlite://(.+)$`)
+	psReg     = regexp.MustCompile(`^postgres(ql)?:.+$`)
+)
+
+// OpenSQLite calls Open, but using a path to an SQLite file. For sintactic
+// sugar a sqlite://path string is also accepted
+func OpenSQLite(filepath string, checkExisting bool) (DB, error) {
+	if psReg.MatchString(filepath) {
+		return DB{nil, none}, fmt.Errorf(
+			"Invalid PostgreSQL connection string %q, a path to an SQLite file was expected",
+			filepath)
+	}
+
+	if !sqliteReg.MatchString(filepath) {
+		filepath = `sqlite://` + filepath
+	}
+
+	return Open(filepath, checkExisting)
+}
+
+// Open returns a DB from the connection string.
+// With checkExisting it will fail if the DB does not exist
+func Open(connection string, checkExisting bool) (DB, error) {
+	if conn := sqliteReg.FindStringSubmatch(connection); conn != nil {
+		if checkExisting {
+			if _, err := os.Stat(conn[1]); os.IsNotExist(err) {
+				return DB{nil, none}, fmt.Errorf("File %q does not exist", conn[1])
+			}
+		}
+
+		db, err := sql.Open("sqlite3", conn[1])
+		return DB{db, sqlite}, err
+	}
+
+	if psReg.MatchString(connection) {
+		db, err := sql.Open("postgres", connection)
+		return DB{db, postgres}, err
+	}
+
+	return DB{nil, none}, fmt.Errorf(`Connection string %q is not valid. It must be on of
+sqlite:///path/to/db.db
+postgresql://[user[:password]@][netloc][:port][,...][/dbname]`, connection)
+}
+
 // Bootstrap creates the necessary tables for the output DB. It is safe to call on a
 // DB that is already bootstrapped.
-func Bootstrap(db *sql.DB) error {
+func Bootstrap(db DB) error {
 	tables := []string{createUsers, createExperiments,
 		createFilePairs, createAssignments}
 
+	var colType string
+
+	switch db.driver {
+	case sqlite:
+		colType = sqliteIncrementType
+	case postgres:
+		colType = posgresIncrementType
+	default:
+		return fmt.Errorf("Unknown driver type")
+	}
+
 	for _, table := range tables {
-		if _, err := db.Exec(table); err != nil {
+		cmd := strings.Replace(table, incrementTypePlaceholder, colType, 1)
+
+		if _, err := db.sqlDB.Exec(cmd); err != nil {
 			return err
 		}
 	}
@@ -66,36 +154,48 @@ func Bootstrap(db *sql.DB) error {
 
 // Initialize populates the DB with default values. It is safe to call on a
 // DB that is already initialized
-func Initialize(db *sql.DB) error {
-	_, err := db.Exec(insertExperiments, defaultExperimentID)
-	return err
+func Initialize(db DB) error {
+	_, err := db.sqlDB.Exec(insertExperiments, defaultExperimentID)
+	if db.driver == postgres && err == nil {
+		db.sqlDB.Exec(alterExperimentsSequence)
+	}
+
+	// Errors are ignored to allow initialization over an existing DB
+	return nil
 }
 
-// Options for the ImportFiles method. Logger is optional, if it is not provided
-// the default stderr will be used.
+// Options for the ImportFiles and Copy methods.
+// Logger is optional, if it is not provided the default stderr will be used.
 type Options struct {
 	Logger *log.Logger
 }
 
-// ImportFiles imports pairs of files from the origin to the destination DB.
-// It copies the contents and processes the needed data (md5 hash, diff)
-func ImportFiles(originDB, destDB *sql.DB, opts Options) (success, failures int64, e error) {
-	var logger *log.Logger
+func (opts *Options) getLogger() *log.Logger {
 	if opts.Logger != nil {
-		logger = opts.Logger
-	} else {
-		logger = log.New(os.Stderr, "", log.LstdFlags) // Default log to stderr
+		return opts.Logger
 	}
 
-	rows, err := originDB.Query(selectFiles)
+	return log.New(os.Stderr, "", log.LstdFlags) // Default log to stderr
+
+}
+
+// ImportFiles imports pairs of files from the origin to the destination DB.
+// It copies the contents and processes the needed data (md5 hash, diff)
+func ImportFiles(originDB DB, destDB DB, opts Options) (success, failures int64, e error) {
+
+	logger := opts.getLogger()
+
+	rows, err := originDB.sqlDB.Query(selectFiles)
 	if err != nil {
 		return 0, 0, err
 	}
 
-	tx, err := destDB.Begin()
+	tx, err := destDB.sqlDB.Begin()
+	if err != nil {
+		return 0, 0, err
+	}
 
 	insert, err := tx.Prepare(insertFilePairs)
-
 	if err != nil {
 		return 0, 0, err
 	}
@@ -133,7 +233,7 @@ func ImportFiles(originDB, destDB *sql.DB, opts Options) (success, failures int6
 			defaultExperimentID)
 
 		if err != nil {
-			logger.Println(err)
+			logger.Printf("Failed to insert row\nerror: %v\n", err)
 			failures++
 			continue
 		}
