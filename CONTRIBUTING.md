@@ -46,6 +46,11 @@ plumbing: packp, Skip argument validations for unknown capabilities. Fixes #623
 
 ## Development
 
+> Please note: you will need a .env file configured with working GitHub OAuth credentials to run the application in development mode.
+> Please follow the [README Installation section](./README.md#installation) for instructions on how to do it.
+
+To build and run the tool, execute:
+
 ```bash
 $ go get -d -u github.com/src-d/code-annotation/...
 $ cd $GOPATH/github.com/src-d/code-annotation
@@ -60,12 +65,15 @@ If you want to benifit from frontend hot reloading feature put this line in your
 UI_DOMAIN=http://127.0.0.1:3000
 ```
 
-Ant then run frontend in dev mode. Execute:
+Run server. Execute:
 
 ```bash
-$ go get -d -u github.com/src-d/code-annotation/...
-$ cd $GOPATH/github.com/src-d/code-annotation
-$ make serve
+$ make gorun
+```
+
+And then run frontend in dev mode. Execute:
+
+```bash
 $ yarn start
 ```
 
