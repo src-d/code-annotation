@@ -1,31 +1,20 @@
 @import '../../node_modules/bootstrap/less/variables.less';
 
 .ex-page {
-    display: flex;
-    flex-direction: column;
     height: 100%;
+    overflow: hidden;
 
-    .navbar {
-        flex-shrink: 0;
-        flex-grow: 0;
+    &__header {
+        margin-bottom: 20px;
+    }
+
+    &__main {
+        height: 100%;
     }
 
     &__loader {
         margin-top: 40px;
         text-align: center;
-    }
-
-    &__main {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    &__header {
-        display: flex;
-        flex: 0 0 auto;
-        justify-content: space-between;
-        margin: 0 30px;
     }
 
     &__name {
@@ -38,20 +27,39 @@
         color: @gray;
     }
 
-    &__progress {
-        margin-bottom: 20px;
-    }
-
     &__content {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
+        height: 100%;
     }
 
     &__diff {
-        flex-grow: 1;
-        display: flex;
-        margin-bottom: 20px;
+        height: 100%;
+
+        // this is the only way I know to create 100% height page
+        // with header & footer & scrollable content in the middle (without flexbox)
+        //
+        // The idea: wrapper for scrollable div has padding-bottom
+        // of the height of footer + header, so the scrollable div has correct max-height
+        // and than margin-bottom: -(padding-bottom) to lift up footer
+        // the page has overflow hidden to hide empty space at the bottom
+        // for better understanding look at codepen: https://codepen.io/smacker/pen/mXyPQE
+        //
+        // Calculating height
+        // NB!!!! layout will get broken if any of heights change
+        //
+        // must be sum of everything on top + footer
+        // page-header: 50px
+        // experiment-header: 23px
+        // margins: 20px * 2 + 10px
+        // footer: 46+10px
+        // borders: 2px
+        // 50 + 23 + 40 + 56 + 10 + 2 = 181px
+        padding-bottom: 181px;
+        // must be -(sum of everything on top + footer - real margin)
+        margin-bottom: -171px;
+    }
+
+    &__footer {
+        padding-bottom: 10px;
     }
 
     &__oops {

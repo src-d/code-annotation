@@ -1,23 +1,30 @@
 import React, { Component } from 'react';
-import { Button } from 'react-bootstrap';
+import { Grid, Row, Col, Button } from 'react-bootstrap';
 import { serverUrl } from '../api';
 import './Index.less';
 
 class Index extends Component {
   render() {
     return (
-      <div className="index-page">
-        <div className="index-page__wrapper">
-          <h1 className="index-page__header">
-            Welcome! We&#39;re glad you made it this far.
-          </h1>
-          <p className="index-page__description">
-            source{'{d}'} code annotation brings together state-of-art insights
-            from<br />machine learning and user experience, for source code
-            annotation.
-          </p>
-
-          <div className="index-page__actions">
+      <Grid fluid className="index-page">
+        <Row>
+          <Col xs={12}>
+            <h1 className="index-page__header">
+              Welcome! We&#39;re glad you made it this far.
+            </h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <p className="index-page__description">
+              source{'{d}'} code annotation brings together state-of-art
+              insights from<br />machine learning and user experience, for
+              source code annotation.
+            </p>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12} className="index-page__actions">
             <Button
               href={`${serverUrl}/login`}
               bsStyle="primary"
@@ -30,13 +37,14 @@ class Index extends Component {
                 className="index-page__github-icon"
               />
             </Button>
-          </div>
-
-          <div className="index-page__preview">
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12} className="index-page__preview">
             <img src="/assigment.png" alt="assigment" width="650" />
-          </div>
-        </div>
-      </div>
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 }
