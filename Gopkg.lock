@@ -26,6 +26,24 @@
   revision = "c65a0412e71e8b9b3bfd22925720d23c0f054237"
 
 [[projects]]
+  name = "github.com/gorilla/context"
+  packages = ["."]
+  revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/gorilla/securecookie"
+  packages = ["."]
+  revision = "667fe4e3466a040b780561fe9b51a83a3753eefc"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/gorilla/sessions"
+  packages = ["."]
+  revision = "ca9ada44574153444b00d3fd9c8559e4cc95f896"
+  version = "v1.1"
+
+[[projects]]
   name = "github.com/jessevdk/go-flags"
   packages = ["."]
   revision = "96dc06278ce32a0e9d957d590bb987c81ee66407"
@@ -40,10 +58,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/lib/pq"
-  packages = [
-    ".",
-    "oid"
-  ]
+  packages = [".","oid"]
   revision = "19c8e9ad00952ce0c64489b60e8df88bb16dd514"
 
 [[projects]]
@@ -103,6 +118,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "806afcae37e46078da863ce9cc87b3836c4ee4200c890bcb3c03b4a52714ef10"
+  inputs-digest = "5dfb21b3ae89d0e1870a9330ead3dca39fa45ee2aa72eb3eedb39976bfbf3256"
   solver-name = "gps-cdcl"
   solver-version = 1
