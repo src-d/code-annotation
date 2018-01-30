@@ -3,7 +3,7 @@ import { Navbar, Nav, NavItem } from 'react-bootstrap';
 
 function PageHeader({ username, avatarUrl }) {
   return (
-    <Navbar>
+    <Navbar fluid>
       <Navbar.Header>
         <Navbar.Brand>
           <a href="/">source{'{d}'} code annotation</a>
