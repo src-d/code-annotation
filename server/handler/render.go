@@ -9,6 +9,11 @@ import (
 	"github.com/src-d/code-annotation/server/service"
 )
 
+// RequestProcessFunc is a function that takes an http.Request, and returns a serializer.Response and an error
+type RequestProcessFunc func(*http.Request) (*serializer.Response, error)
+
+// Get returns an http.HandlerFunc that will serve the user request taking the serializer.Response and errors
+// from the passed RequestProcessFunc
 func Get(rp RequestProcessFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		response, err := rp(r)
@@ -59,6 +64,3 @@ func write(w http.ResponseWriter, r *http.Request, response *serializer.Response
 	w.WriteHeader(statusCode)
 	w.Write(content)
 }
-
-// RequestProcessFunc is the function that takes a http.Request, and returns a serializer.Response and an error
-type RequestProcessFunc func(*http.Request) (*serializer.Response, error)

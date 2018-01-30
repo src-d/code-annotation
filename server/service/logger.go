@@ -4,6 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// NewLogger returns a logrus Logger
 func NewLogger() logrus.FieldLogger {
 	logger := logrus.New()
 	logger.Formatter = &logrus.TextFormatter{

@@ -6,10 +6,12 @@ import (
 	"github.com/src-d/code-annotation/server/model"
 )
 
+// Users is the User repository
 type Users struct {
 	users []*model.User
 }
 
+// Create stores a user into the DB
 func (r *Users) Create(m *model.User) error {
 	for _, u := range r.users {
 		if u.ID == m.ID {
@@ -20,6 +22,8 @@ func (r *Users) Create(m *model.User) error {
 	return nil
 }
 
+// Get returns the User identified by the passed ID.
+// If the user does not exist, if returns no user nor error
 func (r *Users) Get(id int) (*model.User, error) {
 	for _, u := range r.users {
 		if u.ID == id {

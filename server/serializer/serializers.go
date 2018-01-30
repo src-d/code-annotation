@@ -73,6 +73,7 @@ type experimentResponse struct {
 	Description string `json:"description"`
 }
 
+// NewExperimentResponse returns a Response for the passed Experiment
 func NewExperimentResponse(e *model.Experiment) *Response {
 	return newResponse(experimentResponse{
 		ID:          e.ID,
@@ -88,6 +89,7 @@ type assignmentResponse struct {
 	Duration int    `json:"duration"`
 }
 
+// NewAssignmentsResponse returns a Response for the passed Assignment
 func NewAssignmentsResponse(as []*model.Assignment) *Response {
 	assignments := make([]assignmentResponse, len(as))
 	for i, a := range as {
@@ -102,6 +104,7 @@ type filePairsResponse struct {
 	Diff string `json:"diff"`
 }
 
+// NewFilePairsResponse returns a Response for the passed FilePairs
 func NewFilePairsResponse(fp *model.FilePairs) *Response {
 	return newResponse(filePairsResponse{fp.ID, fp.Diff})
 }
@@ -113,6 +116,7 @@ type userResponse struct {
 	AvatarURL string `json:"avatarURL"`
 }
 
+// NewUserResponse returns a Response for the passed User
 func NewUserResponse(u *model.User) *Response {
 	return newResponse(userResponse{u.ID, u.Login, u.Username, u.AvatarURL})
 }
@@ -121,6 +125,7 @@ type countResponse struct {
 	Count int `json:"count"`
 }
 
+// NewCountResponse returns a Response for the total of a count
 func NewCountResponse(c int) *Response {
 	return newResponse(countResponse{c})
 }
