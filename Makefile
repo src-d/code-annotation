@@ -1,6 +1,6 @@
 # Package configuration
 PROJECT = code-annotation
-COMMANDS = server/cmd/code-annotation
+COMMANDS = cli/server
 DEPENDENCIES = github.com/golang/dep/cmd/dep
 
 # Including ci Makefile
@@ -12,8 +12,9 @@ CI_FOLDER = .ci
 YARN = yarn
 REMOVE = rm -rf
 
-SERVER_URL ?= /api
-API_PORT ?= 8080
+HOST ?= 127.0.0.1
+PORT ?= 8080
+SERVER_URL ?= //$(HOST):$(PORT)
 
 $(MAKEFILE):
 	@git clone --quiet $(CI_REPOSITORY) $(CI_FOLDER); \
@@ -42,7 +43,7 @@ build: dependencies-frontend
 
 ## Compiles the dashboard assets, and serve the dashboard through its API
 serve: build
-	go run server/cmd/code-annotation/*
+	go run cli/server/server.go
 
 gorun:
-	go run server/cmd/code-annotation/*
+	go run cli/server/server.go

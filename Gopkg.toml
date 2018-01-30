@@ -60,3 +60,7 @@
 [[constraint]]
   name = "github.com/gorilla/sessions"
   version = "1.1.0"
+
+[[constraint]]
+  name = "github.com/rs/cors"
+  version = "1.2.0"
