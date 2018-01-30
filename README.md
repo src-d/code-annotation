@@ -3,7 +3,7 @@
 
 # Source Code Annotation Tool
 
-In order to evaluate quality of ML models, as well as to create “ImageNet for source core” there is a need for tools to automate the data collection/labeling/annotation.
+In order to evaluate quality of ML models, as well as to create “ImageNet for Source Code” there is a need for tools to automate the data collection/labeling/annotation.
 
 ![Screenshot](.github/screenshot.png?raw=true)
 
@@ -11,13 +11,13 @@ In order to evaluate quality of ML models, as well as to create “ImageNet for 
 
 ### Github OAuth tokens
 
-1. You need OAuth application on github. [Read how to create it](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
+1. You need OAuth application on github. You need an OAuth application on GitHub. See [how to create OAuth applications on GitHub](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
 
     `Authorization callback URL: http://127.0.0.1:8080/oauth-callback`
 
 2. Copy `.env.tpl` to `.env`.
 
-3. On a [page](https://github.com/settings/developers) with your application find `Client ID` and `Client Secret` and put them in `.env` file.
+3. Retrieve the values for your application's Client ID and Client Secret from the [GitHub Developer Settings page](https://github.com/settings/developers) and add them to the end of the corresponding lines in .env.
 
 ### Docker
 
