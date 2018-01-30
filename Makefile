@@ -3,28 +3,25 @@ PROJECT = code-annotation
 COMMANDS = cli/server
 DEPENDENCIES = github.com/golang/dep/cmd/dep
 
-# Including ci Makefile
-MAKEFILE = Makefile.main
-CI_REPOSITORY = https://github.com/src-d/ci.git
-CI_FOLDER = .ci
-
-# Tools
-YARN = yarn
-REMOVE = rm -rf
-
 HOST ?= 127.0.0.1
 PORT ?= 8080
 SERVER_URL ?= //$(HOST):$(PORT)
 
+# Including ci Makefile
+CI_REPOSITORY ?= https://github.com/src-d/ci.git
+CI_PATH ?= $(shell pwd)/.ci
+MAKEFILE := $(CI_PATH)/Makefile.main
 $(MAKEFILE):
-	@git clone --quiet $(CI_REPOSITORY) $(CI_FOLDER); \
-	cp $(CI_FOLDER)/$(MAKEFILE) .;
-
+	git clone --quiet --depth 1 $(CI_REPOSITORY) $(CI_PATH);
 -include $(MAKEFILE)
 
 # set enviroment variables from .env file
 include .env
 export $(shell sed 's/=.*//' .env)
+
+# Tools
+YARN = yarn
+REMOVE = rm -rf
 
 godep:
 	dep ensure
