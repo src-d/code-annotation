@@ -61,6 +61,10 @@ const (
 			FOREIGN KEY (user_id) REFERENCES users(id),
 			FOREIGN KEY (pair_id) REFERENCES file_pairs(id),
 			FOREIGN KEY (experiment_id) REFERENCES experiments(id))`
+	createFeatures = `CREATE TABLE IF NOT EXISTS features (
+		blob_id TEXT,
+		name TEXT, weight REAL,
+		PRIMARY KEY (blob_id, name))`
 )
 
 const (
@@ -130,7 +134,7 @@ postgresql://[user[:password]@][netloc][:port][,...][/dbname]`, connection)
 // DB that is already bootstrapped.
 func Bootstrap(db DB) error {
 	tables := []string{createUsers, createExperiments,
-		createFilePairs, createAssignments}
+		createFilePairs, createAssignments, createFeatures}
 
 	var colType string
 
