@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kelseyhightower/envconfig"
-
 	"github.com/src-d/code-annotation/server"
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/service"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
 type appConfig struct {
