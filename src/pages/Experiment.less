@@ -1,11 +1,22 @@
 @import '../../node_modules/bootstrap/less/variables.less';
+@import '../components/PageHeader.less';
+@import '../components/Experiment/Footer.less';
+
+@ex-page-header-inner-height: 23px; // this value depends on content, update it if you change block
+@ex-page-header-margin-bottom: 20px;
+@ex-page-diff-padding-bottom: 10px;
+@ex-page-footer-margin-bottom: 10px;
+
+@ex-page-diff-lift-height: @navbar-total-height + @ex-page-header-inner-height +
+    @ex-page-header-margin-bottom + @ex-footer-height +
+    @ex-page-footer-margin-bottom;
 
 .ex-page {
     height: 100%;
     overflow: hidden;
 
     &__header {
-        margin-bottom: 20px;
+        margin-bottom: @ex-page-header-margin-bottom;
     }
 
     &__main {
@@ -44,22 +55,15 @@
         // for better understanding look at codepen: https://codepen.io/smacker/pen/mXyPQE
         //
         // Calculating height
-        // NB!!!! layout will get broken if any of heights change
-        //
-        // must be sum of everything on top + footer
-        // page-header: 50px
-        // experiment-header: 23px
-        // margins: 20px * 2 + 10px
-        // footer: 46+10px
-        // borders: 2px
-        // 50 + 23 + 40 + 56 + 10 + 2 = 181px
-        padding-bottom: 181px;
-        // must be -(sum of everything on top + footer - real margin)
-        margin-bottom: -171px;
+        // NB!!!! layout will be broken if any of inner heights are changed
+        // and variables aren't updated
+        padding-bottom: @ex-page-diff-lift-height + @ex-page-diff-padding-bottom;
+        // same as on top, but without padding of diff block iself
+        margin-bottom: -@ex-page-diff-lift-height;
     }
 
     &__footer {
-        padding-bottom: 10px;
+        padding-bottom: @ex-page-footer-margin-bottom;
     }
 
     &__oops {
