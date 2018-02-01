@@ -60,7 +60,7 @@ exports[`experiment/reducer MARK_ASSIGNMENT 1`] = `
 Object {
   "assignments": Array [
     Object {
-      "answer": "Yes",
+      "answer": "yes",
       "duration": 90267,
       "id": 1,
     },

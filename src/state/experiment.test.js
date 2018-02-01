@@ -121,7 +121,7 @@ describe('experiment/reducer', () => {
           assignments: [{ id: 1 }],
           currentAssigmentStartTime,
         },
-        { type: MARK_ASSIGNMENT, id: 1, answer: 'Yes' }
+        { type: MARK_ASSIGNMENT, id: 1, answer: 'yes' }
       )
     ).toMatchSnapshot();
   });
@@ -220,9 +220,9 @@ describe('experiment/actions', () => {
   describe('nextAssigment', () => {
     it('has unanswered assignments', () => {
       const assignments = [
-        { id: 1, answer: 'Yes' },
+        { id: 1, answer: 'yes' },
         { id: 2, answer: null },
-        { id: 3, answer: 'No' },
+        { id: 3, answer: 'no' },
       ];
 
       const store = mockStore({
@@ -237,7 +237,7 @@ describe('experiment/actions', () => {
     });
 
     it('no unanswered assignments', () => {
-      const assignments = [{ id: 1, answer: 'Yes' }];
+      const assignments = [{ id: 1, answer: 'yes' }];
 
       const store = mockStore({
         experiment: {
@@ -310,19 +310,20 @@ describe('experiment/actions', () => {
     });
   });
 
+  // TODO: Test duration extension
   it('mark', () => {
     const store = mockStore({
       experiment: {
         ...initialState,
-        assignments: [],
+        assignments: [{ id: 1 }],
       },
     });
 
-    store.dispatch(mark(1, 'Yes'));
+    store.dispatch(mark(1, 'yes'));
     expect(store.getActions()[0]).toEqual({
       type: MARK_ASSIGNMENT,
       id: 1,
-      answer: 'Yes',
+      answer: 'yes',
     });
   });
 
@@ -330,16 +331,16 @@ describe('experiment/actions', () => {
     const store = mockStore({
       experiment: {
         ...initialState,
-        assignments: [],
+        assignments: [{ id: 1 }],
         currentAssigment: { id: 1 },
       },
     });
 
-    store.dispatch(markCurrent('Yes'));
+    store.dispatch(markCurrent('yes'));
     expect(store.getActions()[0]).toEqual({
       type: MARK_ASSIGNMENT,
       id: 1,
-      answer: 'Yes',
+      answer: 'yes',
     });
   });
 });

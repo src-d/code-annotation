@@ -1,4 +1,3 @@
-import mocks from './mocks';
 import TokenService from '../services/token';
 
 export const serverUrl =
@@ -47,14 +46,18 @@ function normalizeErrors(err) {
 
 function apiCall(url, options = {}) {
   const token = TokenService.get();
-
-  return fetch(apiUrl(url), {
+  const fetchOptions = {
     ...options,
     headers: {
       ...options.headers,
       Authorization: `Bearer ${token}`,
     },
-  })
+  };
+  if (options.body) {
+    fetchOptions.body = JSON.stringify(options.body);
+    fetchOptions.headers['Content-Type'] = 'application/json';
+  }
+  return fetch(apiUrl(url), fetchOptions)
     .then(checkStatus)
     .then(resp => resp.json())
     .then(json => {
@@ -82,20 +85,21 @@ function getFilePair(experimentId, pairId) {
   return apiCall(`/api/experiments/${experimentId}/file-pairs/${pairId}`);
 }
 
-// eslint-disable-next-line
-let exportObject = {
-  me,
-
-  getExperiment,
-  getAssignments,
-  getFilePair,
-};
-if (process.env.NODE_ENV !== 'test') {
-  exportObject = {
-    ...mocks,
-    me,
-  };
+function putAnswer(experimentId, assignmentId, answer) {
+  return apiCall(
+    `/api/experiments/${experimentId}/assignments/${assignmentId}`,
+    {
+      method: 'PUT',
+      body: answer,
+    }
+  );
 }
 
 // eslint-disable-next-line
-export default exportObject;
+export default {
+  me,
+  getExperiment,
+  getAssignments,
+  getFilePair,
+  putAnswer,
+};
