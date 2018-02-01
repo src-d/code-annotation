@@ -79,7 +79,7 @@ function getAssignments(experimentId) {
 }
 
 function getFilePair(experimentId, pairId) {
-  return apiCall(`/api/experiments/${experimentId}/filePairs/${pairId}`);
+  return apiCall(`/api/experiments/${experimentId}/file-pairs/${pairId}`);
 }
 
 // eslint-disable-next-line
