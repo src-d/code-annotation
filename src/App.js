@@ -5,6 +5,7 @@ import Errors from './components/Errors';
 import Index from './pages/Index';
 import Experiment from './pages/Experiment';
 import Final from './pages/Final';
+import Review from './pages/Review';
 
 class App extends Component {
   render() {
@@ -23,6 +24,9 @@ class App extends Component {
           </Fragment>
           <Fragment forRoute={namedRoutes.experiment}>
             <Experiment />
+          </Fragment>
+          <Fragment forRoute={namedRoutes.review}>
+            <Review />
           </Fragment>
           <Fragment forNoMatch>
             <div>not found</div>

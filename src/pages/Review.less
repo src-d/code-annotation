@@ -1,0 +1,82 @@
+@import '../../node_modules/bootstrap/less/variables.less';
+
+.review-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .navbar {
+        flex: 0;
+    }
+
+    &__grid {
+        flex: 1;
+        // even it's a grid container we need to set 100% because of flex it collapses
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__header {
+        flex: 0;
+        margin-bottom: 20px;
+
+        padding: 10px 0;
+        background: #414546;
+    }
+
+    &__breadcrumbs {
+        padding-top: 10px;
+    }
+
+    &__main-row {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__main-col {
+        flex: 1;
+        display: flex;
+    }
+
+    &__controls {
+        text-align: right;
+
+        > * {
+            margin-left: 10px;
+        }
+    }
+
+    &__split {
+        position: relative;
+        flex: 1;
+    }
+
+    &__diff {
+        margin-bottom: 10px;
+    }
+
+    // react-split-pane
+    .SplitPane .Resizer {
+        position: relative;
+        flex: 0 0 auto;
+        display: block;
+        border-top: 1px solid @gray;
+        border-bottom: 1px solid @gray;
+        margin-bottom: 10px;
+        color: @gray;
+        cursor: row-resize;
+
+        &:before {
+            display: block;
+            content: '● ● ●';
+            text-align: center;
+            line-height: 11px;
+        }
+    }
+
+    .SplitPane .Pane2 {
+        display: flex;
+    }
+}

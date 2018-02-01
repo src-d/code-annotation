@@ -18,6 +18,9 @@ const routes = {
         name: 'question',
       },
     },
+    '/review': {
+      name: 'review',
+    },
   },
 };
 
