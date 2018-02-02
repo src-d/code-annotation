@@ -59,16 +59,12 @@ $ make serve
 
 ### Frontend:
 
-If you want to benifit from frontend hot reloading feature put this line in your `.env` file:
-
-```bash
-UI_DOMAIN=http://127.0.0.1:3000
-```
+If you want to benefit from frontend hot reloading feature:
 
 Run server. Execute:
 
 ```bash
-$ make gorun
+$ UI_DOMAIN=http://127.0.0.1:3000 make gorun
 ```
 
 And then run frontend in dev mode. Execute:

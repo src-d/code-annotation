@@ -3,15 +3,40 @@
 
 # Source Code Annotation Tool
 
+Source code annotation tool offers an UI to annotate source code and review these annotations, and a CLI to define the code to be annotated and export the annotations.
+
+### Why is is needed?
+
 In order to evaluate quality of ML models, as well as to create “ImageNet for Source Code” there is a need for tools to automate the data collection/labeling/annotation.
 
 ![Screenshot](.github/screenshot.png?raw=true)
 
-## Installation
+## Requirements
+
+### Global dependencies
+
+You should already have [Go installed](https://golang.org/doc/install#install), and properly [configured the $GOPATH](https://github.com/golang/go/wiki/SettingGOPATH)
+
+```
+go version; # prints your go version
+echo $GOPATH; # prints your $GOPATH path
+```
+
+The project must be under the `$GOPATH`, following the Go import conventions, what means you can go to its directory running:
+
+```
+cd $GOPATH/src/github.com/src-d/landing
+```
+
+You need also [Yarn v1.x.x installed](https://yarnpkg.com/en/docs/install)
+
+```
+yarn --version; # prints your Yarn version
+```
 
 ### Github OAuth tokens
 
-1. You need OAuth application on github. You need an OAuth application on GitHub. See [how to create OAuth applications on GitHub](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
+1. You need an OAuth application on GitHub. See [how to create OAuth applications on GitHub](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
 
     `Authorization callback URL: http://127.0.0.1:8080/oauth-callback`
 
@@ -19,20 +44,17 @@ In order to evaluate quality of ML models, as well as to create “ImageNet for 
 
 3. Retrieve the values for your application's Client ID and Client Secret from the [GitHub Developer Settings page](https://github.com/settings/developers) and add them to the end of the corresponding lines in .env.
 
-### Docker
+## Installation
 
-```bash
-$ docker build -t srcd/code-annotation .
-$ docker run --env-file .env --rm -p 8080:8080 srcd/code-annotation
-```
-
-### Non-docker
+You need to satisfy all [project requirements](#requirements), and then run:
 
 ```bash
 $ go get github.com/src-d/code-annotation/...
 $ cd $GOPATH/github.com/src-d/code-annotation
 $ make serve
 ```
+
+It runs everything you need to get the tool working at [http://localhost:8080](http://localhost:8080)
 
 ## Importing and Exporting Data
 
