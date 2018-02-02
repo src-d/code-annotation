@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Grid, Row, Col } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { push } from 'redux-little-router';
 import PageHeader from '../components/PageHeader';
@@ -37,33 +38,37 @@ class Experiment extends Component {
 
     if (error) {
       return (
-        <div className="ex-page__oops">
-          Oops.<br />Something went wrong.
-        </div>
+        <Row className="ex-page__oops">
+          <Col xs={12}>
+            Oops.<br />Something went wrong.
+          </Col>
+        </Row>
       );
     }
 
     if (loading) {
       return (
-        <div className="ex-page__loader">
-          <Loader />
-        </div>
+        <Row className="ex-page__loader">
+          <Col xs={12}>
+            <Loader />
+          </Col>
+        </Row>
       );
     }
 
     return (
-      <div className="ex-page__main">
-        <div className="ex-page__header">
-          <div className="ex-page__info">
+      <Grid fluid className="ex-page__main">
+        <Row className="ex-page__header">
+          <Col xs={9} className="ex-page__info">
             <span className="ex-page__name">{name}</span>
             <span className="ex-page__description">{description}asd</span>
-          </div>
-          <div className="ex-page__progress">
+          </Col>
+          <Col xs={3} className="ex-page__progress">
             <Progress percent={percent} />
-          </div>
-        </div>
+          </Col>
+        </Row>
         {this.renderContent()}
-      </div>
+      </Grid>
     );
   }
 
@@ -90,9 +95,10 @@ class Experiment extends Component {
     }
 
     return (
-      <div className="ex-page__content">
+      <Row className="ex-page__content">
         <Diff diffString={diffString} className="ex-page__diff" />
         <Footer
+          className="ex-page__footer"
           options={assignmentsOptions}
           value={currentAssigmentId}
           select={selectAssigmentId}
@@ -102,7 +108,7 @@ class Experiment extends Component {
           skip={skip}
           finish={finish}
         />
-      </div>
+      </Row>
     );
   }
 }
