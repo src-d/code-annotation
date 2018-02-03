@@ -1,26 +1,25 @@
 @import '../../node_modules/bootstrap/less/variables.less';
-@import '../components/PageHeader.less';
-@import '../components/Experiment/Footer.less';
-
-@ex-page-header-inner-height: 23px; // this value depends on content, update it if you change block
-@ex-page-header-margin-bottom: 20px;
-@ex-page-diff-padding-bottom: 10px;
-@ex-page-footer-margin-bottom: 10px;
-
-@ex-page-diff-lift-height: @navbar-total-height + @ex-page-header-inner-height +
-    @ex-page-header-margin-bottom + @ex-footer-height +
-    @ex-page-footer-margin-bottom;
 
 .ex-page {
     height: 100%;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 
-    &__header {
-        margin-bottom: @ex-page-header-margin-bottom;
+    .navbar {
+        flex: 0;
     }
 
     &__main {
-        height: 100%;
+        flex: 1;
+        // even it's a grid container we need to set 100% because of flex it collapses
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__header {
+        flex: 0;
+        margin-bottom: 20px;
     }
 
     &__loader {
@@ -39,31 +38,37 @@
     }
 
     &__content {
-        height: 100%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__diff-col {
+        flex: 1;
+        display: flex;
+        padding-bottom: 10px;
     }
 
     &__diff {
-        height: 100%;
-
-        // this is the only way I know to create 100% height page
-        // with header & footer & scrollable content in the middle (without flexbox)
-        //
-        // The idea: wrapper for scrollable div has padding-bottom
-        // of the height of footer + header, so the scrollable div has correct max-height
-        // and than margin-bottom: -(padding-bottom) to lift up footer
-        // the page has overflow hidden to hide empty space at the bottom
-        // for better understanding look at codepen: https://codepen.io/smacker/pen/mXyPQE
-        //
-        // Calculating height
-        // NB!!!! layout will be broken if any of inner heights are changed
-        // and variables aren't updated
-        padding-bottom: @ex-page-diff-lift-height + @ex-page-diff-padding-bottom;
-        // same as on top, but without padding of diff block iself
-        margin-bottom: -@ex-page-diff-lift-height;
+        flex: 1;
     }
 
     &__footer {
-        padding-bottom: @ex-page-footer-margin-bottom;
+        flex: 0;
+        margin-bottom: 10px;
+    }
+
+    &__actions {
+        text-align: center;
+    }
+
+    &__additional-actions {
+        text-align: right;
+    }
+
+    &__actions .btn-toolbar,
+    &__additional-actions .btn-toolbar {
+        display: inline-block;
     }
 
     &__oops {
