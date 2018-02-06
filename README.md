@@ -3,11 +3,18 @@
 
 # Source Code Annotation Tool
 
+Training Machine Learning models often requires large datasets to be duly annotated.
+The nature of these annotations vary depending on the dataset considered: they can be
+the number to be recognized in the [MNIST dataset](http://yann.lecun.com/exdb/mnist/),
+the coordinates of the box containing the objects to be identified in an object detection problem, etc.
+
+This tool provides a simple UI to add annotations to existing datasets, a command line tool
+to fetch more elements to be annotated, and an export mechanism.
+
+Currently, the project provides one single example consisting on labeling two pieces of code
+as being identical, similar, or different.
+
 Source code annotation tool offers an UI to annotate source code and review these annotations, and a CLI to define the code to be annotated and export the annotations.
-
-### Why is is needed?
-
-In order to evaluate quality of ML models, as well as to create “ImageNet for Source Code” there is a need for tools to automate the data collection/labeling/annotation.
 
 ![Screenshot](.github/screenshot.png?raw=true)
 
@@ -22,10 +29,11 @@ go version; # prints your go version
 echo $GOPATH; # prints your $GOPATH path
 ```
 
-The project must be under the `$GOPATH`, following the Go import conventions, what means you can go to its directory running:
+The project must be under $GOPATH, as required by the Go tooling.
+You should be able to navigate into the source code by running:
 
 ```
-cd $GOPATH/src/github.com/src-d/landing
+cd $GOPATH/src/github.com/src-d/code-annotation
 ```
 
 You need also [Yarn v1.x.x installed](https://yarnpkg.com/en/docs/install)
@@ -38,7 +46,7 @@ yarn --version; # prints your Yarn version
 
 1. You need an OAuth application on GitHub. See [how to create OAuth applications on GitHub](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
 
-    `Authorization callback URL: http://127.0.0.1:8080/oauth-callback`
+In order to be able to use this application while running the tool locally, make sure you add http://127.0.0.1:8080/oauth-callback to the authorization callback URL field.
 
 2. Copy `.env.tpl` to `.env`.
 
@@ -54,7 +62,7 @@ $ cd $GOPATH/github.com/src-d/code-annotation
 $ make serve
 ```
 
-It runs everything you need to get the tool working at [http://localhost:8080](http://localhost:8080)
+This will start a server locally, which you can access on [http://localhost:8080](http://localhost:8080)
 
 ## Importing and Exporting Data
 
@@ -108,7 +116,7 @@ our [Contributing Guidelines](CONTRIBUTING.md).
 
 # Code of Conduct
 
-All activities source{d} projects are governed by the [source{d} code of conduct](CODE_OF_CONDUCT.md).
+All activities under source{d} projects are governed by the [source{d} code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
