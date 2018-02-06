@@ -109,7 +109,7 @@ The DSN argument uses the same format as the `import` tool, see the previous sec
 
 In this case, origin will be the internal database, and destination the new database. This new database will have the same contents as the internal one.
 
-To study the user annotation results, focus on the **`assignments`** table.
+The annotations made by the users will be stored in the **`assignments`** table.
 
 ## Contributing
 
