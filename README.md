@@ -68,11 +68,11 @@ This will start a server locally, which you can access on [http://localhost:8080
 
 ### Import File Pairs for Annotation
 
-The file pairs must be initially provided via an [SQLite](https://sqlite.org/) database. The database **must follow the expected schema**, please [follow this link](./cli/examples/import/example.sql) to see an example.
+The file pairs must be provided via an [SQLite](https://sqlite.org/) database. The database **must follow the expected schema**, please [follow this link](./cli/examples/import/example.sql) to see an example.
 
 The `import` command will use those file pairs to create a new [SQLite](https://sqlite.org/) or [PostgreSQL](https://www.postgresql.org/) database that will be used internally by the Annotation Tool. The destination database does not need to be empty, new imported file pairs can be added to previous imports.
 
-_Please note_: if a file pair is identical to an existing one it will not be detected. A new pair entry will be created with the same contents.
+_Note_: duplicate entries are not filtered, so running an import multiple times will result in repeated rows.
 
 To use it, run it as:
 
@@ -89,8 +89,10 @@ Some usage examples:
 
 ```bash
 $ import ./input.db sqlite:///home/user/internal.db
+Imported 989 file pairs successfully
 
 $ import /home/user/input.db postgres://testing:testing@localhost:5432/input?sslmode=disable
+Imported 562 file pairs successfully
 ```
 
 For a complete reference of the PostgreSQL connection string, see the [documentation for the lib/pq Go package](https://godoc.org/github.com/lib/pq#hdr-Connection_String_Parameters).
