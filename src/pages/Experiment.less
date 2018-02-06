@@ -12,6 +12,7 @@
             background-color: #2c3132;
             border-radius: 0;
             border: none;
+            margin-bottom: 0;
         }
     }
 
@@ -27,6 +28,7 @@
         flex: 0;
         margin-bottom: 20px;
         background: #414546;
+        padding: 10px 42px;
     }
 
     &__loader {
@@ -199,7 +201,7 @@
 }
 
 .navbar-right {
-    margin-right: 42px;
+    margin-right: 28px;
 }
 
 .navbar-default .navbar-nav > li > a {
@@ -226,58 +228,12 @@
     background-image: none;
 }
 
-// old code from previous visual design commit
-// footer height depends on elements inside
-// update this value if you change footer
-@ex-footer-height: 46px;
-
-.ex-page__footer {
-    background: #2c3132;
-
-    &__main-buttons,
-    &__additional-buttons {
-        display: inline-block;
-    }
-
-    &__pager {
-        background: #0c0d0e url("/dropdown-arrow.svg") no-repeat;
-        background-size: 11px;
-        background-position: 144px 15px;
-        color: #979a9a;
-        text-transform: uppercase;
-        font-size: 15px;
-        font-weight: 300;
-        letter-spacing: 2px;
-        padding-left: 22px;
-        margin-left: 42px;
-        
-        select {
-            background: transparent;
-            border: none;
-            outline: none;
-            display: inline-block;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            cursor: pointer;
-            border-radius: 0;
-            height: 39px;
-            padding-left: 4px;
-            width: 64px;
-        }
-    }
-
-    &__pager:hover {
-        cursor: pointer;
-    }
-}
-
-.ex-footer__buttons .btn-default {
-    background: none;
-    color: #d8dcdc;     
-}
-
-.ex-footer__buttons .btn-default:hover {
-    background: none;
-    color: #fff;   
+.ex-progress__percent {
+    color: #a0a2a2;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding-right: 8px;
+    padding-top: 1px;
 }
