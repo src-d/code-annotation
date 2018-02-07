@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/src-d/code-annotation/server/model"
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/serializer"
 	"github.com/src-d/code-annotation/server/service"
@@ -34,7 +35,7 @@ func OAuthCallback(
 		}
 
 		code := r.FormValue("code")
-		user, err := oAuth.GetUser(r.Context(), code)
+		ghUser, err := oAuth.GetUser(r.Context(), code)
 		if err != nil {
 			logger.Errorf("oauth get user error: %s", err)
 			// FIXME can it be not server error? for wrong code
@@ -42,11 +43,26 @@ func OAuthCallback(
 			return
 		}
 
-		// FIXME with real repo we need to check does user exists already or not
-		if err := userRepo.Create(user); err != nil {
-			logger.Errorf("can't create user: %s", err)
+		user, err := userRepo.Get(ghUser.Login)
+		if err != nil {
+			logger.Error(err)
 			write(w, r, serializer.NewEmptyResponse(), err)
 			return
+		}
+
+		if user == nil {
+			user = &model.User{
+				Login:     ghUser.Login,
+				Username:  ghUser.Username,
+				AvatarURL: ghUser.AvatarURL,
+				Role:      model.Requester}
+
+			err = userRepo.Create(user)
+			if err != nil {
+				logger.Errorf("can't create user: %s", err)
+				write(w, r, serializer.NewEmptyResponse(), err)
+				return
+			}
 		}
 
 		token, err := jwt.MakeToken(user)

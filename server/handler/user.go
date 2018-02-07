@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/src-d/code-annotation/server/repository"
@@ -13,13 +12,17 @@ import (
 // with the information about the current user
 func Me(usersRepo *repository.Users) RequestProcessFunc {
 	return func(r *http.Request) (*serializer.Response, error) {
-		uID := service.GetUserID(r.Context())
-		if uID == 0 {
-			return nil, fmt.Errorf("no user id in context")
+		userID, err := service.GetUserID(r.Context())
+		if err != nil {
+			return nil, err
 		}
 
-		u, err := usersRepo.Get(uID)
+		u, err := usersRepo.GetByID(userID)
 		if err != nil {
+			return nil, err
+		}
+
+		if u == nil {
 			return nil, serializer.NewHTTPError(http.StatusNotFound, "user not found")
 		}
 

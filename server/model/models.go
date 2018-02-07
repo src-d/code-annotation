@@ -1,10 +1,12 @@
 package model
 
+import "database/sql"
+
 // User of the application; can be Requester or Workers
 type User struct {
 	ID        int
-	Login     string
-	Username  string
+	Login     string // GitHub account username
+	Username  string // Real name, as returned by GitHub
 	AvatarURL string
 	Role      Role
 }
@@ -16,30 +18,34 @@ type Experiment struct {
 	Description string
 }
 
-// Assignment tracks the answer of a worker to a given FilePairs of an Experiment
+// Assignment tracks the answer of a worker to a given FilePair of an Experiment
 type Assignment struct {
 	ID           int
 	UserID       int
 	PairID       int
 	ExperimentID int
-	Answer       string
+	Answer       sql.NullString
 	Duration     int
 }
 
-// FilePairs are the answers that needs to be responsed
-type FilePairs struct {
+// FilePair represents the pairs of files to annotate
+type FilePair struct {
 	ID           int
-	ExperimentID int
+	Score        float64
 	Diff         string
+	ExperimentID int
 	Left         File
 	Right        File
 }
 
 // File contains the info of a File
 type File struct {
-	Name    string
-	Hash    string
-	Content string
+	BlobID       string
+	RepositoryID string
+	CommitHash   string
+	Path         string
+	Content      string
+	Hash         string
 }
 
 // Role represents the position of a app User
@@ -58,5 +64,4 @@ var Answers = map[string]string{
 	"maybe": "maybe",
 	"no":    "no",
 	"skip":  "skip",
-	"":      "",
 }

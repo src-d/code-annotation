@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/src-d/code-annotation/server/handler"
@@ -19,9 +20,15 @@ func Router(
 	jwt *service.JWT,
 	oauth *service.OAuth,
 	uiDomain string,
-	userRepo *repository.Users,
+	db *sql.DB,
 	staticsPath string,
 ) http.Handler {
+
+	// create repos
+	userRepo := repository.NewUsers(db)
+	experimentRepo := repository.NewExperiments(db)
+	assignmentRepo := repository.NewAssignments(db)
+	filePairRepo := repository.NewFilePairs(db)
 
 	// cors options
 	corsOptions := cors.Options{
@@ -46,15 +53,15 @@ func Router(
 
 		r.Route("/experiments/{experimentId}", func(r chi.Router) {
 
-			r.Get("/", handler.Get(handler.GetExperimentDetails()))
+			r.Get("/", handler.Get(handler.GetExperimentDetails(experimentRepo)))
 
 			r.Route("/assignments", func(r chi.Router) {
 
-				r.Get("/", handler.Get(handler.GetAssignmentsForUserExperiment()))
-				r.Put("/{assignmentId}", handler.Get(handler.SaveAssignment()))
+				r.Get("/", handler.Get(handler.GetAssignmentsForUserExperiment(assignmentRepo)))
+				r.Put("/{assignmentId}", handler.Get(handler.SaveAssignment(assignmentRepo)))
 			})
 
-			r.Get("/file-pairs/{pairId}", handler.Get(handler.GetFilePairDetails()))
+			r.Get("/file-pairs/{pairId}", handler.Get(handler.GetFilePairDetails(filePairRepo)))
 		})
 	})
 

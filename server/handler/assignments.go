@@ -2,36 +2,33 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/serializer"
 	"github.com/src-d/code-annotation/server/service"
-
-	"github.com/go-chi/chi"
 )
 
 // GetAssignmentsForUserExperiment returns a function that returns a *serializer.Response
 // with the assignments for the logged user and a passed experiment
 // if these assignments do not already exist, they are created in advance
-func GetAssignmentsForUserExperiment() RequestProcessFunc {
+func GetAssignmentsForUserExperiment(repo *repository.Assignments) RequestProcessFunc {
 	return func(r *http.Request) (*serializer.Response, error) {
-		requestedExperimentID := chi.URLParam(r, "experimentId")
-		experimentID, err := strconv.Atoi(requestedExperimentID)
+		experimentID, err := urlParamInt(r, "experimentId")
 		if err != nil {
-			return nil, serializer.NewHTTPError(
-				http.StatusBadRequest, fmt.Sprintf("wrong format in experiment ID sent; received %s", requestedExperimentID),
-			)
+			return nil, err
 		}
 
-		userID := service.GetUserID(r.Context())
-		assignments, err := repository.GetAssignmentsFor(userID, experimentID)
+		userID, err := service.GetUserID(r.Context())
+		if err != nil {
+			return nil, err
+		}
+
+		assignments, err := repo.GetAll(userID, experimentID)
 		if err == repository.ErrNoAssignmentsInitialized {
-			if assignments, err = repository.CreateAssignmentsFor(userID, experimentID); err != nil {
-				return nil, fmt.Errorf("no available assignments")
+			if assignments, err = repo.Initialize(userID, experimentID); err != nil {
+				return nil, err
 			}
 		}
 
@@ -45,14 +42,30 @@ type assignmentRequest struct {
 }
 
 // SaveAssignment returns a function that saves the user answers as passed in the body request
-func SaveAssignment() RequestProcessFunc {
+func SaveAssignment(repo *repository.Assignments) RequestProcessFunc {
 	return func(r *http.Request) (*serializer.Response, error) {
-		requestedAssignmentID := chi.URLParam(r, "assignmentId")
-		assignmentID, err := strconv.Atoi(requestedAssignmentID)
+		assignmentID, err := urlParamInt(r, "assignmentId")
 		if err != nil {
-			return nil, serializer.NewHTTPError(
-				http.StatusBadRequest, fmt.Sprintf("wrong format in assignment ID sent; received %s", requestedAssignmentID),
-			)
+			return nil, err
+		}
+
+		assignment, err := repo.GetByID(assignmentID)
+		if err != nil {
+			return nil, err
+		}
+
+		if assignment == nil {
+			return nil, serializer.NewHTTPError(http.StatusNotFound, "assignment not found")
+		}
+
+		userID, err := service.GetUserID(r.Context())
+		if err != nil {
+			return nil, err
+		}
+
+		if userID != assignment.UserID {
+			return nil, serializer.NewHTTPError(http.StatusForbidden,
+				"logged in user is not the assignment's owner")
 		}
 
 		var assignmentRequest assignmentRequest
@@ -63,11 +76,12 @@ func SaveAssignment() RequestProcessFunc {
 		}
 
 		if err != nil {
-			return nil, fmt.Errorf("payload could not be read")
+			return nil, err
 		}
 
-		if err := repository.UpdateAssignment(assignmentID, assignmentRequest.Answer, assignmentRequest.Duration); err != nil {
-			return nil, fmt.Errorf("answer could not be saved")
+		err = repo.Update(assignmentID, assignmentRequest.Answer, assignmentRequest.Duration)
+		if err != nil {
+			return nil, err
 		}
 
 		return serializer.NewCountResponse(1), nil

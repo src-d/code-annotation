@@ -83,30 +83,39 @@ func NewExperimentResponse(e *model.Experiment) *Response {
 }
 
 type assignmentResponse struct {
-	ID       int    `json:"id"`
-	PairID   int    `json:"pairId"`
-	Answer   string `json:"answer"`
-	Duration int    `json:"duration"`
+	ID           int     `json:"id"`
+	UserID       int     `json:"userId"`
+	PairID       int     `json:"pairId"`
+	ExperimentID int     `json:"experimentId"`
+	Answer       *string `json:"answer"`
+	Duration     int     `json:"duration"`
 }
 
 // NewAssignmentsResponse returns a Response for the passed Assignment
 func NewAssignmentsResponse(as []*model.Assignment) *Response {
 	assignments := make([]assignmentResponse, len(as))
 	for i, a := range as {
-		assignments[i] = assignmentResponse{a.ID, a.PairID, string(a.Answer), a.Duration}
+		var answer *string
+
+		if a.Answer.Valid {
+			answer = &a.Answer.String
+		}
+
+		assignments[i] = assignmentResponse{a.ID, a.UserID, a.PairID,
+			a.ExperimentID, answer, a.Duration}
 	}
 
 	return newResponse(assignments)
 }
 
-type filePairsResponse struct {
+type filePairResponse struct {
 	ID   int    `json:"id"`
 	Diff string `json:"diff"`
 }
 
-// NewFilePairsResponse returns a Response for the passed FilePairs
-func NewFilePairsResponse(fp *model.FilePairs) *Response {
-	return newResponse(filePairsResponse{fp.ID, fp.Diff})
+// NewFilePairResponse returns a Response for the given FilePair
+func NewFilePairResponse(fp *model.FilePair) *Response {
+	return newResponse(filePairResponse{fp.ID, fp.Diff})
 }
 
 type userResponse struct {

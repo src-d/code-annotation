@@ -26,13 +26,12 @@ const (
 
 // DB groups a sql.DB and the driver used to initialize it
 type DB struct {
-	sqlDB  *sql.DB
+	*sql.DB
 	driver driver
 }
 
-// Close closes the database, releasing any open resources.
-func (db *DB) Close() error {
-	return db.sqlDB.Close()
+func (db *DB) SQLDB() *sql.DB {
+	return db.DB
 }
 
 const (
@@ -41,7 +40,7 @@ const (
 	posgresIncrementType     = "SERIAL"
 
 	createUsers = `CREATE TABLE IF NOT EXISTS users (
-			id <INCREMENT_TYPE>, github_username TEXT, auth TEXT, role INTEGER,
+			id <INCREMENT_TYPE>, login TEXT UNIQUE, username TEXT, avatar_url TEXT, role TEXT,
 			PRIMARY KEY (id))`
 	createExperiments = `CREATE TABLE IF NOT EXISTS experiments (
 			id <INCREMENT_TYPE>, name TEXT UNIQUE, description TEXT,
@@ -55,9 +54,11 @@ const (
 		PRIMARY KEY (id),
 		FOREIGN KEY(experiment_id) REFERENCES experiments(id))`
 	createAssignments = `CREATE TABLE IF NOT EXISTS assignments (
+			id <INCREMENT_TYPE>,
 			user_id INTEGER, pair_id INTEGER, experiment_id INTEGER,
-			answer INTEGER, duration INTEGER,
-			PRIMARY KEY (user_id, pair_id),
+			answer TEXT, duration INTEGER,
+			PRIMARY KEY (id),
+			UNIQUE (user_id, pair_id, experiment_id),
 			FOREIGN KEY (user_id) REFERENCES users(id),
 			FOREIGN KEY (pair_id) REFERENCES file_pairs(id),
 			FOREIGN KEY (experiment_id) REFERENCES experiments(id))`
@@ -150,7 +151,7 @@ func Bootstrap(db DB) error {
 	for _, table := range tables {
 		cmd := strings.Replace(table, incrementTypePlaceholder, colType, 1)
 
-		if _, err := db.sqlDB.Exec(cmd); err != nil {
+		if _, err := db.Exec(cmd); err != nil {
 			return err
 		}
 	}
@@ -161,9 +162,9 @@ func Bootstrap(db DB) error {
 // Initialize populates the DB with default values. It is safe to call on a
 // DB that is already initialized
 func Initialize(db DB) error {
-	_, err := db.sqlDB.Exec(insertExperiments, defaultExperimentID)
+	_, err := db.Exec(insertExperiments, defaultExperimentID)
 	if db.driver == postgres && err == nil {
-		db.sqlDB.Exec(alterExperimentsSequence)
+		db.Exec(alterExperimentsSequence)
 	}
 
 	// Errors are ignored to allow initialization over an existing DB
@@ -191,12 +192,13 @@ func ImportFiles(originDB DB, destDB DB, opts Options) (success, failures int64,
 
 	logger := opts.getLogger()
 
-	rows, err := originDB.sqlDB.Query(selectFiles)
+	rows, err := originDB.Query(selectFiles)
 	if err != nil {
 		return 0, 0, err
 	}
+	defer rows.Close()
 
-	tx, err := destDB.sqlDB.Begin()
+	tx, err := destDB.Begin()
 	if err != nil {
 		return 0, 0, err
 	}

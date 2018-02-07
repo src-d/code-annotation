@@ -17,13 +17,15 @@ const (
 	alterSequenceSQL = `ALTER SEQUENCE <TABLE>_id_seq RESTART WITH $1`
 )
 
+var tables = []string{"users", "experiments", "file_pairs", "assignments"}
+
 // Copy dumps the contents of the origin DB into the destination DB. The
 // destination DB should be bootstrapped, but empty
 func Copy(originDB DB, destDB DB, opts Options) error {
 
 	logger := opts.getLogger()
 
-	tx, err := destDB.sqlDB.Begin()
+	tx, err := destDB.Begin()
 	if err != nil {
 		return err
 	}
@@ -36,16 +38,15 @@ func Copy(originDB DB, destDB DB, opts Options) error {
 		}
 	}()
 
-	tables := []string{"users", "experiments", "file_pairs", "assignments"}
-
 	for _, table := range tables {
 		// SELECT * FROM <TABLE>
 		selectCmd := strings.Replace(dumpAllSQL, tablePlaceholder, table, 1)
 
-		rows, err := originDB.sqlDB.Query(selectCmd)
+		rows, err := originDB.Query(selectCmd)
 		if err != nil {
 			return err
 		}
+		defer rows.Close()
 
 		columnNames, _ := rows.Columns()
 		nColumns := len(columnNames)
@@ -102,9 +103,9 @@ func insertCmd(table string, n int) string {
 	return cmd + "(" + strings.Join(nArgs, ",") + ")"
 }
 
-// genericVals returns a slice of interface{}, each one a pointer to a string
+// genericVals returns a slice of interface{}, each one a pointer to a NullString
 func genericVals(nColumns int) []interface{} {
-	columnVals := make([]string, nColumns)
+	columnVals := make([]sql.NullString, nColumns)
 	columnValsPtr := make([]interface{}, nColumns)
 
 	for i := range columnVals {
@@ -122,13 +123,11 @@ func fixSequences(db DB, logger *log.Logger) {
 		return
 	}
 
-	tables := []string{"users", "experiments", "file_pairs"}
-
 	for _, table := range tables {
 		selectCmd := strings.Replace(maxIDSQL, tablePlaceholder, table, 1)
 
 		var maxID sql.NullInt64
-		err := db.sqlDB.QueryRow(selectCmd).Scan(&maxID)
+		err := db.QueryRow(selectCmd).Scan(&maxID)
 
 		if err != nil {
 			// With 0 rows there is no MAX(id)
@@ -141,10 +140,10 @@ func fixSequences(db DB, logger *log.Logger) {
 			newMax := fmt.Sprintf("%v", maxID.Int64+1)
 
 			// for some reason Exec() fails to substitute $1 with the argument
-			//_, err := db.sqlDB.Exec(alterCmd, newMax)
+			//_, err := db.Exec(alterCmd, newMax)
 
 			alterCmd = strings.Replace(alterCmd, "$1", newMax, 1)
-			_, err := db.sqlDB.Exec(alterCmd)
+			_, err := db.Exec(alterCmd)
 
 			if err != nil {
 				logger.Printf("Error while executing %q:\n%v\n", alterCmd, err)
