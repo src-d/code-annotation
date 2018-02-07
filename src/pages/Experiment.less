@@ -237,3 +237,52 @@
     padding-right: 8px;
     padding-top: 1px;
 }
+
+.ex-page {
+
+   &__additional-actions {
+
+        .btn-default {
+            color: #808b8c;
+            background-color: transparent;
+            border: none;
+            padding-top: 10px;
+        }
+
+        .btn-default:hover {
+            color: #fff;
+        }
+    }
+
+    &__footer {
+        background: #2c3132;
+        padding: 22px 42px 13px 42px;
+
+        .left-actions {
+
+            background: #0c0d0e url("/dropdown-arrow.svg") no-repeat;
+            background-size: 11px;
+            background-position: 144px 15px;
+            color: #979a9a;
+            text-transform: uppercase;
+            font-size: 15px;
+            font-weight: 300;
+            letter-spacing: 2px;
+
+            select {
+                background: transparent;
+                border: none;
+                outline: none;
+                display: inline-block;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                cursor: pointer;
+                border-radius: 0;
+                height: 39px;
+                padding-left: 4px;
+                width: 64px;
+            }
+        }
+    }
+}
