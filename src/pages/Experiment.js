@@ -6,7 +6,9 @@ import PageHeader from '../components/PageHeader';
 import Loader from '../components/Loader';
 import Progress from '../components/Experiment/Progress';
 import Diff from '../components/Experiment/Diff';
-import Footer from '../components/Experiment/Footer';
+import Selector from '../components/Experiment/Selector';
+import Actions from '../components/Experiment/Actions';
+import AdditionActions from '../components/Experiment/AdditionActions';
 import {
   load,
   markCurrent,
@@ -95,20 +97,32 @@ class Experiment extends Component {
     }
 
     return (
-      <Row className="ex-page__content">
-        <Diff diffString={diffString} className="ex-page__diff" />
-        <Footer
-          className="ex-page__footer"
-          options={assignmentsOptions}
-          value={currentAssigmentId}
-          select={selectAssigmentId}
-          markSimilar={markSimilar}
-          markMaybe={markMaybe}
-          markDifferent={markDifferent}
-          skip={skip}
-          finish={finish}
-        />
-      </Row>
+      <React.Fragment>
+        <Row className="ex-page__content">
+          <Col xs={12} className="ex-page__diff-col">
+            <Diff diffString={diffString} className="ex-page__diff" />
+          </Col>
+        </Row>
+        <Row className="ex-page__footer">
+          <Col xs={3}>
+            <Selector
+              options={assignmentsOptions}
+              value={currentAssigmentId}
+              select={selectAssigmentId}
+            />
+          </Col>
+          <Col xs={6} className="ex-page__actions">
+            <Actions
+              markSimilar={markSimilar}
+              markMaybe={markMaybe}
+              markDifferent={markDifferent}
+            />
+          </Col>
+          <Col xs={3} className="ex-page__additional-actions">
+            <AdditionActions skip={skip} finish={finish} />
+          </Col>
+        </Row>
+      </React.Fragment>
     );
   }
 }
