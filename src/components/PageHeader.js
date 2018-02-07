@@ -6,17 +6,17 @@ function PageHeader({ username, avatarUrl }) {
     <Navbar fluid>
       <Navbar.Header>
         <Navbar.Brand>
-            <h1>
-              <a href="/">
-                <img
-                  alt="source{d} code annotation"
-                  src="/sourced-code-annotation-logo.svg"
-                />
-                code annotation
-              </a>
-            </h1>
-          </Navbar.Brand>
-        </Navbar.Header>
+          <h1>
+            <a href="/">
+              <img
+                alt="source{d} code annotation"
+                src="/sourced-code-annotation-logo.svg"
+              />
+              code annotation
+            </a>
+          </h1>
+        </Navbar.Brand>
+      </Navbar.Header>
       <Nav pullRight>
         <NavItem eventKey={1} href="/">
           dashboard
