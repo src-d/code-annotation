@@ -97,6 +97,22 @@ Imported 562 file pairs successfully
 
 For a complete reference of the PostgreSQL connection string, see the [documentation for the lib/pq Go package](https://godoc.org/github.com/lib/pq#hdr-Connection_String_Parameters).
 
+#### Set the Internal Database Connection
+
+Before starting the application you will need to set the `DB_CONNECTION` variable in the `.env` file. It should point to the database created with the `import` command.
+
+This variable uses the same `DSN` string as the `import` command to point to a SQLite or PosgreSQL database.
+
+Some examples:
+
+```
+DB_CONNECTION=sqlite:///home/user/internal.db
+```
+
+```
+DB_CONNECTION=postgres://testing:testing@localhost:5432/input?sslmode=disable
+```
+
 ### Export Annotation Results
 
 To work with the annotation results, the internal data can be extracted into a new SQLite database using the `export` command.
