@@ -18,31 +18,9 @@ Source code annotation tool offers an UI to annotate source code and review thes
 
 ![Screenshot](.github/screenshot.png?raw=true)
 
-## Requirements
+## Installation
 
-### Global dependencies
-
-You should already have [Go installed](https://golang.org/doc/install#install), and properly [configured the $GOPATH](https://github.com/golang/go/wiki/SettingGOPATH)
-
-```
-go version; # prints your go version
-echo $GOPATH; # prints your $GOPATH path
-```
-
-The project must be under $GOPATH, as required by the Go tooling.
-You should be able to navigate into the source code by running:
-
-```
-cd $GOPATH/src/github.com/src-d/code-annotation
-```
-
-You need also [Yarn v1.x.x installed](https://yarnpkg.com/en/docs/install)
-
-```
-yarn --version; # prints your Yarn version
-```
-
-### Github OAuth tokens
+## Github OAuth tokens
 
 1. You need an OAuth application on GitHub. See [how to create OAuth applications on GitHub](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
 
@@ -52,17 +30,13 @@ In order to be able to use this application while running the tool locally, make
 
 3. Retrieve the values for your application's Client ID and Client Secret from the [GitHub Developer Settings page](https://github.com/settings/developers) and add them to the end of the corresponding lines in .env.
 
-## Installation
+### Docker
 
-You need to satisfy all [project requirements](#requirements), and then run:
+docker run --env-file .env --rm -p 8080:8080 srcd/code-annotation
 
-```bash
-$ go get github.com/src-d/code-annotation/...
-$ cd $GOPATH/github.com/src-d/code-annotation
-$ make serve
-```
+### Non-docker
 
-This will start a server locally, which you can access on [http://localhost:8080](http://localhost:8080)
+Download binary from [releases](https://github.com/src-d/code-annotation/releases) for your platform.
 
 ## Importing and Exporting Data
 
@@ -147,8 +121,7 @@ OAUTH_RESTRICT_REQUESTER_ACCESS=team:123456
 
 ## Contributing
 
-[Contributions](https://github.com/src-d/code-annotation/issues) are more than welcome, if you are interested please take a look to
-our [Contributing Guidelines](CONTRIBUTING.md).
+[Contributions](https://github.com/src-d/code-annotation/issues) are more than welcome, if you are interested please take a look to our [Contributing Guidelines](CONTRIBUTING.md).
 
 # Code of Conduct
 

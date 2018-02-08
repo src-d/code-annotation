@@ -49,13 +49,39 @@ plumbing: packp, Skip argument validations for unknown capabilities. Fixes #623
 > Please note: you will need a .env file configured with working GitHub OAuth credentials to run the application in development mode.
 > Please follow the [README Installation section](./README.md#installation) for instructions on how to do it.
 
-To build and run the tool, execute:
+### Global dependencies
+
+You should already have [Go installed](https://golang.org/doc/install#install), and properly [configured the $GOPATH](https://github.com/golang/go/wiki/SettingGOPATH)
+
+```
+go version; # prints your go version
+echo $GOPATH; # prints your $GOPATH path
+```
+
+The project must be under $GOPATH, as required by the Go tooling.
+You should be able to navigate into the source code by running:
+
+```
+cd $GOPATH/src/github.com/src-d/code-annotation
+```
+
+You need also [Yarn v1.x.x installed](https://yarnpkg.com/en/docs/install)
+
+```
+yarn --version; # prints your Yarn version
+```
+
+## Installation
+
+You need to satisfy all [project requirements](#requirements), and then run:
 
 ```bash
 $ go get -d -u github.com/src-d/code-annotation/...
 $ cd $GOPATH/github.com/src-d/code-annotation
 $ make serve
 ```
+
+This will start a server locally, which you can access on [http://localhost:8080](http://localhost:8080)
 
 ### Frontend:
 
@@ -70,7 +96,7 @@ $ UI_DOMAIN=http://127.0.0.1:3000 make gorun
 And then run frontend in dev mode. Execute:
 
 ```bash
-$ yarn start
+$ make dev-frontend
 ```
 
 ### Backend:
