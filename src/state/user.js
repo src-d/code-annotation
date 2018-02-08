@@ -40,7 +40,6 @@ export const logIn = () => dispatch =>
       username: resp.username,
       avatarUrl: resp.avatarURL,
     });
-    dispatch(push('/exp/1'));
   });
 
 export const logOut = () => dispatch => {
@@ -67,6 +66,10 @@ export const authMiddleware = store => next => action => {
       const { result } = action.payload;
       if (!user.loggedIn && result && !result.public) {
         return next(replace('/'));
+      }
+      // redirect user from index page to experiment if user it authorized already
+      if (user.loggedIn && result && result.name === 'index') {
+        return next(push('/exp/1'));
       }
       return next(action);
     })
