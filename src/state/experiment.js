@@ -203,8 +203,9 @@ export const mark = (assignmentId, answer) => dispatch => {
     id: assignmentId,
     answer,
   });
-  dispatch(putAnswer(experimentId, assignmentId, answer));
-  return dispatch(nextAssigment());
+  return dispatch(putAnswer(experimentId, assignmentId, answer)).then(() =>
+    dispatch(nextAssigment())
+  );
 };
 
 export const markCurrent = answer => (dispatch, getState) => {
