@@ -130,6 +130,20 @@ func NewUserResponse(u *model.User) *Response {
 	return newResponse(userResponse{u.ID, u.Login, u.Username, u.AvatarURL})
 }
 
+type featureResponse struct {
+	Name   string  `json:"name"`
+	Weight float64 `json:"weight"`
+}
+
+// NewFeaturesResponse returns a Response for the passed Features
+func NewFeaturesResponse(fs []*model.Feature) *Response {
+	features := make([]featureResponse, len(fs))
+	for i, f := range fs {
+		features[i] = featureResponse(*f)
+	}
+	return newResponse(features)
+}
+
 type countResponse struct {
 	Count int `json:"count"`
 }

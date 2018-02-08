@@ -29,6 +29,7 @@ func Router(
 	experimentRepo := repository.NewExperiments(db)
 	assignmentRepo := repository.NewAssignments(db)
 	filePairRepo := repository.NewFilePairs(db)
+	featureRepo := repository.NewFeatures(db)
 
 	// cors options
 	corsOptions := cors.Options{
@@ -63,6 +64,8 @@ func Router(
 
 			r.Get("/file-pairs/{pairId}", handler.Get(handler.GetFilePairDetails(filePairRepo)))
 		})
+
+		r.Get("/features/{blobId}", handler.Get(handler.GetFeatures(featureRepo)))
 	})
 
 	r.Get("/static/*", handler.FrontendStatics(staticsPath, false))
