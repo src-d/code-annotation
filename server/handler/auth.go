@@ -36,6 +36,10 @@ func OAuthCallback(
 
 		code := r.FormValue("code")
 		ghUser, err := oAuth.GetUser(r.Context(), code)
+		if err == service.ErrNoAccess {
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			return
+		}
 		if err != nil {
 			logger.Errorf("oauth get user error: %s", err)
 			// FIXME can it be not server error? for wrong code
@@ -55,7 +59,8 @@ func OAuthCallback(
 				Login:     ghUser.Login,
 				Username:  ghUser.Username,
 				AvatarURL: ghUser.AvatarURL,
-				Role:      model.Requester}
+				Role:      ghUser.Role,
+			}
 
 			err = userRepo.Create(user)
 			if err != nil {
