@@ -1,6 +1,11 @@
 package model
 
-import "database/sql"
+import (
+	"database/sql"
+	"database/sql/driver"
+	"errors"
+	"fmt"
+)
 
 // User of the application; can be Requester or Workers
 type User struct {
@@ -50,6 +55,34 @@ type File struct {
 
 // Role represents the position of a app User
 type Role string
+
+// Value returns the string value of the Role
+func (r Role) Value() (driver.Value, error) {
+	// TODO: role validation (@dpordomingo)
+	return string(r), nil
+}
+
+// Scan sets the Role with the passed string
+func (r *Role) Scan(value interface{}) error {
+	// TODO: role validation (@dpordomingo)
+	if value == nil {
+		*r = Role(Worker)
+		return nil
+	}
+
+	var bv driver.Value
+	var err error
+	if bv, err = driver.String.ConvertValue(value); err == nil {
+		if v, ok := bv.([]byte); ok {
+			*r = Role(v)
+			return nil
+		}
+
+		err = fmt.Errorf("%#v can not be asserted as a string", bv)
+	}
+
+	return errors.New("failed to scan Role; " + err.Error())
+}
 
 const (
 	// Requester is the role of a user that can review assignments, users, stats of experiments...
