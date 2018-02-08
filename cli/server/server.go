@@ -27,11 +27,19 @@ func main() {
 	logger := service.NewLogger()
 
 	// database
-	db, err := dbutil.Open(conf.DBConn, true)
+	db, err := dbutil.Open(conf.DBConn, false)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatalf("error opening the database: %s", err)
 	}
 	defer db.Close()
+
+	if err := dbutil.Bootstrap(db); err != nil {
+		logger.Fatalf("error bootstrapping the database: %s", err)
+	}
+
+	if err := dbutil.Initialize(db); err != nil {
+		logger.Fatalf("error initializing the database: %s", err)
+	}
 
 	// create services
 	var oauthConfig service.OAuthConfig
