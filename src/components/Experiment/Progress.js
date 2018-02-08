@@ -7,7 +7,7 @@ function Progress({ percent, className = '' }) {
     <div className={`ex-progress ${className}`}>
       <div className="ex-progress__percent">{percent}%</div>
       <div className="ex-progress__bar">
-        <ProgressBar striped bsStyle="info" now={percent} />
+        <ProgressBar now={percent} />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { push } from 'redux-little-router';
 import PageHeader from '../components/PageHeader';
 import Loader from '../components/Loader';
+import Breadcrumbs from '../components/Breadcrumbs';
 import Progress from '../components/Experiment/Progress';
 import Diff from '../components/Experiment/Diff';
 import Selector from '../components/Experiment/Selector';
@@ -58,12 +59,16 @@ class Experiment extends Component {
       );
     }
 
+    const breadcrumbsOptions = [{ name, link: '#' }];
+    if (description) {
+      breadcrumbsOptions.push({ name: description, link: '#' });
+    }
+
     return (
       <Grid fluid className="ex-page__main">
         <Row className="ex-page__header">
           <Col xs={9} className="ex-page__info">
-            <span className="ex-page__name">{name}</span>
-            <span className="ex-page__description">{description}asd</span>
+            <Breadcrumbs items={breadcrumbsOptions} />
           </Col>
           <Col xs={3} className="ex-page__progress">
             <Progress percent={percent} />
@@ -106,9 +111,10 @@ class Experiment extends Component {
         <Row className="ex-page__footer">
           <Col xs={3}>
             <Selector
+              title="Previous"
               options={assignmentsOptions}
               value={currentAssigmentId}
-              select={selectAssigmentId}
+              onChange={e => selectAssigmentId(e.target.value)}
             />
           </Col>
           <Col xs={6} className="ex-page__actions">
@@ -144,7 +150,7 @@ const mapStateToProps = state => {
 
   const assignmentsOptions = assignments.map((a, i) => {
     const status = a.answer ? ` (${a.answer})` : '';
-    return { value: a.id, name: `${i + 1}${status}` };
+    return { value: a.id, name: `(${i + 1})${status}` };
   });
 
   return {

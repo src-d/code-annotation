@@ -1,0 +1,39 @@
+.breadcrumbs {
+    margin: 0;
+    padding: 0;
+
+    color: #818a8a;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+
+    a {
+        color: #818a8a;
+
+        &:hover {
+            text-decoration: none;
+            color: #fff;
+        }
+    }
+
+    > li {
+        display: inline-block;
+
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        &:not(:last-child) {
+            padding-right: 8px;
+
+            &:after {
+                content: '';
+                display: inline-block;
+                background: url(/breadcrumbs-arrow.svg) no-repeat 10px 0;
+                width: 20px;
+                height: 8px;
+            }
+        }
+    }
+}

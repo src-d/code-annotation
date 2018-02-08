@@ -11,6 +11,7 @@ import rootReducer, { middlewares } from './state';
 import { enhancer as routerEnhancer } from './state/routes';
 import { logIn } from './state/user';
 import TokenService from './services/token';
+import './override.less';
 import './index.less';
 import App from './App';
 
