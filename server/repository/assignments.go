@@ -21,6 +21,10 @@ func NewAssignments(db *sql.DB) *Assignments {
 // User are requested for a given Experiment, but they have not been yet created
 var ErrNoAssignmentsInitialized = fmt.Errorf("No assignments initialized")
 
+// ErrNoPairsAvailable is the error returned when the Assignments of a
+// User are requested for a given Experiment, there is no file pairs available for that experiment
+var ErrNoPairsAvailable = fmt.Errorf("No file pairs available")
+
 const (
 	insertAssignmentsSQL = `INSERT INTO assignments (user_id, pair_id, experiment_id, answer, duration) VALUES ($1, $2, $3, $4, $5)`
 	selectIDFilePairsSQL = `SELECT id FROM file_pairs WHERE experiment_id=$1`
@@ -47,7 +51,7 @@ func (repo *Assignments) Initialize(userID int, experimentID int) ([]*model.Assi
 	defer rows.Close()
 
 	duration := 0
-
+	initializedPairs := 0
 	for rows.Next() {
 		var pairID int
 		rows.Scan(&pairID)
@@ -56,6 +60,12 @@ func (repo *Assignments) Initialize(userID int, experimentID int) ([]*model.Assi
 		if err != nil {
 			return nil, fmt.Errorf("DB error: %v", err)
 		}
+
+		initializedPairs++
+	}
+
+	if initializedPairs == 0 {
+		return nil, ErrNoPairsAvailable
 	}
 
 	err = tx.Commit()

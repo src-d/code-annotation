@@ -28,6 +28,10 @@ func GetAssignmentsForUserExperiment(repo *repository.Assignments) RequestProces
 		assignments, err := repo.GetAll(userID, experimentID)
 		if err == repository.ErrNoAssignmentsInitialized {
 			if assignments, err = repo.Initialize(userID, experimentID); err != nil {
+				if err == repository.ErrNoPairsAvailable {
+					return nil, serializer.NewHTTPError(http.StatusNotFound, err.Error())
+				}
+
 				return nil, err
 			}
 		}
