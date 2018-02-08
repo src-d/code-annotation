@@ -1,9 +1,10 @@
 import React from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import './PageHeader.less';
 
 function PageHeader({ username, avatarUrl }) {
   return (
-    <Navbar fluid>
+    <Navbar fluid className="header">
       <Navbar.Header>
         <Navbar.Brand>
           <h1>

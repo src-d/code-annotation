@@ -7,7 +7,7 @@ function Selector({ markSimilar, markMaybe, markDifferent }) {
       <Button bsSize="large" bsStyle="success" onClick={markSimilar}>
         Identical
       </Button>
-      <Button bsSize="large" onClick={markMaybe}>
+      <Button bsSize="large" bsStyle="warning" onClick={markMaybe}>
         Similar
       </Button>
       <Button bsSize="large" bsStyle="danger" onClick={markDifferent}>

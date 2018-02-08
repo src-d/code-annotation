@@ -1,5 +1,32 @@
-@import '../../node_modules/bootstrap/less/variables.less';
+.header.navbar {
+    &-default {
+        margin: 0;
+        background-color: #2c3132;
+        border-radius: 0;
+        border: none;
+    }
 
-@navbar-borders: 2px;
-// @navbar-height is only min-height, update this rule if you make header bigger
-@navbar-total-height: @navbar-height + @navbar-margin-bottom + @navbar-borders;
+    h1.navbar-brand {
+        margin: 0 0 0 -15px;
+
+        a {
+            color: #808b8c;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 300;
+            text-decoration: none;
+
+            img {
+                width: 30px;
+                margin-right: 10px;
+                vertical-align: -4px;
+            }
+        }
+
+        a:hover {
+            text-decoration: none;
+            color: #fff;
+        }
+    }
+}
