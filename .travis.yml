@@ -9,10 +9,12 @@ before_install:
   - nvm use 8
   - npm install -g yarn
   - yarn install -prod false
+  - touch .env
 
 script:
-  - yarn lint
-  - yarn test
-  - touch .env
-  - make dependencies
+  - make lint-frontend
+  - make test-frontend
+  - make dependencies-backend
+  # uncommend next line when BE code will start passing go lint and go vet
+  # - make lint-backend
   - make test
