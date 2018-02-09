@@ -11,9 +11,17 @@ function checkStatus(resp) {
     TokenService.remove();
   }
   if (resp.status < 200 || resp.status >= 300) {
-    const error = new Error(resp.statusText);
-    error.response = resp;
-    throw error;
+    return resp
+      .json()
+      .catch(() => {
+        throw new Error(resp.statusText);
+      })
+      .then(json => {
+        if (json.errors) {
+          throw json.errors;
+        }
+        throw new Error(resp.statusText);
+      });
   }
   return resp;
 }
