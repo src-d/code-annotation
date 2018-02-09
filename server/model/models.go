@@ -48,6 +48,12 @@ type File struct {
 	Hash         string
 }
 
+// Feature represents one name-value feature of file
+type Feature struct {
+	Name   string
+	Weight float64
+}
+
 // Role represents the position of a app User
 type Role string
 
