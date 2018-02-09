@@ -381,6 +381,16 @@ describe('experiment/selectors', () => {
     expect(getProgressPercent(state)).toEqual(50);
   });
 
+  it('getProgressPercent empty', () => {
+    expect(
+      getProgressPercent({
+        experiment: {
+          assignments: [],
+        },
+      })
+    ).toEqual(0);
+  });
+
   it('getOverallTime', () => {
     expect(getOverallTime(state)).toEqual(9503);
   });
