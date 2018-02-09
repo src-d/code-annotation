@@ -4,10 +4,10 @@ import api from '../api';
 import { namedRoutes, makeUrl } from './routes';
 import { add as addErrors } from './errors';
 
-export const ANSWER_SIMILAR = 'Yes';
-export const ANSWER_MAYBE = 'Maybe';
-export const ANSWER_DIFFERENT = 'No';
-export const ANSWER_SKIP = 'Skip';
+export const ANSWER_SIMILAR = 'yes';
+export const ANSWER_MAYBE = 'maybe';
+export const ANSWER_DIFFERENT = 'no';
+export const ANSWER_SKIP = 'skip';
 
 export const experimentId = 1; // hard-coded id for only experiment
 
@@ -89,10 +89,13 @@ const reducer = (state = initialState, action) => {
         ...state,
         assignments: state.assignments.map(a => {
           if (a.id === action.id) {
+            const previousDuration = a.duration || 0;
+            const currentDuration =
+              new Date() - state.currentAssigmentStartTime;
             return {
               ...a,
               answer: action.answer,
-              duration: new Date() - state.currentAssigmentStartTime,
+              duration: previousDuration + currentDuration,
             };
           }
           return a;
@@ -123,6 +126,19 @@ const loadFilePairIfNeeded = id => (dispatch, getState) => {
       diff: res.diff,
     })
   );
+};
+
+const putAnswer = (expId, assignmentId, answer) => (dispatch, getState) => {
+  const { experiment } = getState();
+  const assigment = experiment.assignments.find(a => a.id === assignmentId);
+  const answerPayload = {
+    answer,
+    duration: assigment.duration,
+  };
+  return api.putAnswer(expId, assignmentId, answerPayload).catch(e => {
+    dispatch(addErrors(e));
+    dispatch({ type: LOAD_ERROR, error: e });
+  });
 };
 
 export const selectAssigment = id => (dispatch, getState) => {
@@ -187,7 +203,9 @@ export const mark = (assignmentId, answer) => dispatch => {
     id: assignmentId,
     answer,
   });
-  return dispatch(nextAssigment());
+  return dispatch(putAnswer(experimentId, assignmentId, answer)).then(() =>
+    dispatch(nextAssigment())
+  );
 };
 
 export const markCurrent = answer => (dispatch, getState) => {
