@@ -95,7 +95,6 @@ function putAnswer(experimentId, assignmentId, answer) {
   );
 }
 
-// eslint-disable-next-line
 export default {
   me,
   getExperiment,

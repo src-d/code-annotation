@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"fmt"
 )
 
 // User of the application; can be Requester or Workers
@@ -58,30 +57,31 @@ type Role string
 
 // Value returns the string value of the Role
 func (r Role) Value() (driver.Value, error) {
-	// TODO: role validation (@dpordomingo)
-	return string(r), nil
+	if isValidRole(r) {
+		return string(r), nil
+	}
+
+	return "", errors.New("invalid Role")
 }
 
 // Scan sets the Role with the passed string
 func (r *Role) Scan(value interface{}) error {
-	// TODO: role validation (@dpordomingo)
-	if value == nil {
-		*r = Role(Worker)
+	if v, ok := value.([]byte); ok && isValidRole(Role(string(v))) {
+		*r = Role(v)
 		return nil
 	}
 
-	var bv driver.Value
-	var err error
-	if bv, err = driver.String.ConvertValue(value); err == nil {
-		if v, ok := bv.([]byte); ok {
-			*r = Role(v)
-			return nil
-		}
+	return errors.New("can't scan a valid Role")
+}
 
-		err = fmt.Errorf("%#v can not be asserted as a string", bv)
+func isValidRole(r Role) bool {
+	for _, role := range []Role{Worker, Requester} {
+		if r == role {
+			return true
+		}
 	}
 
-	return errors.New("failed to scan Role; " + err.Error())
+	return false
 }
 
 const (
