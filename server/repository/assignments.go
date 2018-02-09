@@ -21,10 +21,6 @@ func NewAssignments(db *sql.DB) *Assignments {
 // User are requested for a given Experiment, but they have not been yet created
 var ErrNoAssignmentsInitialized = fmt.Errorf("No assignments initialized")
 
-// ErrNoPairsAvailable is the error returned when the Assignments of a
-// User are requested for a given Experiment, there is no file pairs available for that experiment
-var ErrNoPairsAvailable = fmt.Errorf("No file pairs available")
-
 const (
 	insertAssignmentsSQL = `INSERT INTO assignments (user_id, pair_id, experiment_id, answer, duration) VALUES ($1, $2, $3, $4, $5)`
 	selectIDFilePairsSQL = `SELECT id FROM file_pairs WHERE experiment_id=$1`
@@ -33,47 +29,42 @@ const (
 )
 
 // Initialize builds the assignments for the given user and experiment IDs
-func (repo *Assignments) Initialize(userID int, experimentID int) ([]*model.Assignment, error) {
+func (repo *Assignments) Initialize(userID int, experimentID int) (int, error) {
 	tx, err := repo.db.Begin()
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
 	insert, err := tx.Prepare(insertAssignmentsSQL)
 	if err != nil {
-		return nil, fmt.Errorf("DB error: %v", err)
+		return 0, fmt.Errorf("DB error: %v", err)
 	}
 
 	rows, err := repo.db.Query(selectIDFilePairsSQL, experimentID)
 	if err != nil {
-		return nil, fmt.Errorf("Error getting file_pairs from the DB: %v", err)
+		return 0, fmt.Errorf("Error getting file_pairs from the DB: %v", err)
 	}
 	defer rows.Close()
 
 	duration := 0
-	initializedPairs := 0
+	created := 0
 	for rows.Next() {
 		var pairID int
 		rows.Scan(&pairID)
-
 		_, err := insert.Exec(userID, pairID, experimentID, nil, duration)
 		if err != nil {
-			return nil, fmt.Errorf("DB error: %v", err)
+			return 0, fmt.Errorf("DB error: %v", err)
 		}
 
-		initializedPairs++
-	}
-
-	if initializedPairs == 0 {
-		return nil, ErrNoPairsAvailable
+		created++
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return nil, fmt.Errorf("DB error: %v", err)
+		return 0, fmt.Errorf("DB error: %v", err)
 	}
 
-	return repo.GetAll(userID, experimentID)
+	return created, nil
 }
 
 // getWithQuery builds a Assignment from the given sql QueryRow. If the
