@@ -109,13 +109,17 @@ func NewAssignmentsResponse(as []*model.Assignment) *Response {
 }
 
 type filePairResponse struct {
-	ID   int    `json:"id"`
-	Diff string `json:"diff"`
+	ID          int     `json:"id"`
+	Diff        string  `json:"diff"`
+	Score       float64 `json:"score"`
+	LeftBlobID  string  `json:"leftBlobId"`
+	RightBlobID string  `json:"rightBlobId"`
 }
 
 // NewFilePairResponse returns a Response for the given FilePair
 func NewFilePairResponse(fp *model.FilePair) *Response {
-	return newResponse(filePairResponse{fp.ID, fp.Diff})
+	return newResponse(filePairResponse{
+		fp.ID, fp.Diff, fp.Score, fp.Left.BlobID, fp.Right.BlobID})
 }
 
 type userResponse struct {
