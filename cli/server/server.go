@@ -44,7 +44,10 @@ func main() {
 	// create services
 	var oauthConfig service.OAuthConfig
 	envconfig.MustProcess("oauth", &oauthConfig)
-	oauth := service.NewOAuth(oauthConfig.ClientID, oauthConfig.ClientSecret)
+	oauth := service.NewOAuth(
+		oauthConfig.ClientID, oauthConfig.ClientSecret,
+		oauthConfig.RestrictAccess, oauthConfig.RestrictRequesterAccess,
+	)
 
 	var jwtConfig service.JWTConfig
 	envconfig.MustProcess("jwt", &jwtConfig)

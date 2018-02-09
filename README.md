@@ -127,6 +127,24 @@ In this case, origin will be the internal database, and destination the new data
 
 The annotations made by the users will be stored in the **`assignments`** table.
 
+## Access control
+
+It is possible to restrict access and choose each user's role by adding their GitHub accounts to a specific [organization](https://help.github.com/articles/collaborating-with-groups-in-organizations/) or [team](https://help.github.com/articles/organizing-members-into-teams/).
+
+This is optional, if you don't set any restrictions all users with a valid GitHub account will be able to login as a Requester. You may also set a restriction only for Requester users, and leave open access to anyone as Workers.
+
+To do so, set the following variables in your `.env` file:
+
+* `OAUTH_RESTRICT_ACCESS`
+* `OAUTH_RESTRICT_REQUESTER_ACCESS`
+
+Both variables accept a string with either `org:<organization-name>` or `team:<team-id>`. For example:
+
+```bash
+OAUTH_RESTRICT_ACCESS=org:my-organization
+OAUTH_RESTRICT_REQUESTER_ACCESS=team:123456
+```
+
 ## Contributing
 
 [Contributions](https://github.com/src-d/code-annotation/issues) are more than welcome, if you are interested please take a look to
