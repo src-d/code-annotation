@@ -38,7 +38,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -46,15 +45,23 @@ import (
 
 	"github.com/jessevdk/go-flags"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/src-d/code-annotation/server/dbutil"
 )
 
 const desc = `Extracts features from a JSON file with pairs of files to the output database.
-The destination db must exist.`
+The destination db must exist.
+
+The Output argument must be one of:
+sqlite:///path/to/db.db
+postgresql://[user[:password]@][netloc][:port][,...][/dbname]
+
+For a complete reference of the PostgreSQL connection string, see
+https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING`
 
 var opts struct {
 	Args struct {
 		Input  string `description:"JSON file"`
-		Output string `description:"SQLite database filepath"`
+		Output string `description:"SQLite database filepath or PostgreSQL Data Source Name"`
 	} `positional-args:"yes" required:"yes"`
 }
 
@@ -83,11 +90,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if _, err := os.Stat(opts.Args.Output); os.IsNotExist(err) {
-		parser.WriteHelp(os.Stdout)
-		os.Exit(1)
-	}
-	destDB, err := sql.Open("sqlite3", opts.Args.Output)
+	destDB, err := dbutil.Open(opts.Args.Output, true)
 	if err != nil {
 		log.Fatal(err)
 	}
