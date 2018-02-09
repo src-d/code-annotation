@@ -47,7 +47,7 @@ func write(w http.ResponseWriter, r *http.Request, response *serializer.Response
 	} else {
 		statusCode = http.StatusInternalServerError
 		response.Status = statusCode
-		response.Errors = []serializer.HTTPError{serializer.NewHTTPError(statusCode, err.Error())}
+		response.Errors = []serializer.HTTPError{serializer.NewHTTPError(statusCode, http.StatusText(statusCode))}
 	}
 
 	if statusCode >= http.StatusBadRequest {
