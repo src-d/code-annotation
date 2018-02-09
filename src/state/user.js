@@ -32,21 +32,27 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-export const logIn = () => dispatch =>
-  api.me().then(resp => {
-    dispatch({
-      type: LOG_IN,
-      userId: resp.userId,
-      username: resp.username,
-      avatarUrl: resp.avatarURL,
-    });
-  });
-
 export const logOut = () => dispatch => {
   TokenService.remove();
   dispatch({ type: LOG_OUT });
   return dispatch(push('/'));
 };
+
+export const logIn = () => dispatch =>
+  api
+    .me()
+    .then(resp => {
+      dispatch({
+        type: LOG_IN,
+        userId: resp.userId,
+        username: resp.username,
+        avatarUrl: resp.avatarURL,
+      });
+    })
+    .catch(e => {
+      dispatch(addError(e));
+      return dispatch(logOut());
+    });
 
 export const authMiddleware = store => next => action => {
   if (action.type !== LOCATION_CHANGED) {
