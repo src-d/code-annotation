@@ -22,8 +22,11 @@ func stripBearerPrefixFromTokenString(tok string) (string, error) {
 }
 
 var extractor = &request.PostExtractionFilter{
-	Extractor: request.HeaderExtractor{"Authorization"},
-	Filter:    stripBearerPrefixFromTokenString,
+	Extractor: &request.MultiExtractor{
+		request.HeaderExtractor{"Authorization"},
+		request.ArgumentExtractor{"jwt_token"},
+	},
+	Filter: stripBearerPrefixFromTokenString,
 }
 
 // JWTConfig defines enviroment variables for JWT
