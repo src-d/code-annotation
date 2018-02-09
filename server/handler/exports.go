@@ -11,29 +11,40 @@ import (
 	"sort"
 	"time"
 
+	"github.com/src-d/code-annotation/server/dbutil"
+	"github.com/src-d/code-annotation/server/model"
+	"github.com/src-d/code-annotation/server/repository"
+	"github.com/src-d/code-annotation/server/service"
+
 	"github.com/go-chi/chi"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/src-d/code-annotation/server/dbutil"
-	"github.com/src-d/code-annotation/server/service"
 )
 
 const tmpl = `
 <html>
 	<body>
-		<br/><br/>
-		<button onclick="location='create'">Create a new SQLite file</button>
+		<br/>
+		<p>Make sure you are logged in from the main dashboard.</p>
+		<br/>
+		<button onclick="goJWT('/exports/actions/create')">Create a new SQLite export</button>
 		<ul>
-		{{range .}}
-			<li><a href="file/{{.}}">{{.}}</a></li>
-		{{end}}
+			{{range .}}
+			<li><a href="javascript:goJWT('/exports/actions/download/{{.}}')">{{.}}</a></li>
+			{{end}}
 		</ul>
+		<script>
+			function goJWT(url) {
+				window.location = url+"?jwt_token="+window.localStorage.getItem("token");
+			}
+		</script>
 	</body>
 </html>`
 
 var dbConn string
+var usersRepo *repository.Users
 
 // InitializeExports adds the export routes to the given chi.Mux
-func InitializeExports(uiDomain string, r *chi.Mux) {
+func InitializeExports(uiDomain string, repo *repository.Users, jwt *service.JWT, r *chi.Mux) {
 	// This is not reusing the conf read in server.go to avoid refactoring
 	var conf struct {
 		DBConn      string `envconfig:"DB_CONNECTION" default:"sqlite://./internal.db"`
@@ -47,15 +58,38 @@ func InitializeExports(uiDomain string, r *chi.Mux) {
 	// Create the dir to store export files
 	os.MkdirAll(exportsPath, 0775)
 
-	r.Route("/exports", func(r chi.Router) {
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			url := fmt.Sprintf("%s/%s/list", uiDomain, exportsPath)
-			http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-		})
+	usersRepo = repo
 
-		r.Get("/list", exportList(exportsPath, true))
-		r.Get("/create", exportCreate(exportsPath, uiDomain))
-		r.Get("/file/{filename}", exportDownload(exportsPath))
+	r.Route("/exports", func(r chi.Router) {
+		r.Get("/", exportList(exportsPath, true))
+
+		r.Route("/actions", func(r chi.Router) {
+			r.Use(jwt.Middleware)
+			r.Use(requesterRoleAuth)
+
+			r.Get("/create", exportCreate(exportsPath, uiDomain))
+			r.Get("/download/{filename}", exportDownload(exportsPath))
+		})
+	})
+}
+
+// requesterRoleAuth checks that the user making the request has a Requester role
+func requesterRoleAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userID, _ := service.GetUserID(r.Context())
+
+		user, err := usersRepo.GetByID(userID)
+		if err != nil {
+			exportsErr(err, w, r)
+			return
+		}
+
+		if user == nil || user.Role != model.Requester {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }
 
@@ -131,7 +165,7 @@ func exportCreate(exportsPath string, uiDomain string) http.HandlerFunc {
 
 		service.NewLogger().Info("new SQLite file created: " + filepath)
 
-		url := fmt.Sprintf("%s/%s/list", uiDomain, exportsPath)
+		url := fmt.Sprintf("%s/exports", uiDomain)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	}
 }

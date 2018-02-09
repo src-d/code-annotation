@@ -71,7 +71,7 @@ func Router(
 	r.Get("/static/*", handler.FrontendStatics(staticsPath, false))
 	r.Get("/*", handler.FrontendStatics(staticsPath, true))
 
-	handler.InitializeExports(uiDomain, r)
+	handler.InitializeExports(uiDomain, userRepo, jwt, r)
 
 	return r
 }
