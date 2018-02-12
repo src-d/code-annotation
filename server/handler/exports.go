@@ -3,7 +3,6 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -12,180 +11,101 @@ import (
 	"time"
 
 	"github.com/src-d/code-annotation/server/dbutil"
-	"github.com/src-d/code-annotation/server/model"
-	"github.com/src-d/code-annotation/server/repository"
+	"github.com/src-d/code-annotation/server/serializer"
 	"github.com/src-d/code-annotation/server/service"
 
 	"github.com/go-chi/chi"
-	"github.com/kelseyhightower/envconfig"
 )
 
-const tmpl = `
-<html>
-	<body>
-		<br/>
-		<p>Make sure you are logged in from the main dashboard.</p>
-		<br/>
-		<button onclick="goJWT('/exports/actions/create')">Create a new SQLite export</button>
-		<ul>
-			{{range .}}
-			<li><a href="javascript:goJWT('/exports/actions/download/{{.}}')">{{.}}</a></li>
-			{{end}}
-		</ul>
-		<script>
-			function goJWT(url) {
-				window.location = url+"?jwt_token="+window.localStorage.getItem("token");
-			}
-		</script>
-	</body>
-</html>`
+// Export contains handlers for file export
+type Export struct {
+	db          *dbutil.DB
+	exportsPath string
+}
 
-var dbConn string
-var usersRepo *repository.Users
-
-// InitializeExports adds the export routes to the given chi.Mux
-func InitializeExports(uiDomain string, repo *repository.Users, jwt *service.JWT, r *chi.Mux) {
-	// This is not reusing the conf read in server.go to avoid refactoring
-	var conf struct {
-		DBConn      string `envconfig:"DB_CONNECTION" default:"sqlite://./internal.db"`
-		ExportsPath string `envconfig:"EXPORTS_PATH" default:"exports"`
-	}
-	envconfig.MustProcess("", &conf)
-
-	dbConn = conf.DBConn
-	exportsPath := conf.ExportsPath
-
+// NewExport creates new Export
+func NewExport(db *dbutil.DB, exportsPath string) *Export {
 	// Create the dir to store export files
 	os.MkdirAll(exportsPath, 0775)
 
-	usersRepo = repo
-
-	r.Route("/exports", func(r chi.Router) {
-		r.Get("/", exportList(exportsPath, true))
-
-		r.Route("/actions", func(r chi.Router) {
-			r.Use(jwt.Middleware)
-			r.Use(requesterRoleAuth)
-
-			r.Get("/create", exportCreate(exportsPath, uiDomain))
-			r.Get("/download/{filename}", exportDownload(exportsPath))
-		})
-	})
-}
-
-// requesterRoleAuth checks that the user making the request has a Requester role
-func requesterRoleAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID, _ := service.GetUserID(r.Context())
-
-		user, err := usersRepo.GetByID(userID)
-		if err != nil {
-			exportsErr(err, w, r)
-			return
-		}
-
-		if user == nil || user.Role != model.Requester {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-// exportsErr sets the error message in the log and the response
-func exportsErr(err error, w http.ResponseWriter, r *http.Request) {
-	err = fmt.Errorf("exports handler error: %s", err.Error())
-	http.Error(w, err.Error(), http.StatusInternalServerError)
-	service.NewLogger().Error(err.Error())
-}
-
-// exportList handles requests to /list
-func exportList(exportsPath string, useIndexFallback bool) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		files, err := ioutil.ReadDir(exportsPath)
-		if err != nil {
-			exportsErr(err, w, r)
-			return
-		}
-
-		var fileNames []string
-
-		for _, file := range files {
-			fileNames = append(fileNames, file.Name())
-		}
-
-		sort.Sort(sort.Reverse(sort.StringSlice(fileNames)))
-
-		t := template.New("export tmpl")
-		t, err = t.Parse(tmpl)
-		if err != nil {
-			exportsErr(err, w, r)
-			return
-		}
-
-		t.Execute(w, fileNames)
+	return &Export{
+		db:          db,
+		exportsPath: exportsPath,
 	}
 }
 
-// exportCreate handles requests to /create
-func exportCreate(exportsPath string, uiDomain string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		originDB, err := dbutil.Open(dbConn, true)
-		if err != nil {
-			exportsErr(err, w, r)
-			return
-		}
-		defer originDB.Close()
-
-		filepath := fmt.Sprintf("./%s/%s-export.db",
-			exportsPath, time.Now().Format(time.RFC3339))
-
-		if _, err := os.Stat(filepath); err == nil {
-			exportsErr(errors.New("DB file already exists"), w, r)
-			return
-		}
-
-		destDB, err := dbutil.OpenSQLite(filepath, false)
-		if err != nil {
-			exportsErr(err, w, r)
-			return
-		}
-		defer destDB.Close()
-
-		if err = dbutil.Bootstrap(destDB); err != nil {
-			exportsErr(err, w, r)
-			return
-		}
-
-		if err := dbutil.Copy(originDB, destDB, dbutil.Options{}); err != nil {
-			exportsErr(err, w, r)
-			return
-		}
-
-		service.NewLogger().Info("new SQLite file created: " + filepath)
-
-		url := fmt.Sprintf("%s/exports", uiDomain)
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+// List returns a *serializer.Response with a list of files for export
+func (h *Export) List(r *http.Request) (*serializer.Response, error) {
+	files, err := ioutil.ReadDir(h.exportsPath)
+	if err != nil {
+		return nil, err
 	}
+
+	var fileNames []string
+	for _, file := range files {
+		fileNames = append(fileNames, file.Name())
+	}
+
+	sort.Sort(sort.Reverse(sort.StringSlice(fileNames)))
+
+	return &serializer.Response{
+		Status: http.StatusOK,
+		Data:   fileNames,
+	}, nil
 }
 
-// exportDownload handles requests to /file/
-func exportDownload(exportsPath string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		filename := chi.URLParam(r, "filename")
-		filepath := exportsPath + "/" + filename
+// Create creates new export file and returns a *serializer.Response
+// with the name of new file
+func (h *Export) Create(r *http.Request) (*serializer.Response, error) {
+	filepath := fmt.Sprintf("%s/%s-export.db",
+		h.exportsPath, time.Now().Format(time.RFC3339))
 
-		file, err := os.Open(filepath)
-		if err != nil {
-			exportsErr(err, w, r)
-			return
-		}
-		defer file.Close()
-
-		w.Header().Set("Content-Disposition", "attachment; filename="+filename)
-		w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
-
-		io.Copy(w, file)
+	if _, err := os.Stat(filepath); err == nil {
+		return nil, errors.New("DB file already exists")
 	}
+
+	destDB, err := dbutil.OpenSQLite(filepath, false)
+	if err != nil {
+		return nil, err
+	}
+	defer destDB.Close()
+
+	if err = dbutil.Bootstrap(destDB); err != nil {
+		return nil, err
+	}
+
+	if err := dbutil.Copy(*h.db, destDB, dbutil.Options{}); err != nil {
+		return nil, err
+	}
+
+	service.NewLogger().Info("new SQLite file created: " + filepath)
+
+	return &serializer.Response{
+		Status: http.StatusOK,
+		Data:   filepath,
+	}, nil
+}
+
+// Download writes requested file to response
+func (h *Export) Download(w http.ResponseWriter, r *http.Request) {
+	filename := chi.URLParam(r, "filename")
+	filepath := h.exportsPath + "/" + filename
+
+	file, err := os.Open(filepath)
+	if err == os.ErrNotExist {
+		http.NotFound(w, r)
+		return
+	}
+	if err != nil {
+		err = fmt.Errorf("exports handler error: %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		service.NewLogger().Error(err.Error())
+		return
+	}
+	defer file.Close()
+
+	w.Header().Set("Content-Disposition", "attachment; filename="+filename)
+	w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
+
+	io.Copy(w, file)
 }

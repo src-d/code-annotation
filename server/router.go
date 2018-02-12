@@ -1,10 +1,11 @@
 package server
 
 import (
-	"database/sql"
 	"net/http"
 
+	"github.com/src-d/code-annotation/server/dbutil"
 	"github.com/src-d/code-annotation/server/handler"
+	"github.com/src-d/code-annotation/server/model"
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/service"
 
@@ -20,9 +21,12 @@ func Router(
 	jwt *service.JWT,
 	oauth *service.OAuth,
 	uiDomain string,
-	db *sql.DB,
+	dbWrapper *dbutil.DB,
 	staticsPath string,
+	exportsPath string,
 ) http.Handler {
+
+	db := dbWrapper.SQLDB()
 
 	// create repos
 	userRepo := repository.NewUsers(db)
@@ -37,6 +41,9 @@ func Router(
 		AllowedMethods: []string{"GET", "POST", "PUT", "OPTIONS"},
 		AllowedHeaders: []string{"Location", "Authorization", "Content-Type"},
 	}
+
+	requesterACL := service.NewACL(userRepo, model.Requester)
+	export := handler.NewExport(dbWrapper, exportsPath)
 
 	r := chi.NewRouter()
 
@@ -66,12 +73,18 @@ func Router(
 		})
 
 		r.Get("/features/{blobId}", handler.Get(handler.GetFeatures(featureRepo)))
+
+		r.Route("/exports", func(r chi.Router) {
+			r.Use(requesterACL.Middleware)
+
+			r.Get("/", handler.Get(export.List))
+			r.Post("/", handler.Get(export.Create))
+			r.Get("/{filename}/download", export.Download)
+		})
 	})
 
 	r.Get("/static/*", handler.FrontendStatics(staticsPath, false))
 	r.Get("/*", handler.FrontendStatics(staticsPath, true))
-
-	handler.InitializeExports(uiDomain, userRepo, jwt, r)
 
 	return r
 }

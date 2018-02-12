@@ -21,6 +21,9 @@ const routes = {
     '/review': {
       name: 'review',
     },
+    '/export': {
+      name: 'export',
+    },
   },
 };
 
