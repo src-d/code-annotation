@@ -267,8 +267,13 @@ export const getProgressPercent = createSelector(
   getIdenticalCount,
   getSimilarCount,
   getDifferentCount,
-  (total, indentical, similar, different) =>
-    Math.round(100 / total * (indentical + similar + different))
+  (total, indentical, similar, different) => {
+    const completed = indentical + similar + different;
+    if (!total || !completed) {
+      return 0;
+    }
+    return Math.round(100 / total * completed);
+  }
 );
 
 export const getOverallTime = createSelector(getAssignments, assignments =>
