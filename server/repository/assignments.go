@@ -17,16 +17,26 @@ func NewAssignments(db *sql.DB) *Assignments {
 	return &Assignments{db: db}
 }
 
-// ErrNoAssignmentsInitialized is the error returned when the Assignments of a
-// User are requested for a given Experiment, but they have not been yet created
-var ErrNoAssignmentsInitialized = fmt.Errorf("No assignments initialized")
-
 const (
 	insertAssignmentsSQL = `INSERT INTO assignments (user_id, pair_id, experiment_id, answer, duration) VALUES ($1, $2, $3, $4, $5)`
-	selectIDFilePairsSQL = `SELECT id FROM file_pairs WHERE experiment_id=$1`
+	selectIDFilePairsSQL = `SELECT id FROM file_pairs WHERE experiment_id=$1 AND id NOT IN (SELECT pair_id FROM assignments WHERE experiment_id=$1 AND user_id=$2)`
 	selectAssignmentsSQL = `SELECT * FROM assignments WHERE user_id=$1 AND experiment_id=$2`
 	updateAssignmentsSQL = `UPDATE assignments SET answer='%v', duration=%v WHERE id=%v`
+	countPendingIDsSQL   = `SELECT count(id) FROM file_pairs WHERE experiment_id=$1 AND id NOT IN (SELECT pair_id FROM assignments WHERE experiment_id=$1 AND user_id=$2)`
 )
+
+// IsInitialized returns true if the assignments are initialized for the given
+// user and experiment IDs. If it's false, Initialize should be called
+func (repo *Assignments) IsInitialized(userID, experimentID int) (bool, error) {
+	row := repo.db.QueryRow(countPendingIDsSQL, experimentID, userID)
+
+	var count int
+	if err := row.Scan(&count); err != nil {
+		return false, err
+	}
+
+	return count == 0, nil
+}
 
 // Initialize builds the assignments for the given user and experiment IDs
 func (repo *Assignments) Initialize(userID int, experimentID int) (int, error) {
@@ -40,7 +50,7 @@ func (repo *Assignments) Initialize(userID int, experimentID int) (int, error) {
 		return 0, fmt.Errorf("DB error: %v", err)
 	}
 
-	rows, err := repo.db.Query(selectIDFilePairsSQL, experimentID)
+	rows, err := repo.db.Query(selectIDFilePairsSQL, experimentID, userID)
 	if err != nil {
 		return 0, fmt.Errorf("Error getting file_pairs from the DB: %v", err)
 	}
@@ -92,8 +102,7 @@ func (repo *Assignments) GetByID(id int) (*model.Assignment, error) {
 		repo.db.QueryRow("SELECT * FROM assignments WHERE id=$1", id))
 }
 
-// GetAll returns all the Assignments for the given user and experiment IDs.
-// Returns an ErrNoAssignmentsInitialized if they do not exist yet
+// GetAll returns all the Assignments for the given user and experiment IDs
 func (repo *Assignments) GetAll(userID, experimentID int) ([]*model.Assignment, error) {
 	rows, err := repo.db.Query(selectAssignmentsSQL, userID, experimentID)
 	if err != nil {
@@ -113,10 +122,6 @@ func (repo *Assignments) GetAll(userID, experimentID int) ([]*model.Assignment, 
 
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("DB error: %v", err)
-	}
-
-	if len(results) == 0 {
-		return nil, ErrNoAssignmentsInitialized
 	}
 
 	return results, nil
