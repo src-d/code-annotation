@@ -29,9 +29,11 @@ $(MAKEFILE):
 	@git clone --quiet --depth 1 -b v1 $(CI_REPOSITORY) $(CI_PATH);
 -include $(MAKEFILE)
 
-# set enviroment variables from .env file
-include .env
-export $(shell sed 's/=.*//' .env)
+# Set enviroment variables from .env file
+ENV ?= .env
+-include $(ENV)
+export $(shell [ -f "$(ENV)" ] && sed 's/=.*//' $(ENV))
+
 
 # Frontend
 
