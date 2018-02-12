@@ -14,13 +14,18 @@ GOLINT = golint
 GOVET = go vet
 BINDATA = go-bindata
 
+# ci variables
+TRAVIS_BUILD_DIR ?= $(shell pwd)
+PKG_OS = linux
+DOCKER_OS = linux
+DOCKER_ARCH = amd64
+
 # Including ci Makefile
 CI_REPOSITORY ?= https://github.com/src-d/ci.git
 CI_PATH ?= $(shell pwd)/.ci
 MAKEFILE := $(CI_PATH)/Makefile.main
 $(MAKEFILE):
 	@git clone --quiet --depth 1 -b v1 $(CI_REPOSITORY) $(CI_PATH);
-
 -include $(MAKEFILE)
 
 # set enviroment variables from .env file
