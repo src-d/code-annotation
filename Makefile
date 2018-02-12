@@ -8,6 +8,8 @@ PORT ?= 8080
 REACT_APP_SERVER_URL ?= //$(HOST):$(PORT) # frontend uses $(REACT_APP_SERVER_URL) as backend
 UI_DOMAIN ?= $(REACT_APP_SERVER_URL) # /oauth-callback redirects to $(UI_DOMAIN)/?token=__TOKEN__
 
+YARN_PRODUCTION ?= true
+
 # Tools
 YARN = yarn
 GODEP = dep
@@ -37,13 +39,16 @@ export $(shell [ -f "$(ENV)" ] && sed 's/=.*//' $(ENV))
 
 # Frontend
 
-dependencies-frontend:
-	$(YARN)	install
+dependencies-frontend-development:
+	$(MAKE) dependencies-frontend YARN_PRODUCTION=false
 
-test-frontend: dependencies-frontend
+dependencies-frontend:
+	$(YARN) install --production=$(YARN_PRODUCTION)
+
+test-frontend: dependencies-frontend-development
 	$(YARN) test
 
-lint-frontend: dependencies-frontend
+lint-frontend: dependencies-frontend-development
 	$(YARN) lint
 
 build-frontend: dependencies-frontend
