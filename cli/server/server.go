@@ -16,7 +16,7 @@ type appConfig struct {
 	Host        string `envconfig:"HOST"`
 	Port        int    `envconfig:"PORT" default:"8080"`
 	UIDomain    string `envconfig:"UI_DOMAIN" default:"http://127.0.0.1:8080"`
-	DBConn      string `envconfig:"DB_CONNECTION" default:"sqlite://./internal.db"`
+	DBConn      string `envconfig:"DB_CONNECTION" default:"sqlite:///var/code-annotation/internal.db"`
 	ExportsPath string `envconfig:"EXPORTS_PATH" default:"./exports"`
 }
 
