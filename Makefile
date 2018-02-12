@@ -62,9 +62,17 @@ build-backend: dependencies-backend
 lint-backend: dependencies-backend
 	$(GOLINT) ./server/...
 	$(GOVET) ./server/...
-	
+
 bindata:
-	$(BINDATA) -o ./server/assets/asset.go -pkg assets build/static/... build/*.json build/*.png build/index.html
+	$(BINDATA) \
+		-modtime 1 \
+		-pkg assets \
+		-o ./server/assets/asset.go \
+		build/static/... \
+		build/*.json \
+		build/*.png \
+		build/*.svg \
+		build/index.html
 
 prepare-build: | build-frontend build-backend bindata
 
