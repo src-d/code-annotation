@@ -10,6 +10,8 @@ image:
   repository: docker.io/srcd/code-annotation
   # tag must be received as a parameter
   pullPolicy: IfNotPresent
+deployment:
+    internalDatabasePath: /var/code-annotation
 service:
   type: NodePort
   codeAnnotation:

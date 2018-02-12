@@ -17,6 +17,10 @@ spec:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
     spec:
+      volumes:
+        - name: "internal-database"
+          persistentVolumeClaim:
+            claimName: {{ template "fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ required "Image tag is required" .Values.image.tag }}"
@@ -41,6 +45,9 @@ spec:
                   key: jwt_signing_key
           ports:
             - containerPort: {{ .Values.service.codeAnnotation.internalPort }}
+          volumeMounts:
+            - name: internal-database
+              mountPath: {{ .Values.deployment.internalDatabasePath }}
           livenessProbe:
             httpGet:
               path: /
