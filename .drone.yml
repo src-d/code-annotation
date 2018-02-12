@@ -19,9 +19,12 @@ pipeline:
       - REACT_APP_SERVER_URL=//code-annotation-staging.srcd.run
     commands:
       - apk --update upgrade
-      - apk add --no-cache make git curl ca-certificates bash build-base libxml2-dev protobuf nodejs=6.10.3-r1 nodejs-npm
-      - npm install -g yarn
-      - make build
+      - apk add --no-cache
+          bash make curl git
+          ca-certificates build-base
+          libxml2-dev protobuf
+          yarn
+      - make prepare-build
       - make packages
     debug: true
     when:
