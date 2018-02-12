@@ -66,7 +66,7 @@ pipeline:
     release: code-annotation
     prefix: STG
     secrets: [ STG_API_SERVER, STG_KUBERNETES_TOKEN ]
-    values: ingress.globalStaticIpName=code-annotation-staging,ingress.hostname=code-annotation-staging.srcd.run,image.tag=commit-${DRONE_COMMIT_SHA:0:7}
+    values: ingress.globalStaticIpName=code-annotation-staging,ingress.hostname=code-annotation-staging.srcd.run,image.tag=commit-${DRONE_COMMIT_SHA:0:7},secretName=code-annotation-drone-workaround
     tiller_ns: kube-system
     wait: true
     when:
