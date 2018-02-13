@@ -11,23 +11,6 @@ pipeline:
     debug: true
 
 
-  # build on pull requests
-
-  build:
-    image: golang:1.8-alpine3.6
-    environment:
-      - REACT_APP_SERVER_URL="//code-annotation.sourced.tech"
-    commands:
-      - apk --update upgrade
-      - apk add --no-cache make git curl ca-certificates bash build-base libxml2-dev protobuf nodejs=6.10.3-r1 nodejs-npm
-      - npm install -g yarn
-      - make build
-      - make packages
-    debug: true
-    when:
-      event: [pull_request]
-
-
   # deployment to staging environment
 
   build_stg:
