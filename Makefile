@@ -5,7 +5,8 @@ DEPENDENCIES = github.com/golang/dep/cmd/dep github.com/jteeuwen/go-bindata
 
 HOST ?= 127.0.0.1
 PORT ?= 8080
-SERVER_URL ?= //$(HOST):$(PORT)
+REACT_APP_SERVER_URL ?= //$(HOST):$(PORT) # frontend uses $(REACT_APP_SERVER_URL) as backend
+UI_DOMAIN ?= $(REACT_APP_SERVER_URL) # /oauth-callback redirects to $(UI_DOMAIN)/?token=__TOKEN__
 
 # Tools
 YARN = yarn
@@ -44,7 +45,7 @@ lint-frontend: dependencies-frontend
 	$(YARN) lint
 
 build-frontend: dependencies-frontend
-	REACT_APP_SERVER_URL=$(SERVER_URL) $(YARN) build
+	$(YARN) build
 
 dev-frontend: dependencies-frontend
 	$(YARN) start
