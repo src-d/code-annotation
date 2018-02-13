@@ -16,7 +16,7 @@ pipeline:
   build_stg:
     image: golang:1.8-alpine3.6
     environment:
-      - REACT_APP_SERVER_URL="//code-annotation-staging.srcd.run"
+      - REACT_APP_SERVER_URL=//code-annotation-staging.srcd.run
     commands:
       - apk --update upgrade
       - apk add --no-cache make git curl ca-certificates bash build-base libxml2-dev protobuf nodejs=6.10.3-r1 nodejs-npm
