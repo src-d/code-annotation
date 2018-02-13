@@ -25,16 +25,18 @@ func GetAssignmentsForUserExperiment(repo *repository.Assignments) RequestProces
 			return nil, err
 		}
 
-		var created int
-		assignments, err := repo.GetAll(userID, experimentID)
-		if err == repository.ErrNoAssignmentsInitialized {
-			if created, err = repo.Initialize(userID, experimentID); err != nil {
+		initialized, err := repo.IsInitialized(userID, experimentID)
+		if err != nil {
+			return nil, err
+		}
+
+		if !initialized {
+			if _, err = repo.Initialize(userID, experimentID); err != nil {
 				return nil, err
-			} else if created > 0 {
-				assignments, err = repo.GetAll(userID, experimentID)
 			}
 		}
 
+		assignments, err := repo.GetAll(userID, experimentID)
 		if err != nil {
 			return nil, err
 		}
