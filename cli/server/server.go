@@ -12,10 +12,11 @@ import (
 )
 
 type appConfig struct {
-	Host     string `envconfig:"HOST"`
-	Port     int    `envconfig:"PORT" default:"8080"`
-	UIDomain string `envconfig:"UI_DOMAIN" default:"http://127.0.0.1:8080"`
-	DBConn   string `envconfig:"DB_CONNECTION" default:"sqlite://./internal.db"`
+	Host        string `envconfig:"HOST"`
+	Port        int    `envconfig:"PORT" default:"8080"`
+	UIDomain    string `envconfig:"UI_DOMAIN" default:"http://127.0.0.1:8080"`
+	DBConn      string `envconfig:"DB_CONNECTION" default:"sqlite://./internal.db"`
+	ExportsPath string `envconfig:"EXPORTS_PATH" default:"./exports"`
 }
 
 func main() {
@@ -54,7 +55,7 @@ func main() {
 	jwt := service.NewJWT(jwtConfig.SigningKey)
 
 	// start the router
-	router := server.Router(logger, jwt, oauth, conf.UIDomain, db.SQLDB(), "build")
+	router := server.Router(logger, jwt, oauth, conf.UIDomain, &db, "build", conf.ExportsPath)
 	logger.Info("running...")
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), router)
 	logger.Fatal(err)

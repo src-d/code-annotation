@@ -103,10 +103,29 @@ function putAnswer(experimentId, assignmentId, answer) {
   );
 }
 
+function exportList() {
+  return apiCall('/api/exports');
+}
+
+function exportCreate() {
+  return apiCall(`/api/exports`, {
+    method: 'POST',
+  });
+}
+
+function exportDownload(filename) {
+  const token = TokenService.get();
+  const url = apiUrl(`/api/exports/${filename}/download?jwt_token=${token}`);
+  window.open(url, '_blank');
+}
+
 export default {
   me,
   getExperiment,
   getAssignments,
   getFilePair,
   putAnswer,
+  exportList,
+  exportCreate,
+  exportDownload,
 };
