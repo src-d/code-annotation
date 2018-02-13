@@ -28,6 +28,8 @@ spec:
           env:
             - name: UI_DOMAIN
               value: "//{{ .Values.ingress.hostname }}"
+            - name: DB_CONNECTION
+              value: "sqlite://{{ .Values.deployment.internalDatabasePath }}/internal.db"
             - name: OAUTH_CLIENT_ID
               valueFrom:
                 secretKeyRef:
