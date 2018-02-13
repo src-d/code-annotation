@@ -96,3 +96,45 @@ func SaveAssignment(repo *repository.Assignments) RequestProcessFunc {
 		return serializer.NewCountResponse(1), nil
 	}
 }
+
+// GetFilePairAnnotations returns a function that returns a *serializer.Response
+// with the Annotation results for the given File Pair and Experiment IDs
+func GetFilePairAnnotations(repo *repository.Assignments) RequestProcessFunc {
+	return func(r *http.Request) (*serializer.Response, error) {
+		experimentID, err := urlParamInt(r, "experimentId")
+		if err != nil {
+			return nil, err
+		}
+
+		pairID, err := urlParamInt(r, "pairId")
+		if err != nil {
+			return nil, err
+		}
+
+		assignments, err := repo.GetByExperimentPair(experimentID, pairID)
+		if err != nil {
+			return nil, err
+		}
+
+		var responseData serializer.ExpAnnotationResponse
+
+		for _, a := range assignments {
+			switch a.AnswerStr() {
+			case "yes":
+				responseData.Yes++
+			case "maybe":
+				responseData.Maybe++
+			case "no":
+				responseData.No++
+			case "skip":
+				responseData.Skip++
+			case "":
+				responseData.Unanswered++
+			}
+		}
+
+		responseData.Total = len(assignments)
+
+		return serializer.NewExpAnnotationsResponse(responseData), nil
+	}
+}

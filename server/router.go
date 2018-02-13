@@ -67,6 +67,7 @@ func Router(
 
 				r.Route("/{pairId}", func(r chi.Router) {
 					r.Get("/", handler.Get(handler.GetFilePairDetails(filePairRepo)))
+					r.Get("/annotations", handler.Get(handler.GetFilePairAnnotations(assignmentRepo)))
 				})
 
 			})

@@ -108,6 +108,22 @@ func NewAssignmentsResponse(as []*model.Assignment) *Response {
 	return newResponse(assignments)
 }
 
+// ExpAnnotationResponse stores the data needed by NewExpAnnotationsResponse
+type ExpAnnotationResponse struct {
+	Yes        int `json:"yes"`
+	Maybe      int `json:"maybe"`
+	No         int `json:"no"`
+	Skip       int `json:"skip"`
+	Unanswered int `json:"unanswered"`
+	Total      int `json:"total"`
+}
+
+// NewExpAnnotationsResponse returns a Response for the Experiment Annotation
+// results
+func NewExpAnnotationsResponse(data ExpAnnotationResponse) *Response {
+	return newResponse(data)
+}
+
 type filePairResponse struct {
 	ID          int     `json:"id"`
 	Diff        string  `json:"diff"`

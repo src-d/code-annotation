@@ -17,10 +17,6 @@ func NewFilePairs(db *sql.DB) *FilePairs {
 	return &FilePairs{db: db}
 }
 
-type scannable interface {
-	Scan(dest ...interface{}) error
-}
-
 // getWithQuery builds a FilePair from the given sql Row or Rows. If the FilePair
 // does not exist, it returns nil, nil
 func (repo *FilePairs) getWithQuery(queryRow scannable) (*model.FilePair, error) {

@@ -18,11 +18,12 @@ func NewAssignments(db *sql.DB) *Assignments {
 }
 
 const (
-	insertAssignmentsSQL = `INSERT INTO assignments (user_id, pair_id, experiment_id, answer, duration) VALUES ($1, $2, $3, $4, $5)`
-	selectIDFilePairsSQL = `SELECT id FROM file_pairs WHERE experiment_id=$1 AND id NOT IN (SELECT pair_id FROM assignments WHERE experiment_id=$1 AND user_id=$2)`
-	selectAssignmentsSQL = `SELECT * FROM assignments WHERE user_id=$1 AND experiment_id=$2`
-	updateAssignmentsSQL = `UPDATE assignments SET answer='%v', duration=%v WHERE id=%v`
-	countPendingIDsSQL   = `SELECT count(id) FROM file_pairs WHERE experiment_id=$1 AND id NOT IN (SELECT pair_id FROM assignments WHERE experiment_id=$1 AND user_id=$2)`
+	insertAssignmentsSQL             = `INSERT INTO assignments (user_id, pair_id, experiment_id, answer, duration) VALUES ($1, $2, $3, $4, $5)`
+	selectIDFilePairsSQL             = `SELECT id FROM file_pairs WHERE experiment_id=$1 AND id NOT IN (SELECT pair_id FROM assignments WHERE experiment_id=$1 AND user_id=$2)`
+	selectAssignmentsSQL             = `SELECT * FROM assignments WHERE user_id=$1 AND experiment_id=$2`
+	selectAssignmentsWhereExpPairSQL = `SELECT * FROM assignments WHERE experiment_id=$1 AND pair_id=$2`
+	updateAssignmentsSQL             = `UPDATE assignments SET answer='%v', duration=%v WHERE id=%v`
+	countPendingIDsSQL               = `SELECT count(id) FROM file_pairs WHERE experiment_id=$1 AND id NOT IN (SELECT pair_id FROM assignments WHERE experiment_id=$1 AND user_id=$2)`
 )
 
 // IsInitialized returns true if the assignments are initialized for the given
@@ -79,7 +80,7 @@ func (repo *Assignments) Initialize(userID int, experimentID int) (int, error) {
 
 // getWithQuery builds a Assignment from the given sql QueryRow. If the
 // Assignment does not exist, it returns nil, nil
-func (repo *Assignments) getWithQuery(queryRow *sql.Row) (*model.Assignment, error) {
+func (repo *Assignments) getWithQuery(queryRow scannable) (*model.Assignment, error) {
 	var as model.Assignment
 
 	err := queryRow.Scan(&as.ID, &as.UserID, &as.PairID, &as.ExperimentID,
@@ -118,6 +119,31 @@ func (repo *Assignments) GetAll(userID, experimentID int) ([]*model.Assignment, 
 			&as.Answer, &as.Duration)
 
 		results = append(results, &as)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("DB error: %v", err)
+	}
+
+	return results, nil
+}
+
+func (repo *Assignments) GetByExperimentPair(experimentID, filePairID int) ([]*model.Assignment, error) {
+	rows, err := repo.db.Query(selectAssignmentsWhereExpPairSQL, experimentID, filePairID)
+	if err != nil {
+		return nil, fmt.Errorf("error getting assignments from the DB: %v", err)
+	}
+	defer rows.Close()
+
+	results := make([]*model.Assignment, 0)
+
+	for rows.Next() {
+		as, err := repo.getWithQuery(rows)
+		if err != nil {
+			return nil, fmt.Errorf("DB error: %v", err)
+		}
+
+		results = append(results, as)
 	}
 
 	if err := rows.Err(); err != nil {
