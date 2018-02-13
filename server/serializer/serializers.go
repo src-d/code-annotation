@@ -122,6 +122,22 @@ func NewFilePairResponse(fp *model.FilePair) *Response {
 		fp.ID, fp.Diff, fp.Score, fp.Left.BlobID, fp.Right.BlobID})
 }
 
+type simplifiedFilePairResponse struct {
+	ID        int    `json:"id"`
+	LeftPath  string `json:"leftPath"`
+	RightPath string `json:"rightPath"`
+}
+
+// NewSimplifiedFilePairsResponse returns a Response for the given FilePairs
+func NewSimplifiedFilePairsResponse(fps []*model.FilePair) *Response {
+	result := make([]simplifiedFilePairResponse, len(fps))
+	for i, fp := range fps {
+		result[i] = simplifiedFilePairResponse{fp.ID, fp.Left.Path, fp.Right.Path}
+	}
+
+	return newResponse(result)
+}
+
 type userResponse struct {
 	ID        int    `json:"id"`
 	Login     string `json:"login"`
