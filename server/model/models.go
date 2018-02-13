@@ -32,6 +32,15 @@ type Assignment struct {
 	Duration     int
 }
 
+// AnswerStr returns the string value, using "" if it's not set
+func (a *Assignment) AnswerStr() string {
+	if a.Answer.Valid {
+		return a.Answer.String
+	}
+
+	return ""
+}
+
 // FilePair represents the pairs of files to annotate
 type FilePair struct {
 	ID           int

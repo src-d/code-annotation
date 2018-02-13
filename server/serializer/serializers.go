@@ -108,6 +108,22 @@ func NewAssignmentsResponse(as []*model.Assignment) *Response {
 	return newResponse(assignments)
 }
 
+// ExpAnnotationResponse stores the data needed by NewExpAnnotationsResponse
+type ExpAnnotationResponse struct {
+	Yes        int `json:"yes"`
+	Maybe      int `json:"maybe"`
+	No         int `json:"no"`
+	Skip       int `json:"skip"`
+	Unanswered int `json:"unanswered"`
+	Total      int `json:"total"`
+}
+
+// NewExpAnnotationsResponse returns a Response for the Experiment Annotation
+// results
+func NewExpAnnotationsResponse(data ExpAnnotationResponse) *Response {
+	return newResponse(data)
+}
+
 type filePairResponse struct {
 	ID          int     `json:"id"`
 	Diff        string  `json:"diff"`
@@ -120,6 +136,22 @@ type filePairResponse struct {
 func NewFilePairResponse(fp *model.FilePair) *Response {
 	return newResponse(filePairResponse{
 		fp.ID, fp.Diff, fp.Score, fp.Left.BlobID, fp.Right.BlobID})
+}
+
+type listFilePairResponse struct {
+	ID        int    `json:"id"`
+	LeftPath  string `json:"leftPath"`
+	RightPath string `json:"rightPath"`
+}
+
+// NewListFilePairsResponse returns a Response for the given FilePairs
+func NewListFilePairsResponse(fps []*model.FilePair) *Response {
+	result := make([]listFilePairResponse, len(fps))
+	for i, fp := range fps {
+		result[i] = listFilePairResponse{fp.ID, fp.Left.Path, fp.Right.Path}
+	}
+
+	return newResponse(result)
 }
 
 type userResponse struct {

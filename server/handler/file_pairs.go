@@ -28,3 +28,21 @@ func GetFilePairDetails(repo *repository.FilePairs) RequestProcessFunc {
 		return serializer.NewFilePairResponse(filePair), nil
 	}
 }
+
+// GetFilePairs returns a function that returns a *serializer.Response
+// with the list of file pairs for the given experiment ID
+func GetFilePairs(repo *repository.FilePairs) RequestProcessFunc {
+	return func(r *http.Request) (*serializer.Response, error) {
+		experimentID, err := urlParamInt(r, "experimentId")
+		if err != nil {
+			return nil, err
+		}
+
+		filePairs, err := repo.GetAll(experimentID)
+		if err != nil {
+			return nil, err
+		}
+
+		return serializer.NewListFilePairsResponse(filePairs), nil
+	}
+}

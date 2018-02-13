@@ -69,7 +69,15 @@ func Router(
 				r.Put("/{assignmentId}", handler.Get(handler.SaveAssignment(assignmentRepo)))
 			})
 
-			r.Get("/file-pairs/{pairId}", handler.Get(handler.GetFilePairDetails(filePairRepo)))
+			r.Route("/file-pairs", func(r chi.Router) {
+				r.Get("/", handler.Get(handler.GetFilePairs(filePairRepo)))
+
+				r.Route("/{pairId}", func(r chi.Router) {
+					r.Get("/", handler.Get(handler.GetFilePairDetails(filePairRepo)))
+					r.Get("/annotations", handler.Get(handler.GetFilePairAnnotations(assignmentRepo)))
+				})
+
+			})
 		})
 
 		r.Get("/features/{blobId}", handler.Get(handler.GetFeatures(featureRepo)))
