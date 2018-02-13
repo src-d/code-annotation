@@ -11,7 +11,7 @@ import {
   getSkipCount,
   getAverageTime,
   getOverallTime,
-} from '../state/experiment';
+} from '../state/assignments';
 
 class Final extends Component {
   render() {

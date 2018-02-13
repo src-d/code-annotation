@@ -20,14 +20,14 @@ class App extends Component {
           <Fragment forRoute={namedRoutes.finish}>
             <Final />
           </Fragment>
+          <Fragment forRoute={namedRoutes.review}>
+            <Review />
+          </Fragment>
           <Fragment forRoute={namedRoutes.question}>
             <Experiment />
           </Fragment>
           <Fragment forRoute={namedRoutes.experiment}>
             <Experiment />
-          </Fragment>
-          <Fragment forRoute={namedRoutes.review}>
-            <Review />
           </Fragment>
           <Fragment forRoute={namedRoutes.export}>
             <Export />

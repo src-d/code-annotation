@@ -10,17 +10,16 @@ import Diff from '../components/Experiment/Diff';
 import Selector from '../components/Experiment/Selector';
 import Actions from '../components/Experiment/Actions';
 import AdditionActions from '../components/Experiment/AdditionActions';
+import { experimentId } from '../state/experiment';
 import {
-  load,
   markCurrent,
   ANSWER_SIMILAR,
   ANSWER_MAYBE,
   ANSWER_DIFFERENT,
   ANSWER_SKIP,
-  experimentId,
   getProgressPercent,
   getCurrentFilePair,
-} from '../state/experiment';
+} from '../state/assignments';
 import { makeUrl } from '../state/routes';
 import './Experiment.less';
 
@@ -134,21 +133,14 @@ class Experiment extends Component {
 }
 
 const mapStateToProps = state => {
-  const { experiment, user } = state;
-  const {
-    error,
-    loading,
-    fileLoading,
-    name,
-    description,
-    assignments,
-    currentAssigment,
-  } = experiment;
+  const { experiment, assignments, user } = state;
+  const { error, loading, name, description } = experiment;
+  const { list, currentAssigment } = assignments;
 
   const filePair = getCurrentFilePair(state);
   const diff = filePair ? filePair.diff : null;
 
-  const assignmentsOptions = assignments.map((a, i) => {
+  const assignmentsOptions = list.map((a, i) => {
     const status = a.answer ? ` (${a.answer})` : '';
     return { value: a.id, name: `(${i + 1})${status}` };
   });
@@ -159,7 +151,6 @@ const mapStateToProps = state => {
     name,
     description,
     percent: getProgressPercent(state),
-    fileLoading,
     diffString: diff,
     currentAssigmentId: currentAssigment ? currentAssigment.id : null,
     assignmentsOptions,
@@ -168,7 +159,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  load: () => dispatch(load()),
   markSimilar: () => dispatch(markCurrent(ANSWER_SIMILAR)),
   markMaybe: () => dispatch(markCurrent(ANSWER_MAYBE)),
   markDifferent: () => dispatch(markCurrent(ANSWER_DIFFERENT)),

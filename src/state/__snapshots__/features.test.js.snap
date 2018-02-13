@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`features/reducer LOAD 1`] = `
+Object {
+  "error": null,
+  "features": Array [],
+  "loading": true,
+}
+`;
+
+exports[`features/reducer LOAD_SUCCESS 1`] = `
+Object {
+  "error": null,
+  "features": Array [
+    1,
+    2,
+  ],
+  "loading": false,
+}
+`;

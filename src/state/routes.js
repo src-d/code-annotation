@@ -14,12 +14,15 @@ const routes = {
       '/finish': {
         name: 'finish',
       },
+      '/review': {
+        name: 'review',
+        '/:pair': {
+          name: 'reviewPair',
+        },
+      },
       '/:question': {
         name: 'question',
       },
-    },
-    '/review': {
-      name: 'review',
     },
     '/export': {
       name: 'export',

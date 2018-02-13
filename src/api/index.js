@@ -103,6 +103,20 @@ function putAnswer(experimentId, assignmentId, answer) {
   );
 }
 
+function getFilePairs(experimentId) {
+  return apiCall(`/api/experiments/${experimentId}/file-pairs`);
+}
+
+function getFilePairAnnotations(experimentId, id) {
+  return apiCall(
+    `/api/experiments/${experimentId}/file-pairs/${id}/annotations`
+  );
+}
+
+function getFeatures(blobId) {
+  return apiCall(`/api/features/${blobId}`);
+}
+
 function exportList() {
   return apiCall('/api/exports');
 }
@@ -128,4 +142,7 @@ export default {
   exportList,
   exportCreate,
   exportDownload,
+  getFilePairs,
+  getFeatures,
+  getFilePairAnnotations,
 };

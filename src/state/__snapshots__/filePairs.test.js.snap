@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`filePairs/reducer LOAD 1`] = `
+Object {
+  "currentAnnotations": Object {},
+  "currentPairId": null,
+  "list": Array [],
+  "loading": true,
+  "pairs": Object {},
+}
+`;
+
+exports[`filePairs/reducer LOAD_FILE_PAIR 1`] = `
+Object {
+  "currentAnnotations": Object {},
+  "currentPairId": null,
+  "list": Array [],
+  "loading": true,
+  "pairs": Object {},
+}
+`;
+
+exports[`filePairs/reducer LOAD_SUCCESS 1`] = `
+Object {
+  "currentAnnotations": Object {},
+  "currentPairId": null,
+  "list": undefined,
+  "loading": false,
+  "pairs": Object {},
+}
+`;
+
+exports[`filePairs/reducer SET_CURRENT_PAIR 1`] = `
+Object {
+  "currentAnnotations": Object {},
+  "currentPairId": 1,
+  "list": Array [],
+  "loading": true,
+  "pairs": Object {},
+}
+`;
+
+exports[`filePairs/reducer SET_FILE_PAIR 1`] = `
+Object {
+  "currentAnnotations": Object {},
+  "currentPairId": null,
+  "list": Array [],
+  "loading": false,
+  "pairs": Object {
+    "1": Object {
+      "diff": "content",
+      "leftBlobId": "id1",
+      "rightBlobId": "id2",
+      "score": 0.987,
+    },
+  },
+}
+`;
