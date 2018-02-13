@@ -103,33 +103,8 @@ func (repo *Assignments) GetByID(id int) (*model.Assignment, error) {
 		repo.db.QueryRow("SELECT * FROM assignments WHERE id=$1", id))
 }
 
-// GetAll returns all the Assignments for the given user and experiment IDs
-func (repo *Assignments) GetAll(userID, experimentID int) ([]*model.Assignment, error) {
-	rows, err := repo.db.Query(selectAssignmentsSQL, userID, experimentID)
-	if err != nil {
-		return nil, fmt.Errorf("Error getting assignments from the DB: %v", err)
-	}
-	defer rows.Close()
-
-	results := make([]*model.Assignment, 0)
-
-	for rows.Next() {
-		var as model.Assignment
-		rows.Scan(&as.ID, &as.UserID, &as.PairID, &as.ExperimentID,
-			&as.Answer, &as.Duration)
-
-		results = append(results, &as)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("DB error: %v", err)
-	}
-
-	return results, nil
-}
-
-func (repo *Assignments) GetByExperimentPair(experimentID, filePairID int) ([]*model.Assignment, error) {
-	rows, err := repo.db.Query(selectAssignmentsWhereExpPairSQL, experimentID, filePairID)
+func (repo *Assignments) getAssignmentsWithQuery(query string, args ...interface{}) ([]*model.Assignment, error) {
+	rows, err := repo.db.Query(query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("error getting assignments from the DB: %v", err)
 	}
@@ -151,6 +126,17 @@ func (repo *Assignments) GetByExperimentPair(experimentID, filePairID int) ([]*m
 	}
 
 	return results, nil
+}
+
+// GetAll returns all the Assignments for the given user and experiment IDs
+func (repo *Assignments) GetAll(userID, experimentID int) ([]*model.Assignment, error) {
+	return repo.getAssignmentsWithQuery(selectAssignmentsSQL, userID, experimentID)
+}
+
+// GetByExperimentPair returns all the Assignments for the given experiment and pair IDs
+func (repo *Assignments) GetByExperimentPair(experimentID, filePairID int) ([]*model.Assignment, error) {
+	return repo.getAssignmentsWithQuery(
+		selectAssignmentsWhereExpPairSQL, experimentID, filePairID)
 }
 
 // Update updates the Assignment identified by the given user and pair IDs,

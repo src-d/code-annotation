@@ -43,6 +43,6 @@ func GetFilePairs(repo *repository.FilePairs) RequestProcessFunc {
 			return nil, err
 		}
 
-		return serializer.NewSimplifiedFilePairsResponse(filePairs), nil
+		return serializer.NewListFilePairsResponse(filePairs), nil
 	}
 }
