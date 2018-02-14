@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`assignments/reducer LOAD 1`] = `
+Object {
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+}
+`;
+
+exports[`assignments/reducer LOAD_ERROR 1`] = `
+Object {
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": "test error",
+  "fileLoading": true,
+  "list": Array [],
+  "loading": false,
+}
+`;
+
+exports[`assignments/reducer LOAD_FILE_PAIR 1`] = `
+Object {
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+}
+`;
+
+exports[`assignments/reducer LOAD_SUCCESS 1`] = `
+Object {
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "list": Array [],
+  "loading": false,
+}
+`;
+
+exports[`assignments/reducer MARK_ASSIGNMENT existing assigment 1`] = `
+Object {
+  "currentAssigment": null,
+  "currentAssigmentStartTime": 2018-01-17T11:26:49.733Z,
+  "error": null,
+  "list": Array [
+    Object {
+      "answer": "yes",
+      "duration": 90267,
+      "id": 1,
+    },
+  ],
+  "loading": true,
+}
+`;
+
+exports[`assignments/reducer MARK_ASSIGNMENT unknown assigment 1`] = `
+Object {
+  "currentAssigment": null,
+  "currentAssigmentStartTime": 2018-01-17T11:26:49.733Z,
+  "error": null,
+  "list": Array [
+    Object {
+      "id": 1,
+    },
+  ],
+  "loading": true,
+}
+`;
+
+exports[`assignments/reducer SET_ASSIGNMENTS 1`] = `
+Object {
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "list": Array [
+    1,
+    2,
+  ],
+  "loading": true,
+}
+`;
+
+exports[`assignments/reducer SET_CURRENT_ASSIGMENT 1`] = `
+Object {
+  "currentAssigment": Object {
+    "id": 1,
+    "name": "test",
+  },
+  "currentAssigmentStartTime": 2018-01-17T11:26:49.733Z,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+}
+`;
+
+exports[`assignments/reducer SET_FILE_PAIR 1`] = `
+Object {
+  "currentAssigment": null,
+  "currentAssigmentStartTime": null,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+}
+`;
