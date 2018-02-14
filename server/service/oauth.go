@@ -122,24 +122,29 @@ type restrictionChecker interface {
 // setRole sets the Role attribute of the given GitHub user based on the
 // organization and team memberships
 func (o *OAuth) setRole(checker restrictionChecker, client *http.Client, user *githubUser) error {
-	user.Role = model.Requester
+	defaultRole := model.Requester
 
 	if o.restrictRequesterAccess != "" {
-		err := checker.checkAccess(client, o.restrictRequesterAccess, user.Login)
-		if err != nil && err != ErrNoAccess {
+		if err := checker.checkAccess(client, o.restrictRequesterAccess, user.Login); err == nil {
+			user.Role = model.Requester
+			return nil
+		} else if err != ErrNoAccess {
 			return err
 		}
-		if err == ErrNoAccess {
-			user.Role = model.Worker
-		}
+
+		defaultRole = model.Worker
 	}
 
-	if o.restrictAccess != "" && (user.Role == model.Worker || o.restrictRequesterAccess == "") {
+	if o.restrictAccess != "" {
 		if err := checker.checkAccess(client, o.restrictAccess, user.Login); err != nil {
 			return err
 		}
+
+		user.Role = defaultRole
+		return nil
 	}
 
+	user.Role = defaultRole
 	return nil
 }
 
