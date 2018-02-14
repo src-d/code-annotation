@@ -125,6 +125,11 @@ The DSN argument uses the same format as the `import` tool, see the previous sec
 
 In this case, origin will be the internal database, and destination the new database. This new database will have the same contents as the internal one.
 
+You can also download the results database from the web interface visiting:
+```
+http://<your-hostname>/export
+```
+
 The annotations made by the users will be stored in the **`assignments`** table.
 
 ## Access control
