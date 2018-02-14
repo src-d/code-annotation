@@ -107,11 +107,27 @@ func (o *OAuth) GetUser(ctx context.Context, code string) (*githubUser, error) {
 		return nil, fmt.Errorf("can't parse github user response: %s", err)
 	}
 
+	if err = o.setRole(o, client, &user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// Needed for the tests
+type restrictionChecker interface {
+	checkAccess(client *http.Client, restriction, login string) error
+}
+
+// setRole sets the Role attribute of the given GitHub user based on the
+// organization and team memberships
+func (o *OAuth) setRole(checker restrictionChecker, client *http.Client, user *githubUser) error {
 	user.Role = model.Requester
+
 	if o.restrictRequesterAccess != "" {
-		err := o.checkAccess(client, o.restrictRequesterAccess, user.Login)
+		err := checker.checkAccess(client, o.restrictRequesterAccess, user.Login)
 		if err != nil && err != ErrNoAccess {
-			return nil, err
+			return err
 		}
 		if err == ErrNoAccess {
 			user.Role = model.Worker
@@ -119,12 +135,12 @@ func (o *OAuth) GetUser(ctx context.Context, code string) (*githubUser, error) {
 	}
 
 	if o.restrictAccess != "" && (user.Role == model.Worker || o.restrictRequesterAccess == "") {
-		if err := o.checkAccess(client, o.restrictAccess, user.Login); err != nil {
-			return nil, err
+		if err := checker.checkAccess(client, o.restrictAccess, user.Login); err != nil {
+			return err
 		}
 	}
 
-	return &user, nil
+	return nil
 }
 
 const orgPrefix = "org:"
