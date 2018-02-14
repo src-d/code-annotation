@@ -33,8 +33,6 @@ $(MAKEFILE):
 
 # Set enviroment variables from .env file
 ENV ?= .env
-$(ENV):
-	touch $(ENV)
 include $(ENV)
 export $(shell sed 's/=.*//' $(ENV))
 
