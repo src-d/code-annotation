@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Grid, Row, Col } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { push } from 'redux-little-router';
+import { Helmet } from 'react-helmet';
 import PageHeader from '../components/PageHeader';
 import Loader from '../components/Loader';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -29,6 +30,9 @@ class Experiment extends Component {
 
     return (
       <div className="ex-page">
+        <Helmet>
+          <title>{this.props.name}</title>
+        </Helmet>
         <PageHeader {...user} />
         {this.renderMain()}
       </div>

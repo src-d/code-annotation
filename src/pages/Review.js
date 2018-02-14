@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-bootstrap';
 import SplitPane from 'react-split-pane';
+import { Helmet } from 'react-helmet';
 import PageHeader from '../components/PageHeader';
 import Loader from '../components/Loader';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -18,6 +19,9 @@ class Review extends Component {
 
     return (
       <div className="review-page">
+        <Helmet>
+          <title>{`Review for experiment ${this.props.name}`}</title>
+        </Helmet>
         <PageHeader {...user} />
         {this.renderMain()}
       </div>

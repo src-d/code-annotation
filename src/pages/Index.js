@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Grid, Row, Col, Button } from 'react-bootstrap';
+import { Helmet } from 'react-helmet';
 import { serverUrl } from '../api';
 import './Index.less';
 
@@ -7,6 +8,9 @@ class Index extends Component {
   render() {
     return (
       <Grid fluid className="index-page">
+        <Helmet>
+          <title>Dashboard</title>
+        </Helmet>
         <Row>
           <Col xs={12}>
             <h1 className="index-page__header">

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Fragment } from 'redux-little-router';
+import { Helmet } from 'react-helmet';
 import { namedRoutes } from './state/routes';
 import Errors from './components/Errors';
 import Index from './pages/Index';
@@ -13,6 +14,7 @@ class App extends Component {
     return (
       <Fragment forRoute="/">
         <div style={{ height: '100%' }}>
+          <Helmet titleTemplate="%s | source{d} Code Annotation Tool" />
           <Errors />
           <Fragment forRoute={namedRoutes.index}>
             <Index />

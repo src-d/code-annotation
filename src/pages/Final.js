@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-bootstrap';
+import { Helmet } from 'react-helmet';
 import PageHeader from '../components/PageHeader';
 import AnnotationResults from '../components/AnnotationResults';
 import {
@@ -19,6 +20,9 @@ class Final extends Component {
 
     return (
       <div className="final-page">
+        <Helmet>
+          <title>{expName}</title>
+        </Helmet>
         <PageHeader {...user} />
         <Grid>
           <Row>
