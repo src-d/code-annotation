@@ -26,6 +26,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ required "Image tag is required" .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: OAUTH_RESTRICT_ACCESS
+              value: "{{ .Values.authorization.restrictAccessGroup }}"
+            - name: OAUTH_RESTRICT_REQUESTER_ACCESS
+              value: "{{ .Values.authorization.restrictRequesterGroup }}"
             - name: UI_DOMAIN
               value: "//{{ .Values.ingress.hostname }}"
             - name: DB_CONNECTION
