@@ -107,24 +107,22 @@ func (o *OAuth) GetUser(ctx context.Context, code string) (*githubUser, error) {
 		return nil, fmt.Errorf("can't parse github user response: %s", err)
 	}
 
-	role := model.Requester
+	user.Role = model.Requester
 	if o.restrictRequesterAccess != "" {
 		err := o.checkAccess(client, o.restrictRequesterAccess, user.Login)
 		if err != nil && err != ErrNoAccess {
 			return nil, err
 		}
 		if err == ErrNoAccess {
-			role = model.Worker
+			user.Role = model.Worker
 		}
 	}
 
-	if o.restrictAccess != "" && role == model.Worker {
+	if o.restrictAccess != "" && (user.Role == model.Worker || o.restrictRequesterAccess == "") {
 		if err := o.checkAccess(client, o.restrictAccess, user.Login); err != nil {
 			return nil, err
 		}
 	}
-
-	user.Role = role
 
 	return &user, nil
 }
