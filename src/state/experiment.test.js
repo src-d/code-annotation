@@ -8,6 +8,7 @@ import reducer, {
   SET_EXPERIMENT,
   load,
 } from './experiment';
+import { ADD as ERROR_ADD } from './errors';
 
 const mockStore = configureMockStore([thunk]);
 
@@ -45,34 +46,61 @@ describe('experiment/reducer', () => {
 });
 
 describe('experiment/actions', () => {
-  it('load', () => {
-    const store = mockStore({
-      experiment: initialState,
+  describe('load', () => {
+    it('success', () => {
+      const store = mockStore({
+        experiment: initialState,
+      });
+
+      fetch.mockResponse(
+        JSON.stringify({
+          data: {
+            id: 1,
+            name: 'experiment name',
+          },
+        })
+      );
+
+      store.dispatch(load(1)).then(() => {
+        expect(store.getActions()).toEqual([
+          {
+            type: LOAD,
+          },
+          {
+            type: 'ca/experiment/SET_EXPERIMENT',
+            id: 1,
+            name: 'experiment name',
+          },
+          {
+            type: 'ca/experiment/LOAD_SUCCESS',
+          },
+        ]);
+      });
     });
 
-    fetch.mockResponse(
-      JSON.stringify({
-        data: {
-          id: 1,
-          name: 'experiment name',
-        },
-      })
-    );
+    it('error', () => {
+      const store = mockStore({
+        experiment: initialState,
+      });
 
-    store.dispatch(load(1)).then(() => {
-      expect(store.getActions()).toEqual([
-        {
-          type: LOAD,
-        },
-        {
-          type: 'ca/experiment/SET_EXPERIMENT',
-          id: 1,
-          name: 'experiment name',
-        },
-        {
-          type: 'ca/experiment/LOAD_SUCCESS',
-        },
-      ]);
+      const errText = 'some error';
+      fetch.mockReject(errText);
+
+      store.dispatch(load(1)).then(() => {
+        expect(store.getActions()).toEqual([
+          {
+            type: LOAD,
+          },
+          {
+            type: ERROR_ADD,
+            error: errText,
+          },
+          {
+            type: LOAD_ERROR,
+            error: [errText],
+          },
+        ]);
+      });
     });
   });
 });

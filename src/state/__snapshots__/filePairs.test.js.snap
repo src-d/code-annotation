@@ -10,6 +10,16 @@ Object {
 }
 `;
 
+exports[`filePairs/reducer LOAD_ANNOTATIONS 1`] = `
+Object {
+  "currentAnnotations": Object {},
+  "currentPairId": null,
+  "list": Array [],
+  "loading": true,
+  "pairs": Object {},
+}
+`;
+
 exports[`filePairs/reducer LOAD_FILE_PAIR 1`] = `
 Object {
   "currentAnnotations": Object {},
@@ -26,6 +36,16 @@ Object {
   "currentPairId": null,
   "list": undefined,
   "loading": false,
+  "pairs": Object {},
+}
+`;
+
+exports[`filePairs/reducer SET_ANNOTATIONS 1`] = `
+Object {
+  "currentAnnotations": undefined,
+  "currentPairId": null,
+  "list": Array [],
+  "loading": true,
   "pairs": Object {},
 }
 `;

@@ -92,10 +92,7 @@ const putAnswer = (expId, assignmentId, answer) => (dispatch, getState) => {
     answer,
     duration: assigment.duration,
   };
-  return api.putAnswer(expId, assignmentId, answerPayload).catch(e => {
-    dispatch(addErrors(e));
-    dispatch({ type: LOAD_ERROR, error: e });
-  });
+  return api.putAnswer(expId, assignmentId, answerPayload);
 };
 
 export const selectAssigment = (expId, id) => (dispatch, getState) => {
@@ -146,9 +143,12 @@ export const mark = (expId, assignmentId, answer) => dispatch => {
     id: assignmentId,
     answer,
   });
-  return dispatch(putAnswer(expId, assignmentId, answer)).then(() =>
-    dispatch(nextAssigment(expId))
-  );
+  return dispatch(putAnswer(expId, assignmentId, answer))
+    .then(() => dispatch(nextAssigment(expId)))
+    .catch(e => {
+      dispatch(addErrors(e));
+      dispatch({ type: LOAD_ERROR, error: e });
+    });
 };
 
 export const markCurrent = answer => (dispatch, getState) => {
@@ -179,7 +179,11 @@ export const middleware = store => next => action => {
           next(selectAssigment(experimentId, +payload.params.question))
         );
     case namedRoutes.finish:
-      return next(load(experimentId));
+      promise = Promise.resolve();
+      if (experiment.id !== +payload.params.experiment) {
+        promise = next(expLoad(experimentId));
+      }
+      return promise.then(() => next(load(experimentId)));
     default:
       return result;
   }

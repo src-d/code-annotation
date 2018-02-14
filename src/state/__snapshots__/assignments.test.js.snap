@@ -41,17 +41,32 @@ Object {
 }
 `;
 
-exports[`assignments/reducer MARK_ASSIGNMENT 1`] = `
+exports[`assignments/reducer MARK_ASSIGNMENT existing assigment 1`] = `
 Object {
-  "assignments": Array [
+  "currentAssigment": null,
+  "currentAssigmentStartTime": 2018-01-17T11:26:49.733Z,
+  "error": null,
+  "list": Array [
+    Object {
+      "answer": "yes",
+      "duration": 90267,
+      "id": 1,
+    },
+  ],
+  "loading": true,
+}
+`;
+
+exports[`assignments/reducer MARK_ASSIGNMENT unknown assigment 1`] = `
+Object {
+  "currentAssigment": null,
+  "currentAssigmentStartTime": 2018-01-17T11:26:49.733Z,
+  "error": null,
+  "list": Array [
     Object {
       "id": 1,
     },
   ],
-  "currentAssigment": null,
-  "currentAssigmentStartTime": 2018-01-17T11:26:49.733Z,
-  "error": null,
-  "list": Array [],
   "loading": true,
 }
 `;

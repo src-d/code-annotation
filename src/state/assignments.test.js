@@ -28,6 +28,7 @@ import reducer, {
   getCurrentFilePair,
 } from './assignments';
 import { LOAD_FILE_PAIR, SET_FILE_PAIR } from './filePairs';
+import { makeUrl } from './routes';
 import { ADD as ERROR_ADD } from './errors';
 
 const mockStore = configureMockStore([thunk]);
@@ -109,20 +110,36 @@ describe('assignments/reducer', () => {
     ).toMatchSnapshot();
   });
 
-  it('MARK_ASSIGNMENT', () => {
+  describe('MARK_ASSIGNMENT', () => {
     const currentAssigmentStartTime = new Date(1516188409733);
-    mockDate(1516188500000);
 
-    expect(
-      reducer(
-        {
-          ...initialState,
-          assignments: [{ id: 1 }],
-          currentAssigmentStartTime,
-        },
-        { type: MARK_ASSIGNMENT, id: 1, answer: 'yes' }
-      )
-    ).toMatchSnapshot();
+    it('existing assigment', () => {
+      mockDate(1516188500000);
+      expect(
+        reducer(
+          {
+            ...initialState,
+            list: [{ id: 1 }],
+            currentAssigmentStartTime,
+          },
+          { type: MARK_ASSIGNMENT, id: 1, answer: 'yes' }
+        )
+      ).toMatchSnapshot();
+    });
+
+    it('unknown assigment', () => {
+      mockDate(1516188500000);
+      expect(
+        reducer(
+          {
+            ...initialState,
+            list: [{ id: 1 }],
+            currentAssigmentStartTime,
+          },
+          { type: MARK_ASSIGNMENT, id: 2, answer: 'yes' }
+        )
+      ).toMatchSnapshot();
+    });
   });
 });
 
@@ -260,51 +277,110 @@ describe('assignments/actions', () => {
     });
   });
 
-  it('load', () => {
-    const store = mockStore({
-      assignments: initialState,
+  describe('load', () => {
+    it('success', () => {
+      const store = mockStore({
+        assignments: initialState,
+      });
+
+      fetch.mockResponse(
+        JSON.stringify({
+          data: [
+            {
+              id: 1,
+              answer: null,
+            },
+          ],
+        })
+      );
+      return store.dispatch(load(expId)).then(() => {
+        expect(store.getActions()).toEqual([
+          {
+            type: LOAD,
+          },
+          {
+            type: SET_ASSIGNMENTS,
+            assignments: [{ answer: null, id: 1 }],
+          },
+          {
+            type: LOAD_SUCCESS,
+          },
+        ]);
+      });
     });
 
-    fetch.mockResponse(
-      JSON.stringify({
-        data: [
-          {
-            id: 1,
-            answer: null,
-          },
-        ],
-      })
-    );
+    it('error', () => {
+      const store = mockStore({
+        assignments: initialState,
+      });
 
-    store.dispatch(load(expId)).then(() => {
-      expect(store.getActions()).toEqual([
-        {
-          type: LOAD,
-        },
-        {
-          type: SET_ASSIGNMENTS,
-          assignments: [{ answer: null, id: 1 }],
-        },
-        {
-          type: LOAD_SUCCESS,
-        },
-      ]);
+      fetch.mockReject('some error');
+      return store.dispatch(load(expId)).then(() => {
+        expect(store.getActions()).toEqual([
+          {
+            type: LOAD,
+          },
+          {
+            type: ERROR_ADD,
+            error: 'some error',
+          },
+          {
+            type: LOAD_ERROR,
+            error: ['some error'],
+          },
+        ]);
+      });
     });
   });
 
-  it('mark', () => {
-    const store = mockStore({
-      assignments: {
-        ...initialState,
-        list: [{ id: 1 }],
-      },
+  describe('mark', () => {
+    it('success', () => {
+      const store = mockStore({
+        assignments: {
+          ...initialState,
+          list: [{ id: 1 }],
+        },
+      });
+
+      fetch.mockResponse(JSON.stringify({ data: {} }));
+      return store.dispatch(mark(expId, 1, 'yes')).then(() => {
+        expect(store.getActions()).toEqual([
+          {
+            type: MARK_ASSIGNMENT,
+            id: 1,
+            answer: 'yes',
+          },
+          push(makeUrl('finish', { experiment: 1 })),
+        ]);
+      });
     });
 
-    store.dispatch(mark(expId, 1, 'yes'));
-    expect(store.getActions()[0]).toEqual({
-      type: MARK_ASSIGNMENT,
-      id: 1,
-      answer: 'yes',
+    it('error', () => {
+      const store = mockStore({
+        assignments: {
+          ...initialState,
+          list: [{ id: 1 }],
+        },
+      });
+
+      fetch.mockReject('some error');
+      return store.dispatch(mark(expId, 1, 'yes')).then(() => {
+        expect(store.getActions()).toEqual([
+          {
+            type: MARK_ASSIGNMENT,
+            id: 1,
+            answer: 'yes',
+          },
+          {
+            type: ERROR_ADD,
+            error: 'some error',
+          },
+          {
+            type: LOAD_ERROR,
+            error: ['some error'],
+          },
+        ]);
+      });
     });
   });
 
@@ -320,11 +396,13 @@ describe('assignments/actions', () => {
       },
     });
 
-    store.dispatch(markCurrent('yes'));
-    expect(store.getActions()[0]).toEqual({
-      type: MARK_ASSIGNMENT,
-      id: 1,
-      answer: 'yes',
+    fetch.mockResponse(JSON.stringify({ data: {} }));
+    return store.dispatch(markCurrent('yes')).then(() => {
+      expect(store.getActions()[0]).toEqual({
+        type: MARK_ASSIGNMENT,
+        id: 1,
+        answer: 'yes',
+      });
     });
   });
 });

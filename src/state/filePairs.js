@@ -118,7 +118,7 @@ export const selectPair = (expId, id) => dispatch => {
 
 export const loadAnnotations = (expId, id) => dispatch => {
   dispatch({ type: LOAD_ANNOTATIONS });
-  api.getFilePairAnnotations(expId, id).then(res =>
+  return api.getFilePairAnnotations(expId, id).then(res =>
     dispatch({
       type: SET_ANNOTATIONS,
       data: res,
