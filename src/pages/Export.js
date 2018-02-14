@@ -87,15 +87,14 @@ class Export extends Component {
       <ul>
         {this.state.files.map((f, i) => (
           <li key={i}>
-            <a
-              href="#"
+            <button
               onClick={e => {
                 e.preventDefault();
                 api.exportDownload(f);
               }}
             >
               {f}
-            </a>
+            </button>
           </li>
         ))}
       </ul>
