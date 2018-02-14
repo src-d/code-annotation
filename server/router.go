@@ -11,13 +11,14 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/pressly/lg"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 )
 
 // Router returns a Handler to serve the code-anotation backend
 func Router(
-	logger logrus.FieldLogger,
+	logger *logrus.Logger,
 	jwt *service.JWT,
 	oauth *service.OAuth,
 	uiDomain string,
@@ -49,7 +50,7 @@ func Router(
 
 	r.Use(middleware.Recoverer)
 	r.Use(cors.New(corsOptions).Handler)
-	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger}))
+	r.Use(lg.RequestLogger(logger))
 
 	r.Get("/login", handler.Login(oauth))
 	r.Get("/oauth-callback", handler.OAuthCallback(oauth, jwt, userRepo, uiDomain, logger))
