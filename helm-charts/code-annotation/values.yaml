@@ -11,7 +11,10 @@ image:
   # tag must be received as a parameter
   pullPolicy: IfNotPresent
 deployment:
-    internalDatabasePath: /var/code-annotation
+    internalDatabasePath: "/var/code-annotation"
+authorization:
+    restrictAccessGroup: "org:src-d"
+    restrictRequesterGroup: ""
 service:
   type: NodePort
   codeAnnotation:
