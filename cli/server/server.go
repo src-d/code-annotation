@@ -12,6 +12,7 @@ import (
 )
 
 type appConfig struct {
+	Env         string `envconfig:"ENV" default:"production"`
 	Host        string `envconfig:"HOST"`
 	Port        int    `envconfig:"PORT" default:"8080"`
 	UIDomain    string `envconfig:"UI_DOMAIN" default:"http://127.0.0.1:8080"`
@@ -25,7 +26,7 @@ func main() {
 	envconfig.MustProcess("", &conf)
 
 	// loger
-	logger := service.NewLogger()
+	logger := service.NewLogger(conf.Env)
 
 	// database
 	db, err := dbutil.Open(conf.DBConn, false)

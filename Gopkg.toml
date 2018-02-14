@@ -68,3 +68,7 @@
 [[constraint]]
   name = "github.com/rs/cors"
   version = "1.2.0"
+
+[[constraint]]
+  name = "github.com/pressly/lg"
+  version = "1.0.2"

@@ -7,8 +7,8 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
+	"github.com/pressly/lg"
 	"github.com/src-d/code-annotation/server/serializer"
-	"github.com/src-d/code-annotation/server/service"
 )
 
 // RequestProcessFunc is a function that takes an http.Request, and returns a serializer.Response and an error
@@ -51,14 +51,14 @@ func write(w http.ResponseWriter, r *http.Request, response *serializer.Response
 	}
 
 	if statusCode >= http.StatusBadRequest {
-		service.NewLogger().Error(err.Error())
+		lg.RequestLog(r).Error(err.Error())
 	}
 
 	content, err := json.Marshal(response)
 	if err != nil {
 		err = fmt.Errorf("response could not be marshalled; %s", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		service.NewLogger().Error(err.Error())
+		lg.RequestLog(r).Error(err.Error())
 		return
 	}
 

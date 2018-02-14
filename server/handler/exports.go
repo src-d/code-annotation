@@ -10,9 +10,9 @@ import (
 	"sort"
 	"time"
 
+	"github.com/pressly/lg"
 	"github.com/src-d/code-annotation/server/dbutil"
 	"github.com/src-d/code-annotation/server/serializer"
-	"github.com/src-d/code-annotation/server/service"
 
 	"github.com/go-chi/chi"
 )
@@ -78,7 +78,7 @@ func (h *Export) Create(r *http.Request) (*serializer.Response, error) {
 		return nil, err
 	}
 
-	service.NewLogger().Info("new SQLite file created: " + filepath)
+	lg.RequestLog(r).Info("new SQLite file created: " + filepath)
 
 	return &serializer.Response{
 		Status: http.StatusOK,
@@ -99,7 +99,7 @@ func (h *Export) Download(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		err = fmt.Errorf("exports handler error: %s", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		service.NewLogger().Error(err.Error())
+		lg.RequestLog(r).Error(err.Error())
 		return
 	}
 	defer file.Close()
