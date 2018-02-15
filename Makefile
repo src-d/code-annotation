@@ -34,7 +34,7 @@ $(MAKEFILE):
 # Set enviroment variables from .env file
 ENV ?= .env
 -include $(ENV)
-export $(shell sed 's/=.*//' $(ENV))
+export $(shell [ -f "$(ENV)" ] && sed 's/=.*//' $(ENV))
 
 
 # Frontend
