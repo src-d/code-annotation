@@ -16,8 +16,10 @@ const routes = {
       },
       '/review': {
         name: 'review',
+        restrictReviewer: true,
         '/:pair': {
           name: 'reviewPair',
+          restrictReviewer: true,
         },
       },
       '/:question': {
@@ -26,6 +28,10 @@ const routes = {
     },
     '/export': {
       name: 'export',
+      restrictReviewer: true,
+    },
+    '/forbidden': {
+      name: 'forbidden',
     },
   },
 };

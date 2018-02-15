@@ -159,11 +159,13 @@ type userResponse struct {
 	Login     string `json:"login"`
 	Username  string `json:"username"`
 	AvatarURL string `json:"avatarURL"`
+	Role      string `json:"role"`
 }
 
 // NewUserResponse returns a Response for the passed User
 func NewUserResponse(u *model.User) *Response {
-	return newResponse(userResponse{u.ID, u.Login, u.Username, u.AvatarURL})
+	return newResponse(
+		userResponse{u.ID, u.Login, u.Username, u.AvatarURL, u.Role.String()})
 }
 
 type featureResponse struct {

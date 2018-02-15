@@ -70,6 +70,11 @@ type Feature struct {
 // Role represents the position of a app User
 type Role string
 
+// String returns the string value of the Role
+func (r Role) String() string {
+	return string(r)
+}
+
 // Value returns the string value of the Role
 func (r Role) Value() (driver.Value, error) {
 	if isValidRole(r) {
