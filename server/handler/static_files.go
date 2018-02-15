@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"bytes"
 	"net/http"
-	"os"
+
+	"github.com/src-d/code-annotation/server/assets"
 )
 
 // FrontendStatics handles the static-files requests, serving the files under the given staticsPath
@@ -10,12 +12,20 @@ import (
 func FrontendStatics(staticsPath string, useIndexFallback bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		filepath := staticsPath + r.URL.Path
-		if useIndexFallback {
-			if _, err := os.Stat(filepath); err != nil {
-				filepath = staticsPath + "/index.html"
+		b, err := assets.Asset(filepath)
+		// fallback on index, will be handled by FE router
+		if err != nil {
+			filepath = staticsPath + "/index.html"
+			b, err = assets.Asset(filepath)
+			if err != nil {
+				http.NotFound(w, r)
+				return
 			}
 		}
-
-		http.ServeFile(w, r, filepath)
+		info, err := assets.AssetInfo(filepath)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(b))
 	}
 }
