@@ -11,6 +11,8 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
+var version = "dev"
+
 type appConfig struct {
 	Env         string `envconfig:"ENV" default:"production"`
 	Host        string `envconfig:"HOST"`
@@ -56,7 +58,7 @@ func main() {
 	jwt := service.NewJWT(jwtConfig.SigningKey)
 
 	// start the router
-	router := server.Router(logger, jwt, oauth, conf.UIDomain, &db, "build", conf.ExportsPath)
+	router := server.Router(logger, jwt, oauth, conf.UIDomain, &db, "build", conf.ExportsPath, version)
 	logger.Info("running...")
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), router)
 	logger.Fatal(err)

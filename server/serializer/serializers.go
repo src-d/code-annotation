@@ -188,3 +188,12 @@ type countResponse struct {
 func NewCountResponse(c int) *Response {
 	return newResponse(countResponse{c})
 }
+
+type versionResponse struct {
+	Version string `json:"version"`
+}
+
+// NewVersionResponse returns a Repsponse with current version of the server
+func NewVersionResponse(version string) *Response {
+	return newResponse(versionResponse{version})
+}
