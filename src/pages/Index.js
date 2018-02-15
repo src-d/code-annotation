@@ -34,12 +34,12 @@ class Index extends Component {
               bsStyle="primary"
               className="index-page__github-button"
             >
-              Sign in with Github
               <img
                 src="/github.png"
                 alt="github"
                 className="index-page__github-icon"
               />
+              Sign in with GitHub
             </Button>
           </Col>
         </Row>
