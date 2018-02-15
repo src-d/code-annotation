@@ -72,17 +72,20 @@ func Router(
 			})
 
 			r.Route("/file-pairs", func(r chi.Router) {
+				r.Use(requesterACL.Middleware)
+
 				r.Get("/", handler.Get(handler.GetFilePairs(filePairRepo)))
-
-				r.Route("/{pairId}", func(r chi.Router) {
-					r.Get("/", handler.Get(handler.GetFilePairDetails(filePairRepo)))
-					r.Get("/annotations", handler.Get(handler.GetFilePairAnnotations(assignmentRepo)))
-				})
-
+				r.Get("/{pairId}/annotations", handler.Get(handler.GetFilePairAnnotations(assignmentRepo)))
 			})
+
+			r.Get("/file-pairs/{pairId}", handler.Get(handler.GetFilePairDetails(filePairRepo)))
 		})
 
-		r.Get("/features/{blobId}", handler.Get(handler.GetFeatures(featureRepo)))
+		r.Route("/features", func(r chi.Router) {
+			r.Use(requesterACL.Middleware)
+
+			r.Get("/{blobId}", handler.Get(handler.GetFeatures(featureRepo)))
+		})
 
 		r.Route("/exports", func(r chi.Router) {
 			r.Use(requesterACL.Middleware)
