@@ -35,11 +35,19 @@ func (checker *testRestrictionChecker) checkAccess(client *http.Client, restrict
 	return nil
 }
 
-var testChecker testRestrictionChecker
+func NewTestOAuth(clientID, clientSecret, restrictAccess, restrictRequesterAccess string) *OAuth {
+	return &OAuth{
+		config:                  nil,
+		store:                   nil,
+		restrictAccess:          restrictAccess,
+		restrictRequesterAccess: restrictRequesterAccess,
+		restrictionChecker:      &testRestrictionChecker{},
+	}
+}
 
 // getTestResult is a helper that performs oauth.setRole
 func getTestResult(oauth *OAuth, user githubUser) roleTestResult {
-	err := oauth.setRole(&testChecker, nil, &user)
+	err := oauth.setRole(nil, &user)
 
 	if err != nil {
 		return denied
@@ -96,7 +104,7 @@ func (suite *OAuthSuite) TestGetUser() {
 	)
 
 	for i, test := range tests {
-		oauth := NewOAuth("client-id", "client-secret",
+		oauth := NewTestOAuth("client-id", "client-secret",
 			test.RestrictAccess, test.RestrictRequesterAccess)
 
 		assert.Equal(
@@ -110,6 +118,7 @@ func (suite *OAuthSuite) TestGetUser() {
 			`Failed for test #%v, requesterGroupUser`, i)
 	}
 }
+
 func TestOAuth(t *testing.T) {
 	suite.Run(t, new(OAuthSuite))
 }

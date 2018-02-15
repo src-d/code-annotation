@@ -27,12 +27,18 @@ type OAuthConfig struct {
 	RestrictRequesterAccess string `envconfig:"RESTRICT_REQUESTER_ACCESS"`
 }
 
+// Needed for the tests
+type restrictionChecker interface {
+	checkAccess(client *http.Client, restriction, login string) error
+}
+
 // OAuth service abstracts OAuth implementation
 type OAuth struct {
 	config                  *oauth2.Config
 	store                   *sessions.CookieStore
 	restrictAccess          string
 	restrictRequesterAccess string
+	restrictionChecker      restrictionChecker
 }
 
 // NewOAuth return new OAuth service
@@ -48,6 +54,7 @@ func NewOAuth(clientID, clientSecret, restrictAccess, restrictRequesterAccess st
 		store:                   sessions.NewCookieStore([]byte(clientSecret)),
 		restrictAccess:          restrictAccess,
 		restrictRequesterAccess: restrictRequesterAccess,
+		restrictionChecker:      &githubPermissions{},
 	}
 }
 
@@ -107,25 +114,20 @@ func (o *OAuth) GetUser(ctx context.Context, code string) (*githubUser, error) {
 		return nil, fmt.Errorf("can't parse github user response: %s", err)
 	}
 
-	if err = o.setRole(o, client, &user); err != nil {
+	if err = o.setRole(client, &user); err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
-// Needed for the tests
-type restrictionChecker interface {
-	checkAccess(client *http.Client, restriction, login string) error
-}
-
 // setRole sets the Role attribute of the given GitHub user based on the
 // organization and team memberships
-func (o *OAuth) setRole(checker restrictionChecker, client *http.Client, user *githubUser) error {
+func (o *OAuth) setRole(client *http.Client, user *githubUser) error {
 	defaultRole := model.Requester
 
 	if o.restrictRequesterAccess != "" {
-		if err := checker.checkAccess(client, o.restrictRequesterAccess, user.Login); err == nil {
+		if err := o.restrictionChecker.checkAccess(client, o.restrictRequesterAccess, user.Login); err == nil {
 			user.Role = model.Requester
 			return nil
 		} else if err != ErrNoAccess {
@@ -136,7 +138,7 @@ func (o *OAuth) setRole(checker restrictionChecker, client *http.Client, user *g
 	}
 
 	if o.restrictAccess != "" {
-		if err := checker.checkAccess(client, o.restrictAccess, user.Login); err != nil {
+		if err := o.restrictionChecker.checkAccess(client, o.restrictAccess, user.Login); err != nil {
 			return err
 		}
 
@@ -151,7 +153,10 @@ func (o *OAuth) setRole(checker restrictionChecker, client *http.Client, user *g
 const orgPrefix = "org:"
 const teamPrefix = "team:"
 
-func (o *OAuth) checkAccess(client *http.Client, restriction, login string) error {
+// githubPermissions implements the restrictionChecker interface
+type githubPermissions struct{}
+
+func (o *githubPermissions) checkAccess(client *http.Client, restriction, login string) error {
 	if strings.HasPrefix(restriction, orgPrefix) {
 		org := strings.TrimPrefix(restriction, orgPrefix)
 		return o.checkUserInOrg(client, org, login)
@@ -165,7 +170,7 @@ func (o *OAuth) checkAccess(client *http.Client, restriction, login string) erro
 	return fmt.Errorf("invalid restriction '%s', it must be one of 'org:<organization-name>' or 'team:<team-id>'", restriction)
 }
 
-func (o *OAuth) checkUserInOrg(client *http.Client, org, login string) error {
+func (o *githubPermissions) checkUserInOrg(client *http.Client, org, login string) error {
 	url := fmt.Sprintf("https://api.github.com/orgs/%s/members/%s", org, login)
 	resp, err := client.Get(url)
 	if err != nil {
@@ -181,7 +186,7 @@ func (o *OAuth) checkUserInOrg(client *http.Client, org, login string) error {
 	return nil
 }
 
-func (o *OAuth) checkUserInTeam(client *http.Client, team, login string) error {
+func (o *githubPermissions) checkUserInTeam(client *http.Client, team, login string) error {
 	url := fmt.Sprintf("https://api.github.com/teams/%s/memberships/%s", team, login)
 	r, err := http.NewRequest("GET", url, nil)
 	// The Nested Teams API is currently available for developers to preview only
