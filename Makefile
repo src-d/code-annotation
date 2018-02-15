@@ -89,6 +89,7 @@ gorun:
 serve: build-frontend build-backend gorun
 
 .PHONY: dependencies-frontend build-frontend dev-frontend \
+		dependencies-frontend-development prepare-build \
 		test-frontend lint-frontend \
 		dependencies-backend build-backend release-build \
 		lint-backend bindata \
