@@ -1,8 +1,10 @@
 import React from 'react';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { logOut } from '../state/user';
 import './PageHeader.less';
 
-function PageHeader({ username, avatarUrl }) {
+function PageHeader({ username, avatarUrl, onLogoutClick }) {
   return (
     <Navbar fluid className="header">
       <Navbar.Header>
@@ -19,9 +21,11 @@ function PageHeader({ username, avatarUrl }) {
         </Navbar.Brand>
       </Navbar.Header>
       <Nav pullRight>
-        <NavItem eventKey={1} href="/">
-          dashboard
-        </NavItem>
+        <NavDropdown eventKey={1} title="dashboard" id="nav-dropdown">
+          <MenuItem eventKey={1.1} onClick={onLogoutClick}>
+            Logout
+          </MenuItem>
+        </NavDropdown>
         <NavItem eventKey={2}>
           <img
             src={avatarUrl}
@@ -34,4 +38,6 @@ function PageHeader({ username, avatarUrl }) {
   );
 }
 
-export default PageHeader;
+export default connect(state => state.user, { onLogoutClick: logOut })(
+  PageHeader
+);

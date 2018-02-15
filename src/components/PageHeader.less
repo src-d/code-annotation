@@ -6,7 +6,8 @@
         border: none;
     }
 
-    .navbar-nav > li > a {
+    .navbar-nav > li > a,
+    .dropdown-menu > li > a {
         color: #808b8c;
         font-size: 12px;
         text-transform: uppercase;
@@ -17,7 +18,16 @@
         &:hover {
             text-decoration: none;
             color: #fff;
+            background: transparent;
         }
+    }
+
+    .navbar-nav > .open > a {
+        background: transparent;
+    }
+    .navbar-nav > li > .dropdown-menu {
+        color: #808b8c;
+        background: #2c3132;
     }
 
     h1.navbar-brand {
