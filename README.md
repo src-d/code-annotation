@@ -42,7 +42,7 @@ Download binary from [releases](https://github.com/src-d/code-annotation/release
 
 ### Import File Pairs for Annotation
 
-The file pairs must be provided via an [SQLite](https://sqlite.org/) database. The database **must follow the expected schema**, please [follow this link](./cli/examples/import/example.sql) to see an example.
+The file pairs must be provided via an [SQLite](https://sqlite.org/) database. The database **must follow the expected schema**, please [follow this link](./cli/import/examples/example.sql) to see an example.
 
 The `import` command will use those file pairs to create a new [SQLite](https://sqlite.org/) or [PostgreSQL](https://www.postgresql.org/) database that will be used internally by the Annotation Tool. The destination database does not need to be empty, new imported file pairs can be added to previous imports.
 
@@ -98,6 +98,11 @@ $ export <origin-DSN> <path-to-sqlite.db>
 The DSN argument uses the same format as the `import` tool, see the previous section.
 
 In this case, origin will be the internal database, and destination the new database. This new database will have the same contents as the internal one.
+
+You can also download the results database from the web interface visiting:
+```
+http://<your-hostname>/export
+```
 
 The annotations made by the users will be stored in the **`assignments`** table.
 
