@@ -12,9 +12,10 @@ import (
 type roleTestResult string
 
 const (
-	denied    roleTestResult = "denied"
-	worker    roleTestResult = "worker"
-	requester roleTestResult = "requester"
+	denied        roleTestResult = "denied"
+	worker        roleTestResult = "worker"
+	requester     roleTestResult = "requester"
+	notApplicable roleTestResult = "N/A"
 )
 
 const (
@@ -89,9 +90,9 @@ func (suite *OAuthSuite) TestGetUser() {
 		accessGroupMember       roleTestResult
 		requesterGroupMember    roleTestResult
 	}{
-		{"", "", requester, requester, requester},
-		{"", requesterGroup, worker, worker, requester},
-		{accessGroup, "", denied, requester, denied},
+		{"", "", requester, notApplicable, notApplicable},
+		{"", requesterGroup, worker, notApplicable, requester},
+		{accessGroup, "", denied, requester, notApplicable},
 		{accessGroup, requesterGroup, denied, worker, requester},
 	}
 
@@ -110,12 +111,18 @@ func (suite *OAuthSuite) TestGetUser() {
 		assert.Equal(
 			test.outsider, getTestResult(oauth, outsiderUser),
 			`Failed for test #%v, outsiderUser`, i)
-		assert.Equal(
-			test.accessGroupMember, getTestResult(oauth, accessGroupUser),
-			`Failed for test #%v, accessGroupUser`, i)
-		assert.Equal(
-			test.requesterGroupMember, getTestResult(oauth, requesterGroupUser),
-			`Failed for test #%v, requesterGroupUser`, i)
+
+		if test.accessGroupMember != notApplicable {
+			assert.Equal(
+				test.accessGroupMember, getTestResult(oauth, accessGroupUser),
+				`Failed for test #%v, accessGroupUser`, i)
+		}
+
+		if test.requesterGroupMember != notApplicable {
+			assert.Equal(
+				test.requesterGroupMember, getTestResult(oauth, requesterGroupUser),
+				`Failed for test #%v, requesterGroupUser`, i)
+		}
 	}
 }
 
