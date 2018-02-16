@@ -141,9 +141,6 @@ func (o *OAuth) setRole(client *http.Client, user *githubUser) error {
 		if err := o.restrictionChecker.checkAccess(client, o.restrictAccess, user.Login); err != nil {
 			return err
 		}
-
-		user.Role = defaultRole
-		return nil
 	}
 
 	user.Role = defaultRole
