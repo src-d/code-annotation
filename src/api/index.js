@@ -55,6 +55,7 @@ function apiCall(url, options = {}) {
   const token = TokenService.get();
   const fetchOptions = {
     ...options,
+    credentials: 'include',
     headers: {
       ...options.headers,
       Authorization: `Bearer ${token}`,
@@ -74,6 +75,10 @@ function apiCall(url, options = {}) {
       return json.data;
     })
     .catch(err => Promise.reject(normalizeErrors(err)));
+}
+
+function auth(state, code) {
+  return apiCall(`/oauth-callback?state=${state}&code=${code}`);
 }
 
 function me() {
@@ -137,6 +142,7 @@ function exportDownload(filename) {
 }
 
 export default {
+  auth,
   me,
   getExperiments,
   getExperiment,

@@ -29,6 +29,10 @@ const routes = {
         name: 'question',
       },
     },
+    '/auth': {
+      name: 'auth',
+      public: true,
+    },
     '/export': {
       name: 'export',
       restrictReviewer: true,
