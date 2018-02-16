@@ -25,6 +25,7 @@ func Router(
 	dbWrapper *dbutil.DB,
 	staticsPath string,
 	exportsPath string,
+	version string,
 ) http.Handler {
 
 	db := dbWrapper.SQLDB()
@@ -91,6 +92,8 @@ func Router(
 			r.Get("/{filename}/download", export.Download)
 		})
 	})
+
+	r.Get("/version", handler.Get(handler.Version(version)))
 
 	r.Get("/static/*", handler.FrontendStatics(staticsPath, false))
 	r.Get("/*", handler.FrontendStatics(staticsPath, true))
