@@ -58,3 +58,29 @@ pipeline:
     when:
       branch: [staging]
       event: [push]
+
+  # push build artifacts to GitHub release
+
+  build_stg:
+    image: golang:1.9-alpine3.7
+    environment:
+      - REACT_APP_SERVER_URL=//code-annotation-staging.srcd.run
+    commands:
+      - apk --update upgrade
+      - apk add --no-cache
+          bash make curl git
+          ca-certificates build-base
+          libxml2-dev protobuf
+          yarn
+      - make prepare-build
+      - make packages
+    debug: true
+    when:
+      event: [tag]
+
+  github_release:
+    image: plugins/github-release
+    secrets: [ github_token ]
+    files: build/*.tar.gz
+    when:
+      event: [tag]
