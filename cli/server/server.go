@@ -11,6 +11,8 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
+// version will be replaced automatically by the CI build.
+// See https://github.com/src-d/ci/blob/v1/Makefile.main#L56
 var version = "dev"
 
 type appConfig struct {
