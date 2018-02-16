@@ -22,6 +22,7 @@ const reducer = (state = initialState, action) => {
         userId: action.userId,
         username: action.username,
         avatarUrl: action.avatarUrl,
+        role: action.role,
       };
     case LOG_OUT: {
       return initialState;
@@ -44,9 +45,10 @@ export const logIn = () => dispatch =>
     .then(resp => {
       dispatch({
         type: LOG_IN,
-        userId: resp.userId,
+        userId: resp.id,
         username: resp.username,
         avatarUrl: resp.avatarURL,
+        role: resp.role,
       });
     })
     .catch(e => {
@@ -76,6 +78,10 @@ export const authMiddleware = store => next => action => {
       // redirect user from index page to experiment if user it authorized already
       if (user.loggedIn && result && result.name === 'index') {
         return next(push('/exp/1'));
+      }
+      // hide pages that are meant only for users with the requester role
+      if (user.role !== 'requester' && result && result.restrictReviewer) {
+        return next(replace('/forbidden'));
       }
       return next(action);
     })

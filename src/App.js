@@ -8,6 +8,7 @@ import Experiment from './pages/Experiment';
 import Final from './pages/Final';
 import Review from './pages/Review';
 import Export from './pages/Export';
+import Forbidden from './pages/Forbidden';
 
 class App extends Component {
   render() {
@@ -33,6 +34,9 @@ class App extends Component {
           </Fragment>
           <Fragment forRoute={namedRoutes.export}>
             <Export />
+          </Fragment>
+          <Fragment forRoute={namedRoutes.forbidden}>
+            <Forbidden />
           </Fragment>
           <Fragment forNoMatch>
             <div>not found</div>
