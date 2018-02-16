@@ -14,14 +14,17 @@ pipeline:
   # deployment to staging environment
 
   build_stg:
-    image: golang:1.8-alpine3.6
+    image: golang:1.9-alpine3.7
     environment:
-      - REACT_APP_SERVER_URL="//code-annotation-staging.srcd.run"
+      - REACT_APP_SERVER_URL=//code-annotation-staging.srcd.run
     commands:
       - apk --update upgrade
-      - apk add --no-cache make git curl ca-certificates bash build-base libxml2-dev protobuf nodejs=6.10.3-r1 nodejs-npm
-      - npm install -g yarn
-      - make build
+      - apk add --no-cache
+          bash make curl git
+          ca-certificates build-base
+          libxml2-dev protobuf
+          yarn
+      - make prepare-build
       - make packages
     debug: true
     when:

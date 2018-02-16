@@ -1,3 +1,7 @@
-FROM alpine:3.6
+FROM alpine:3.7
 ADD ./build/bin /bin
-ENTRYPOINT ["/bin/code-annotation"]
+
+RUN apk --update upgrade && \
+    apk add --no-cache ca-certificates
+
+ENTRYPOINT ["/bin/server"]

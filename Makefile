@@ -5,7 +5,10 @@ DEPENDENCIES = github.com/golang/dep/cmd/dep github.com/jteeuwen/go-bindata
 
 HOST ?= 127.0.0.1
 PORT ?= 8080
-SERVER_URL ?= //$(HOST):$(PORT)
+REACT_APP_SERVER_URL ?= //$(HOST):$(PORT) # frontend uses $(REACT_APP_SERVER_URL) as backend
+UI_DOMAIN ?= $(REACT_APP_SERVER_URL) # /oauth-callback redirects to $(UI_DOMAIN)/?token=__TOKEN__
+
+YARN_PRODUCTION ?= true
 
 # Tools
 YARN = yarn
@@ -14,32 +17,42 @@ GOLINT = golint
 GOVET = go vet
 BINDATA = go-bindata
 
+# ci variables
+TRAVIS_BUILD_DIR ?= $(shell pwd)
+PKG_OS = linux
+DOCKER_OS = linux
+DOCKER_ARCH = amd64
+
 # Including ci Makefile
 CI_REPOSITORY ?= https://github.com/src-d/ci.git
 CI_PATH ?= $(shell pwd)/.ci
 MAKEFILE := $(CI_PATH)/Makefile.main
 $(MAKEFILE):
 	@git clone --quiet --depth 1 -b v1 $(CI_REPOSITORY) $(CI_PATH);
-
 -include $(MAKEFILE)
 
-# set enviroment variables from .env file
-include .env
-export $(shell sed 's/=.*//' .env)
+# Set enviroment variables from .env file
+ENV ?= .env
+-include $(ENV)
+export $(shell [ -f "$(ENV)" ] && sed 's/=.*//' $(ENV))
+
 
 # Frontend
 
-dependencies-frontend:
-	$(YARN)	install
+dependencies-frontend-development:
+	$(MAKE) dependencies-frontend YARN_PRODUCTION=false
 
-test-frontend: dependencies-frontend
+dependencies-frontend:
+	$(YARN) install --production=$(YARN_PRODUCTION)
+
+test-frontend: dependencies-frontend-development
 	$(YARN) test
 
-lint-frontend: dependencies-frontend
+lint-frontend: dependencies-frontend-development
 	$(YARN) lint
 
 build-frontend: dependencies-frontend
-	REACT_APP_SERVER_URL=$(SERVER_URL) $(YARN) build
+	$(YARN) build
 
 dev-frontend: dependencies-frontend
 	$(YARN) start
@@ -54,9 +67,17 @@ build-backend: dependencies-backend
 lint-backend: dependencies-backend
 	$(GOLINT) ./server/...
 	$(GOVET) ./server/...
-	
+
 bindata:
-	$(BINDATA) -o ./server/assets/asset.go -pkg assets build/static/... build/*.json build/*.png build/index.html
+	$(BINDATA) \
+		-modtime 1 \
+		-pkg assets \
+		-o ./server/assets/asset.go \
+		build/static/... \
+		build/*.json \
+		build/*.png \
+		build/*.svg \
+		build/index.html
 
 prepare-build: | build-frontend build-backend bindata
 
@@ -68,6 +89,7 @@ gorun:
 serve: build-frontend build-backend gorun
 
 .PHONY: dependencies-frontend build-frontend dev-frontend \
+		dependencies-frontend-development prepare-build \
 		test-frontend lint-frontend \
 		dependencies-backend build-backend release-build \
 		lint-backend bindata \
