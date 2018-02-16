@@ -68,7 +68,7 @@ This will start a server locally, which you can access on [http://localhost:8080
 
 ### Import File Pairs for Annotation
 
-The file pairs must be provided via an [SQLite](https://sqlite.org/) database. The database **must follow the expected schema**, please [follow this link](./cli/examples/import/example.sql) to see an example.
+The file pairs must be provided via an [SQLite](https://sqlite.org/) database. The database **must follow the expected schema**, please [follow this link](./cli/import/examples/example.sql) to see an example.
 
 The `import` command will use those file pairs to create a new [SQLite](https://sqlite.org/) or [PostgreSQL](https://www.postgresql.org/) database that will be used internally by the Annotation Tool. The destination database does not need to be empty, new imported file pairs can be added to previous imports.
 
