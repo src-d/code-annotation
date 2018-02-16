@@ -70,7 +70,6 @@ lint-backend: dependencies-backend
 
 bindata:
 	$(BINDATA) \
-		-modtime 1 \
 		-pkg assets \
 		-o ./server/assets/asset.go \
 		build/static/... \
