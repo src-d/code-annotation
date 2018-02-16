@@ -1,10 +1,31 @@
 import React from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import { push } from 'redux-little-router';
 import { logOut } from '../state/user';
+import { makeUrl } from '../state/routes';
 import './PageHeader.less';
 
-function PageHeader({ username, avatarUrl, onLogoutClick }) {
+function PageHeader({
+  username,
+  role,
+  avatarUrl,
+  onReviewClick,
+  onLogoutClick,
+}) {
+  let reviewItem = null;
+  if (role === 'requester') {
+    reviewItem = (
+      <MenuItem eventKey={1.1} onClick={onReviewClick}>
+        Review
+      </MenuItem>
+    );
+  }
+  let divider = null;
+  if (reviewItem) {
+    divider = <MenuItem divider />;
+  }
+
   return (
     <Navbar fluid className="header">
       <Navbar.Header>
@@ -22,7 +43,9 @@ function PageHeader({ username, avatarUrl, onLogoutClick }) {
       </Navbar.Header>
       <Nav pullRight>
         <NavDropdown eventKey={1} title="dashboard" id="nav-dropdown">
-          <MenuItem eventKey={1.1} onClick={onLogoutClick}>
+          {reviewItem}
+          {divider}
+          <MenuItem eventKey={1.2} onClick={onLogoutClick}>
             Logout
           </MenuItem>
         </NavDropdown>
@@ -38,6 +61,7 @@ function PageHeader({ username, avatarUrl, onLogoutClick }) {
   );
 }
 
-export default connect(state => state.user, { onLogoutClick: logOut })(
-  PageHeader
-);
+export default connect(state => state.user, {
+  onReviewClick: () => push(makeUrl('review', { experiment: 1 })),
+  onLogoutClick: logOut,
+})(PageHeader);
