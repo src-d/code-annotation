@@ -5,7 +5,7 @@ import './Diff.less';
 
 class Diff extends PureComponent {
   render() {
-    const { diffString, className } = this.props;
+    const { diffString, leftLoc, rightLoc, className } = this.props;
     const diffHTML = Diff2Html.getPrettyHtml(diffString, {
       inputFormat: 'diff',
       outputFormat: 'side-by-side',
@@ -15,10 +15,16 @@ class Diff extends PureComponent {
       matchingMaxComparisons: 2500,
     });
     return (
-      <div
-        className={className}
-        dangerouslySetInnerHTML={{ __html: diffHTML }}
-      />
+      <div className={`diff ${className}`}>
+        <div className="diff__locs">
+          <div className="diff__loc left">{leftLoc} lines of code</div>
+          <div className="diff__loc right">{rightLoc} lines of code</div>
+        </div>
+        <div
+          className="diff__content"
+          dangerouslySetInnerHTML={{ __html: diffHTML }}
+        />
+      </div>
     );
   }
 }

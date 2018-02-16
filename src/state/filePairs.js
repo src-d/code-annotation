@@ -50,6 +50,8 @@ const reducer = (state = initialState, action) => {
             score: action.score,
             leftBlobId: action.leftBlobId,
             rightBlobId: action.rightBlobId,
+            leftLoc: action.leftLoc,
+            rightLoc: action.rightLoc,
           },
         },
       };

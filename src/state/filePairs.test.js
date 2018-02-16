@@ -52,6 +52,8 @@ describe('filePairs/reducer', () => {
         score: 0.987,
         leftBlobId: 'id1',
         rightBlobId: 'id2',
+        leftLoc: 1,
+        rightLoc: 2,
       })
     ).toMatchSnapshot();
   });

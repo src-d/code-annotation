@@ -84,6 +84,8 @@ class Experiment extends Component {
     const {
       fileLoading,
       diffString,
+      leftLoc,
+      rightLoc,
       assignmentsOptions,
       currentAssigmentId,
       selectAssigmentId,
@@ -106,7 +108,12 @@ class Experiment extends Component {
       <React.Fragment>
         <Row className="ex-page__content">
           <Col xs={12} className="ex-page__diff-col">
-            <Diff diffString={diffString} className="ex-page__diff" />
+            <Diff
+              diffString={diffString}
+              leftLoc={leftLoc}
+              rightLoc={rightLoc}
+              className="ex-page__diff"
+            />
           </Col>
         </Row>
         <Row className="ex-page__footer">
@@ -154,6 +161,8 @@ const mapStateToProps = state => {
     description,
     percent: getProgressPercent(state),
     diffString: diff,
+    leftLoc: filePair ? filePair.leftLoc : 0,
+    rightLoc: filePair ? filePair.rightLoc : 0,
     currentAssigmentId: currentAssigment ? currentAssigment.id : null,
     assignmentsOptions,
   };
