@@ -1,3 +1,5 @@
+@import '../../node_modules/bootstrap/less/variables.less';
+
 .header.navbar {
     &-default {
         margin: 0;
@@ -6,7 +8,8 @@
         border: none;
     }
 
-    .navbar-nav > li > a {
+    .navbar-nav > li > a,
+    .dropdown-menu > li > a {
         color: #808b8c;
         font-size: 12px;
         text-transform: uppercase;
@@ -17,7 +20,19 @@
         &:hover {
             text-decoration: none;
             color: #fff;
+            background: transparent;
         }
+    }
+
+    .navbar-nav > .open > a {
+        background: transparent;
+    }
+    .navbar-nav > li > .dropdown-menu {
+        color: #808b8c;
+        background: #2c3132;
+    }
+    .navbar-nav .caret {
+        color: @brand-info;
     }
 
     h1.navbar-brand {

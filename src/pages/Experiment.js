@@ -26,14 +26,12 @@ import './Experiment.less';
 
 class Experiment extends Component {
   render() {
-    const { user } = this.props;
-
     return (
       <div className="ex-page">
         <Helmet>
           <title>{this.props.name}</title>
         </Helmet>
-        <PageHeader {...user} />
+        <PageHeader />
         {this.renderMain()}
       </div>
     );
@@ -137,7 +135,7 @@ class Experiment extends Component {
 }
 
 const mapStateToProps = state => {
-  const { experiment, assignments, user } = state;
+  const { experiment, assignments } = state;
   const { error, loading, name, description } = experiment;
   const { list, currentAssigment } = assignments;
 
@@ -158,7 +156,6 @@ const mapStateToProps = state => {
     diffString: diff,
     currentAssigmentId: currentAssigment ? currentAssigment.id : null,
     assignmentsOptions,
-    user,
   };
 };
 

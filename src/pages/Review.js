@@ -15,14 +15,12 @@ import './Review.less';
 
 class Review extends Component {
   render() {
-    const { user } = this.props;
-
     return (
       <div className="review-page">
         <Helmet>
           <title>{`Review for experiment ${this.props.name}`}</title>
         </Helmet>
-        <PageHeader {...user} />
+        <PageHeader />
         {this.renderMain()}
       </div>
     );
@@ -111,7 +109,7 @@ class Review extends Component {
 }
 
 const mapStateToProps = state => {
-  const { experiment, filePairs, user } = state;
+  const { experiment, filePairs } = state;
   const { error, loading, fileLoading, name, description } = experiment;
   const { list: filePairsList, currentAnnotations } = filePairs;
 
@@ -138,7 +136,6 @@ const mapStateToProps = state => {
     mostSimilarFeatures,
     leastSimilarFeatures,
     features,
-    user,
   };
 };
 

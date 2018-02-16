@@ -23,7 +23,7 @@ class Final extends Component {
         <Helmet>
           <title>{expName}</title>
         </Helmet>
-        <PageHeader {...user} />
+        <PageHeader />
         <Grid>
           <Row>
             <Col xs={12}>
