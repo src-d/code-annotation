@@ -19,6 +19,7 @@ func NewUsers(db *sql.DB) *Users {
 
 const (
 	insertUsersSQL           = `INSERT INTO users (login, username, avatar_url, role) VALUES ($1, $2, $3, $4)`
+	updateUsersSQL           = `UPDATE users SET username = $1, avatar_url = $2, role = $3 WHERE login = $4`
 	selectUsersWhereLoginSQL = `SELECT * FROM users WHERE login=$1`
 	selectUsersWhereIDSQL    = `SELECT * FROM users WHERE id=$1`
 )
@@ -38,6 +39,13 @@ func (repo *Users) Create(user *model.User) error {
 	if newUser != nil {
 		*user = *newUser
 	}
+
+	return err
+}
+
+// Update the given user in the database
+func (repo *Users) Update(user *model.User) error {
+	_, err := repo.db.Exec(updateUsersSQL, user.Username, user.AvatarURL, user.Role, user.Login)
 
 	return err
 }

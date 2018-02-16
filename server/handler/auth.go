@@ -68,6 +68,16 @@ func OAuthCallback(
 				write(w, r, serializer.NewEmptyResponse(), err)
 				return
 			}
+		} else {
+			user.Username = ghUser.Username
+			user.AvatarURL = ghUser.AvatarURL
+			user.Role = ghUser.Role
+
+			if err = userRepo.Update(user); err != nil {
+				logger.Errorf("can't update user: %s", err)
+				write(w, r, serializer.NewEmptyResponse(), err)
+				return
+			}
 		}
 
 		token, err := jwt.MakeToken(user)
