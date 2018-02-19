@@ -59,7 +59,7 @@ func NewOAuth(clientID, clientSecret, restrictAccess, restrictRequesterAccess st
 }
 
 // GithubUser represents the user response returned by the GitHub auth.
-type githubUser struct {
+type GithubUser struct {
 	ID        int        `json:"id"`
 	Login     string     `json:"login"`
 	Username  string     `json:"name"`
@@ -95,7 +95,7 @@ func (o *OAuth) ValidateState(r *http.Request, state string) error {
 }
 
 // GetUser gets user from provider and return user model
-func (o *OAuth) GetUser(ctx context.Context, code string) (*githubUser, error) {
+func (o *OAuth) GetUser(ctx context.Context, code string) (*GithubUser, error) {
 	token, err := o.config.Exchange(ctx, code)
 	if err != nil {
 		return nil, fmt.Errorf("oauth exchange error: %s", err)
@@ -108,7 +108,7 @@ func (o *OAuth) GetUser(ctx context.Context, code string) (*githubUser, error) {
 	}
 	defer resp.Body.Close()
 
-	var user githubUser
+	var user GithubUser
 	err = json.NewDecoder(resp.Body).Decode(&user)
 	if err != nil {
 		return nil, fmt.Errorf("can't parse github user response: %s", err)
@@ -123,7 +123,7 @@ func (o *OAuth) GetUser(ctx context.Context, code string) (*githubUser, error) {
 
 // setRole sets the Role attribute of the given GitHub user based on the
 // organization and team memberships
-func (o *OAuth) setRole(client *http.Client, user *githubUser) error {
+func (o *OAuth) setRole(client *http.Client, user *GithubUser) error {
 	defaultRole := model.Requester
 
 	if o.restrictRequesterAccess != "" {

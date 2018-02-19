@@ -47,7 +47,7 @@ func NewTestOAuth(clientID, clientSecret, restrictAccess, restrictRequesterAcces
 }
 
 // getTestResult is a helper that performs oauth.setRole
-func getTestResult(oauth *OAuth, user githubUser) roleTestResult {
+func getTestResult(oauth *OAuth, user GithubUser) roleTestResult {
 	err := oauth.setRole(nil, &user)
 
 	if err != nil {
@@ -99,9 +99,9 @@ func (suite *OAuthSuite) TestGetUser() {
 	assert := suite.Assert()
 
 	var (
-		outsiderUser       = githubUser{Login: outsiderGroup}
-		accessGroupUser    = githubUser{Login: accessGroup}
-		requesterGroupUser = githubUser{Login: requesterGroup}
+		outsiderUser       = GithubUser{Login: outsiderGroup}
+		accessGroupUser    = GithubUser{Login: accessGroup}
+		requesterGroupUser = GithubUser{Login: requesterGroup}
 	)
 
 	for i, test := range tests {

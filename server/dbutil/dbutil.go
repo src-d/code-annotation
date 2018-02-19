@@ -30,6 +30,7 @@ type DB struct {
 	driver driver
 }
 
+// SQLDB returns the *sql.DB
 func (db *DB) SQLDB() *sql.DB {
 	return db.DB
 }
