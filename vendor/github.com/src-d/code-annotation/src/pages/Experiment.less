@@ -1,0 +1,74 @@
+@import '../../node_modules/bootstrap/less/variables.less';
+@import '../components/PageHeader.less';
+@import '../components/Experiment/Footer.less';
+
+@ex-page-header-inner-height: 23px; // this value depends on content, update it if you change block
+@ex-page-header-margin-bottom: 20px;
+@ex-page-diff-padding-bottom: 10px;
+@ex-page-footer-margin-bottom: 10px;
+
+@ex-page-diff-lift-height: @navbar-total-height + @ex-page-header-inner-height +
+    @ex-page-header-margin-bottom + @ex-footer-height +
+    @ex-page-footer-margin-bottom;
+
+.ex-page {
+    height: 100%;
+    overflow: hidden;
+
+    &__header {
+        margin-bottom: @ex-page-header-margin-bottom;
+    }
+
+    &__main {
+        height: 100%;
+    }
+
+    &__loader {
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    &__name {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    &__description {
+        color: @gray;
+    }
+
+    &__content {
+        height: 100%;
+    }
+
+    &__diff {
+        height: 100%;
+
+        // this is the only way I know to create 100% height page
+        // with header & footer & scrollable content in the middle (without flexbox)
+        //
+        // The idea: wrapper for scrollable div has padding-bottom
+        // of the height of footer + header, so the scrollable div has correct max-height
+        // and than margin-bottom: -(padding-bottom) to lift up footer
+        // the page has overflow hidden to hide empty space at the bottom
+        // for better understanding look at codepen: https://codepen.io/smacker/pen/mXyPQE
+        //
+        // Calculating height
+        // NB!!!! layout will be broken if any of inner heights are changed
+        // and variables aren't updated
+        padding-bottom: @ex-page-diff-lift-height + @ex-page-diff-padding-bottom;
+        // same as on top, but without padding of diff block iself
+        margin-bottom: -@ex-page-diff-lift-height;
+    }
+
+    &__footer {
+        padding-bottom: @ex-page-footer-margin-bottom;
+    }
+
+    &__oops {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 48px;
+    }
+}
