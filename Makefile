@@ -89,7 +89,7 @@ gorun:
 	go run cli/server/server.go
 
 ## Compiles the assets, and serve the tool through its API
-serve: build-frontend build-backend gorun
+serve: | build-frontend build-backend gorun
 
 .PHONY: dependencies-frontend build-frontend dev-frontend \
 		dependencies-frontend-development prepare-build build-app \
