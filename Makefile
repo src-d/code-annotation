@@ -1,7 +1,11 @@
 # Package configuration
 PROJECT = code-annotation
 COMMANDS = cli/server
-DEPENDENCIES = github.com/golang/dep/cmd/dep github.com/jteeuwen/go-bindata
+DEPENDENCIES = \
+	github.com/golang/dep/cmd/dep \
+	github.com/jteeuwen/go-bindata \
+	github.com/golang/lint/golint
+GO_LINTABLE_PACKAGES = $(shell go list ./... | grep -v '/vendor/')
 
 HOST ?= 127.0.0.1
 PORT ?= 8080
@@ -64,9 +68,11 @@ dependencies-backend: $(DEPENDENCIES)
 
 build-backend: dependencies-backend
 
-lint-backend: dependencies-backend
-	$(GOLINT) ./server/...
-	$(GOVET) ./server/...
+$(GO_LINTABLE_PACKAGES):
+	$(GOLINT) $@
+	$(GOVET) $@
+
+lint-backend: dependencies-backend $(GO_LINTABLE_PACKAGES)
 
 bindata:
 	$(BINDATA) \
