@@ -9,11 +9,16 @@ before_install:
   - nvm use 8
   - npm install -g yarn
 
-script:
-  - make lint-frontend
-  - make test-frontend
-  - make dependencies-backend
-  # uncommend next line when BE code will start passing go lint and go vet
-  # - make lint-backend
-  - make test
-  - make validate-commit
+jobs:
+  include:
+    - stage: Tests, linters and build
+      script:
+        - make lint-frontend
+        - make test-frontend
+        - make dependencies-backend
+        # uncommend next line when BE code will start passing go lint and go vet
+        # - make lint-backend
+        - make test
+        - make validate-commit
+    - script:
+        - make build-app

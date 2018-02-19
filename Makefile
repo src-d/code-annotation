@@ -80,7 +80,9 @@ bindata:
 
 prepare-build: | build-frontend build-backend bindata
 
-validate-commit: dependencies-backend no-changes-in-commit
+validate-commit: | dependencies-backend no-changes-in-commit
+
+build-app: | prepare-build packages
 
 # Run only server
 gorun:
@@ -90,8 +92,8 @@ gorun:
 serve: build-frontend build-backend gorun
 
 .PHONY: dependencies-frontend build-frontend dev-frontend \
-		dependencies-frontend-development prepare-build \
+		dependencies-frontend-development prepare-build build-app \
 		test-frontend lint-frontend \
 		dependencies-backend build-backend release-build \
 		lint-backend bindata \
-		gorun serve
+		gorun serve validate-commit
