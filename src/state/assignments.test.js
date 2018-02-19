@@ -14,6 +14,7 @@ import reducer, {
   SET_CURRENT_ASSIGMENT,
   MARK_ASSIGNMENT,
   selectAssigment,
+  undoneAssigment,
   nextAssigment,
   load,
   mark,
@@ -243,7 +244,7 @@ describe('assignments/actions', () => {
     });
   });
 
-  describe('nextAssigment', () => {
+  describe('undoneAssigment', () => {
     it('has unanswered assignments', () => {
       const list = [
         { id: 1, answer: 'yes' },
@@ -258,7 +259,7 @@ describe('assignments/actions', () => {
         },
       });
 
-      store.dispatch(nextAssigment(expId));
+      store.dispatch(undoneAssigment(expId));
       expect(store.getActions()).toEqual([push('/exp/1/2')]);
     });
 
@@ -272,8 +273,58 @@ describe('assignments/actions', () => {
         },
       });
 
+      store.dispatch(undoneAssigment(expId));
+      expect(store.getActions()).toEqual([push('/exp/1/finish')]);
+    });
+  });
+
+  describe('nextAssigment', () => {
+    it('should redirect to the next assigment', () => {
+      const current = { id: 1, answer: 'yes' };
+      const list = [current, { id: 2, answer: 'yes' }, { id: 3, answer: 'no' }];
+
+      const store = mockStore({
+        assignments: {
+          ...initialState,
+          list,
+          currentAssigment: current,
+        },
+      });
+
+      store.dispatch(nextAssigment(expId));
+      expect(store.getActions()).toEqual([push('/exp/1/2')]);
+    });
+
+    it('last assigment and no unanswered assignments', () => {
+      const current = { id: 2, answer: 'yes' };
+      const list = [{ id: 1, answer: 'yes' }, current];
+
+      const store = mockStore({
+        assignments: {
+          ...initialState,
+          list,
+          currentAssigment: current,
+        },
+      });
+
       store.dispatch(nextAssigment(expId));
       expect(store.getActions()).toEqual([push('/exp/1/finish')]);
+    });
+
+    it('last assigment and has unanswered assignments', () => {
+      const current = { id: 3, answer: 'no' };
+      const list = [{ id: 1, answer: 'yes' }, { id: 2, answer: null }, current];
+
+      const store = mockStore({
+        assignments: {
+          ...initialState,
+          list,
+          currentAssigment: current,
+        },
+      });
+
+      store.dispatch(nextAssigment(expId));
+      expect(store.getActions()).toEqual([push('/exp/1/2')]);
     });
   });
 
@@ -335,10 +386,12 @@ describe('assignments/actions', () => {
 
   describe('mark', () => {
     it('success', () => {
+      const currentAssigment = { id: 1, answer: 'yes' };
       const store = mockStore({
         assignments: {
           ...initialState,
-          list: [{ id: 1 }],
+          list: [currentAssigment],
+          currentAssigment,
         },
       });
 

@@ -108,16 +108,39 @@ export const selectAssigment = (expId, id) => (dispatch, getState) => {
   });
 };
 
-export const nextAssigment = (expId, op = push) => (dispatch, getState) => {
-  const { assignments } = getState();
-  const noAnswer = assignments.list.find(a => a.answer === null);
-  if (!noAnswer) {
+const goToQuestion = (expId, question, op = push) => dispatch => {
+  if (!question) {
     return dispatch(op(makeUrl('finish', { experiment: expId })));
   }
 
   return dispatch(
-    op(makeUrl('question', { experiment: expId, question: noAnswer.id }))
+    op(makeUrl('question', { experiment: expId, question: question.id }))
   );
+};
+
+export const undoneAssigment = (expId, op = push) => (dispatch, getState) => {
+  const { assignments } = getState();
+  const noAnswer = assignments.list.find(a => a.answer === null);
+  return dispatch(goToQuestion(expId, noAnswer, op));
+};
+
+export const nextAssigment = (expId, op = push) => (dispatch, getState) => {
+  const { assignments } = getState();
+  let currentIdx;
+  if (assignments.currentAssigment) {
+    currentIdx = assignments.list.findIndex(
+      a => a.id === assignments.currentAssigment.id
+    );
+  } else {
+    currentIdx = -1;
+  }
+
+  if (currentIdx >= assignments.list.length - 1) {
+    return dispatch(undoneAssigment(expId, op));
+  }
+
+  const question = assignments.list[currentIdx + 1];
+  return dispatch(goToQuestion(expId, question, op));
 };
 
 export const load = expId => dispatch => {

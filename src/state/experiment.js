@@ -2,7 +2,7 @@ import { LOCATION_CHANGED, replace } from 'redux-little-router';
 import api from '../api';
 import { namedRoutes } from './routes';
 import { add as addErrors } from './errors';
-import { load as loadAssigments, nextAssigment } from './assignments';
+import { load as loadAssigments, undoneAssigment } from './assignments';
 
 export const experimentId = 1; // hard-coded id for only experiment
 
@@ -84,7 +84,7 @@ export const middleware = () => next => action => {
     case namedRoutes.experiment:
       return next(load(experimentId))
         .then(() => next(loadAssigments(experimentId)))
-        .then(() => next(nextAssigment(experimentId, replace)));
+        .then(() => next(undoneAssigment(experimentId, replace)));
     default:
       return result;
   }
