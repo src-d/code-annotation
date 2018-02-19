@@ -70,7 +70,9 @@ Object {
     "1": Object {
       "diff": "content",
       "leftBlobId": "id1",
+      "leftLoc": 1,
       "rightBlobId": "id2",
+      "rightLoc": 2,
       "score": 0.987,
     },
   },

@@ -130,12 +130,14 @@ type filePairResponse struct {
 	Score       float64 `json:"score"`
 	LeftBlobID  string  `json:"leftBlobId"`
 	RightBlobID string  `json:"rightBlobId"`
+	LeftLOC     int     `json:"leftLoc"`
+	RightLOC    int     `json:"rightLoc"`
 }
 
 // NewFilePairResponse returns a Response for the given FilePair
-func NewFilePairResponse(fp *model.FilePair) *Response {
+func NewFilePairResponse(fp *model.FilePair, leftLOC, rightLOC int) *Response {
 	return newResponse(filePairResponse{
-		fp.ID, fp.Diff, fp.Score, fp.Left.BlobID, fp.Right.BlobID})
+		fp.ID, fp.Diff, fp.Score, fp.Left.BlobID, fp.Right.BlobID, leftLOC, rightLOC})
 }
 
 type listFilePairResponse struct {

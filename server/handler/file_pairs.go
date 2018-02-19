@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/serializer"
@@ -25,7 +26,13 @@ func GetFilePairDetails(repo *repository.FilePairs) RequestProcessFunc {
 			return nil, serializer.NewHTTPError(http.StatusNotFound, "no file-pair found")
 		}
 
-		return serializer.NewFilePairResponse(filePair), nil
+		leftLOC := len(strings.Split(filePair.Left.Content, "\n"))
+		rightLOC := len(strings.Split(filePair.Right.Content, "\n"))
+		if err != nil {
+			return nil, err
+		}
+
+		return serializer.NewFilePairResponse(filePair, leftLOC, rightLOC), nil
 	}
 }
 
