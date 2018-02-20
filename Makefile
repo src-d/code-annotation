@@ -3,11 +3,6 @@ PROJECT = code-annotation
 COMMANDS = cli/server
 DEPENDENCIES = github.com/golang/dep/cmd/dep github.com/jteeuwen/go-bindata
 
-HOST ?= 127.0.0.1
-PORT ?= 8080
-REACT_APP_SERVER_URL ?= //$(HOST):$(PORT) # frontend uses $(REACT_APP_SERVER_URL) as backend
-UI_DOMAIN ?= $(REACT_APP_SERVER_URL) # /oauth-callback redirects to $(UI_DOMAIN)/?token=__TOKEN__
-
 YARN_PRODUCTION ?= true
 
 # Tools

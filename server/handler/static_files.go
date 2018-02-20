@@ -2,30 +2,66 @@ package handler
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 
 	"github.com/src-d/code-annotation/server/assets"
 )
 
-// FrontendStatics handles the static-files requests, serving the files under the given staticsPath
-// if useIndexFallback is set to true and the requested file does not exist, the staticsPath/index.html will be served
-func FrontendStatics(staticsPath string, useIndexFallback bool) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		filepath := staticsPath + r.URL.Path
-		b, err := assets.Asset(filepath)
-		// fallback on index, will be handled by FE router
-		if err != nil {
-			filepath = staticsPath + "/index.html"
-			b, err = assets.Asset(filepath)
-			if err != nil {
-				http.NotFound(w, r)
-				return
-			}
-		}
-		info, err := assets.AssetInfo(filepath)
-		if err != nil {
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
-		http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(b))
+// Static contains handlers to serve static using go-bindata
+type Static struct {
+	dir       string
+	serverURL string
+}
+
+// NewStatic creates new Static
+func NewStatic(dir, serverURL string) *Static {
+	return &Static{dir, serverURL}
+}
+
+type options struct {
+	ServerURL   string      `json:"SERVER_URL"`
+	InitalState interface{} `json:"initialState"`
+}
+
+// ServeHTTP serves any static file from static directory or fallbacks on index.hml
+func (s *Static) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	filepath := s.dir + r.URL.Path
+	b, err := assets.Asset(filepath)
+	if err != nil {
+		s.ServeIndexHTML(nil)(w, r)
+		return
 	}
+	s.serveAsset(w, r, filepath, b)
+}
+
+// ServeIndexHTML serves index.html file with initial state
+func (s *Static) ServeIndexHTML(initialState interface{}) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		filepath := s.dir + "/index.html"
+		b, err := assets.Asset(filepath)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		bData, err := json.Marshal(options{
+			ServerURL:   s.serverURL,
+			InitalState: initialState,
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		b = bytes.Replace(b, []byte("window.REPLACE_BY_SERVER"), bData, 1)
+		s.serveAsset(w, r, filepath, b)
+	}
+}
+
+func (s *Static) serveAsset(w http.ResponseWriter, r *http.Request, filepath string, content []byte) {
+	info, err := assets.AssetInfo(filepath)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+	http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(content))
 }

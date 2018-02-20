@@ -6,3 +6,4 @@ global.localStorage = new LocalStorage('./localStorageTemp');
 
 global.window = document.defaultView;
 global.window.localStorage = global.localStorage;
+global.window.cas = {};

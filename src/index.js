@@ -17,6 +17,7 @@ import App from './App';
 
 const store = createStore(
   rootReducer,
+  window.cas.initialState || {},
   composeWithDevTools(
     compose(routerEnhancer, applyMiddleware(...[...middlewares, thunk]))
   )
