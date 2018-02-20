@@ -80,6 +80,8 @@ bindata:
 
 prepare-build: | build-frontend build-backend bindata
 
+validate-commit: dependencies-backend no-changes-in-commit
+
 # Run only server
 gorun:
 	go run cli/server/server.go

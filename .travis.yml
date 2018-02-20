@@ -16,3 +16,4 @@ script:
   # uncommend next line when BE code will start passing go lint and go vet
   # - make lint-backend
   - make test
+  - make validate-commit
