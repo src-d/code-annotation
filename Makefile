@@ -32,9 +32,9 @@ $(MAKEFILE):
 -include $(MAKEFILE)
 
 # Set enviroment variables from .env file
-ENV ?= .env
--include $(ENV)
-export $(shell [ -f "$(ENV)" ] && sed 's/=.*//' $(ENV))
+DOT_ENV ?= .env
+-include $(DOT_ENV)
+export $(shell [ -f "$(DOT_ENV)" ] && sed 's/=.*//' $(DOT_ENV))
 
 
 # Frontend
