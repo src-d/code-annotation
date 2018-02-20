@@ -30,11 +30,29 @@ func OAuthCallback(
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := oAuth.ValidateState(r, r.FormValue("state")); err != nil {
-			write(w, r, serializer.NewEmptyResponse(), serializer.NewHTTPError(http.StatusBadRequest))
+			errorText := "The state passed is incorrect or expired"
+			write(
+				w, r,
+				serializer.NewEmptyResponse(),
+				serializer.NewHTTPError(http.StatusBadRequest, errorText),
+			)
 			return
 		}
 
 		code := r.FormValue("code")
+		if code == "" {
+			errorText := r.FormValue("error_description")
+			if errorText == "" {
+				errorText = "OAuth provided didn't send code in callback"
+			}
+			write(
+				w, r,
+				serializer.NewEmptyResponse(),
+				serializer.NewHTTPError(http.StatusBadRequest, errorText),
+			)
+			return
+		}
+
 		ghUser, err := oAuth.GetUser(r.Context(), code)
 		if err == service.ErrNoAccess {
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
