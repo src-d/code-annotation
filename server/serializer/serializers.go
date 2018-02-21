@@ -82,6 +82,20 @@ func NewExperimentResponse(e *model.Experiment) *Response {
 	})
 }
 
+// NewExperimentsResponse returns a Response with a list of Experiments
+func NewExperimentsResponse(experiments []*model.Experiment) *Response {
+	result := make([]experimentResponse, len(experiments))
+	for i, e := range experiments {
+		result[i] = experimentResponse{
+			ID:          e.ID,
+			Name:        e.Name,
+			Description: e.Description,
+		}
+	}
+
+	return newResponse(result)
+}
+
 type assignmentResponse struct {
 	ID           int     `json:"id"`
 	UserID       int     `json:"userId"`
