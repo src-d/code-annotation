@@ -30,6 +30,8 @@ spec:
               value: "{{ .Values.authorization.restrictAccessGroup }}"
             - name: OAUTH_RESTRICT_REQUESTER_ACCESS
               value: "{{ .Values.authorization.restrictRequesterGroup }}"
+            - name: SERVER_URL
+              value: "//{{ .Values.ingress.hostname }}"
             - name: UI_DOMAIN
               value: "//{{ .Values.ingress.hostname }}"
             - name: DB_CONNECTION

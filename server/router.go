@@ -21,9 +21,9 @@ func Router(
 	logger *logrus.Logger,
 	jwt *service.JWT,
 	oauth *service.OAuth,
+	static *handler.Static,
 	uiDomain string,
 	dbWrapper *dbutil.DB,
-	staticsPath string,
 	exportsPath string,
 	version string,
 ) http.Handler {
@@ -98,8 +98,8 @@ func Router(
 
 	r.Get("/version", handler.Get(handler.Version(version)))
 
-	r.Get("/static/*", handler.FrontendStatics(staticsPath, false))
-	r.Get("/*", handler.FrontendStatics(staticsPath, true))
+	r.Get("/static/*", static.ServeHTTP)
+	r.Get("/*", static.ServeHTTP)
 
 	return r
 }

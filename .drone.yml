@@ -15,8 +15,6 @@ pipeline:
 
   build_stg:
     image: golang:1.9-alpine3.7
-    environment:
-      - REACT_APP_SERVER_URL=//code-annotation-staging.srcd.run
     commands:
       - apk --update upgrade
       - apk add --no-cache
