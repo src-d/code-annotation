@@ -4,6 +4,19 @@ import 'diff2html/dist/diff2html.css';
 import './Diff.less';
 
 class Diff extends PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.leftDiff = null;
+    this.rightDiff = null;
+
+    this.leftListen = true;
+    this.rightListen = true;
+
+    this.leftScrollListener = this.listerner('left').bind(this);
+    this.rightScrollListener = this.listerner('right').bind(this);
+  }
+
   render() {
     const { diffString, leftLoc, rightLoc, className } = this.props;
     const diffHTML = Diff2Html.getPrettyHtml(diffString, {
@@ -26,6 +39,55 @@ class Diff extends PureComponent {
         />
       </div>
     );
+  }
+
+  componentDidMount() {
+    this.listenScrolls();
+  }
+
+  componentWillUpdate() {
+    this.unListenScrolls();
+  }
+
+  componentDidUpdate() {
+    this.listenScrolls();
+  }
+
+  componentWillUnmount() {
+    this.unListenScrolls();
+  }
+
+  listenScrolls() {
+    const diffs = document.querySelectorAll('.d2h-file-side-diff');
+    if (diffs.length) {
+      [this.leftDiff, this.rightDiff] = diffs;
+      this.leftDiff.addEventListener('scroll', this.leftScrollListener);
+      this.rightDiff.addEventListener('scroll', this.rightScrollListener);
+    }
+  }
+
+  unListenScrolls() {
+    if (this.leftDiff) {
+      this.leftDiff.removeEventListener('scroll', this.leftScrollListener);
+    }
+    if (this.rightDiff) {
+      this.rightDiff.removeEventListener('scroll', this.rightScrollListener);
+    }
+  }
+
+  listerner(side) {
+    const oppositeSide = side === 'left' ? 'right' : 'left';
+
+    return e => {
+      if (!this[`${side}Listen`]) {
+        return;
+      }
+      this[`${oppositeSide}Listen`] = false;
+      this[`${oppositeSide}Diff`].scrollTop = e.target.scrollTop;
+      window.setTimeout(() => {
+        this[`${oppositeSide}Listen`] = true;
+      }, 1);
+    };
   }
 }
 
