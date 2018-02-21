@@ -9,6 +9,9 @@ const routes = {
   '/': {
     name: 'index',
     public: true,
+    '/dashboard': {
+      name: 'dashboard',
+    },
     '/exp/:experiment': {
       name: 'experiment',
       '/finish': {
