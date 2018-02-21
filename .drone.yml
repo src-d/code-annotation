@@ -22,8 +22,7 @@ pipeline:
           ca-certificates build-base
           libxml2-dev protobuf
           yarn
-      - make prepare-build
-      - make packages
+      - make build-app
     debug: true
     when:
       branch: [staging]

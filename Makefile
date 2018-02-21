@@ -1,7 +1,11 @@
 # Package configuration
 PROJECT = code-annotation
 COMMANDS = cli/server
-DEPENDENCIES = github.com/golang/dep/cmd/dep github.com/jteeuwen/go-bindata
+DEPENDENCIES = \
+	github.com/golang/dep/cmd/dep \
+	github.com/jteeuwen/go-bindata \
+	github.com/golang/lint/golint
+GO_LINTABLE_PACKAGES = $(shell go list ./... | grep -v '/vendor/')
 
 YARN_PRODUCTION ?= true
 
@@ -59,9 +63,11 @@ dependencies-backend: $(DEPENDENCIES)
 
 build-backend: dependencies-backend
 
-lint-backend: dependencies-backend
-	$(GOLINT) ./server/...
-	$(GOVET) ./server/...
+$(GO_LINTABLE_PACKAGES):
+	$(GOLINT) $@
+	$(GOVET) $@
+
+lint-backend: dependencies-backend $(GO_LINTABLE_PACKAGES)
 
 bindata:
 	$(BINDATA) \
@@ -75,18 +81,20 @@ bindata:
 
 prepare-build: | build-frontend build-backend bindata
 
-validate-commit: dependencies-backend no-changes-in-commit
+validate-commit: | dependencies-backend no-changes-in-commit
+
+build-app: | prepare-build packages
 
 # Run only server
 gorun:
 	go run cli/server/server.go
 
 ## Compiles the assets, and serve the tool through its API
-serve: build-frontend build-backend gorun
+serve: | build-frontend build-backend gorun
 
 .PHONY: dependencies-frontend build-frontend dev-frontend \
-		dependencies-frontend-development prepare-build \
+		dependencies-frontend-development prepare-build build-app \
 		test-frontend lint-frontend \
 		dependencies-backend build-backend release-build \
 		lint-backend bindata \
-		gorun serve
+		gorun serve validate-commit
