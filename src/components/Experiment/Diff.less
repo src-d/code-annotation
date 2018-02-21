@@ -12,13 +12,19 @@
     display: none;
 }
 
+.d2h-file-side-diff {
+    max-height: 100%;
+    overflow: auto;
+    position: relative;
+    margin-bottom: -5px;
+}
+
 .diff {
     // there is a bug in Chrome if I use flex here location div gets 0px height
     // but I can't reproduce it on simpler example
     // most probably related to http://jsfiddle.net/mLkp7L1j/2/
     // works in FF but doesn't work in Chrome now
     position: relative;
-    overflow: auto;
 
     &__locs {
         position: absolute;
