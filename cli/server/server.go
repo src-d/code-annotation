@@ -18,7 +18,7 @@ var version = "dev"
 
 type appConfig struct {
 	Env         string `envconfig:"ENV" default:"production"`
-	Host        string `envconfig:"HOST" default:"127.0.0.1"`
+	Host        string `envconfig:"HOST" default:"0.0.0.0"`
 	Port        int    `envconfig:"PORT" default:"8080"`
 	ServerURL   string `envconfig:"SERVER_URL"`
 	UIDomain    string `envconfig:"UI_DOMAIN"`
