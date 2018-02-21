@@ -2,8 +2,8 @@ import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import './ExperimentsList.less';
 
-function buttonText(procent) {
-  switch (procent) {
+function buttonText(percent) {
+  switch (percent) {
     case 0:
       return 'Begin';
     case 100:
@@ -18,23 +18,23 @@ function ExperimentsList({ experiments }) {
     <Table responsive className="experiments-list">
       <tbody>
         {experiments.map(exp => {
-          const started = exp.procent === 0;
-          const finished = exp.procent === 100;
+          const started = exp.percent === 0;
+          const finished = exp.percent === 100;
           return (
             <tr
               key={exp.id}
               className={`experiments-list__row${finished ? ' finished' : ''}`}
             >
               <td className="experiments-list__name">{exp.name}</td>
-              <td className="experiments-list__procent">{exp.procent}%</td>
+              <td className="experiments-list__percent">{exp.percent}%</td>
               <td className="experiments-list__additional-actions">
                 {!finished && !started ? (
-                  <a href="#">mark as finished</a>
+                  <a href="/">mark as finished</a>
                 ) : null}
               </td>
               <td className="experiments-list__actions">
                 <Button bsStyle="primary" bsSize="xsmall" disabled={finished}>
-                  {buttonText(exp.procent)}
+                  {buttonText(exp.percent)}
                 </Button>
               </td>
             </tr>

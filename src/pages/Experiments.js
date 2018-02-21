@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import PageHeader from '../components/PageHeader';
 import ExperimentsList from '../components/ExperimentsList';
 
-class Final extends Component {
+class Experiments extends Component {
   render() {
     const { user, experiments } = this.props;
 
@@ -45,10 +45,10 @@ class Final extends Component {
 const mapStateToProps = state => ({
   user: state.user,
   experiments: [
-    { id: 1, name: 'Lee Morgan Experiment', procent: 0 },
-    { id: 2, name: 'Chet Baker Experiment', procent: 36 },
-    { id: 2, name: 'Cliff Brown Experiment', procent: 100 },
+    { id: 1, name: 'Lee Morgan Experiment', percent: 0 },
+    { id: 2, name: 'Chet Baker Experiment', percent: 36 },
+    { id: 2, name: 'Cliff Brown Experiment', percent: 100 },
   ],
 });
 
-export default connect(mapStateToProps)(Final);
+export default connect(mapStateToProps)(Experiments);
