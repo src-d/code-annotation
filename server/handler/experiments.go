@@ -69,12 +69,12 @@ func GetExperiments(repo *repository.Experiments, assignmentsRepo *repository.As
 }
 
 func experimentProgress(repo *repository.Assignments, experimentID int, userID int) (float32, error) {
-	countAll, err := repo.CountUserAssigments(experimentID, userID)
+	countAll, err := repo.CountUserAssignment(experimentID, userID)
 	if err != nil {
 		return 0, fmt.Errorf("Error count of assigments from the DB: %v", err)
 	}
 
-	countComplete, err := repo.CountCompleteUserAssigments(experimentID, userID)
+	countComplete, err := repo.CountCompleteUserAssignment(experimentID, userID)
 	if err != nil {
 		return 0, fmt.Errorf("Error count of complete assigments from the DB: %v", err)
 	}

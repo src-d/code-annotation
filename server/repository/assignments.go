@@ -24,8 +24,8 @@ const (
 	selectAssignmentsWhereExpPairSQL = `SELECT * FROM assignments WHERE experiment_id=$1 AND pair_id=$2`
 	updateAssignmentsSQL             = `UPDATE assignments SET answer='%v', duration=%v WHERE id=%v`
 	countPendingIDsSQL               = `SELECT count(id) FROM file_pairs WHERE experiment_id=$1 AND id NOT IN (SELECT pair_id FROM assignments WHERE experiment_id=$1 AND user_id=$2)`
-	countUserAssigmentsSQL           = `SELECT COUNT(*) FROM assignments WHERE experiment_id=$1 AND user_id=$1`
-	countCompleteUserAssigmentsSQL   = `SELECT COUNT(*) FROM assignments WHERE experiment_id=$1 AND user_id=$1 AND answer IS NOT null`
+	countUserAssigmentsSQL           = `SELECT COUNT(*) FROM assignments WHERE experiment_id=$1 AND user_id=$2`
+	countCompleteUserAssigmentsSQL   = `SELECT COUNT(*) FROM assignments WHERE experiment_id=$1 AND user_id=$2 AND answer IS NOT null`
 )
 
 // IsInitialized returns true if the assignments are initialized for the given
@@ -155,8 +155,8 @@ func (repo *Assignments) Update(assignmentID int, answer string, duration int) e
 	return err
 }
 
-// CountUserAssigments returns number of assigments in given experiment for the given user
-func (repo *Assignments) CountUserAssigments(experimentID, userID int) (int, error) {
+// CountUserAssignment returns number of assigments in given experiment for the given user
+func (repo *Assignments) CountUserAssignment(experimentID, userID int) (int, error) {
 	row := repo.db.QueryRow(countUserAssigmentsSQL, experimentID, userID)
 
 	var count int
@@ -167,8 +167,8 @@ func (repo *Assignments) CountUserAssigments(experimentID, userID int) (int, err
 	return count, nil
 }
 
-// CountCompleteUserAssigments returns number of assigments with an answer in given experiment for the given user
-func (repo *Assignments) CountCompleteUserAssigments(experimentID, userID int) (int, error) {
+// CountCompleteUserAssignment returns number of assigments with an answer in given experiment for the given user
+func (repo *Assignments) CountCompleteUserAssignment(experimentID, userID int) (int, error) {
 	row := repo.db.QueryRow(countCompleteUserAssigmentsSQL, experimentID, userID)
 
 	var count int
