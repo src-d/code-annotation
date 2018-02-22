@@ -19,6 +19,7 @@ class Diff extends PureComponent {
 
   render() {
     const { diffString, leftLoc, rightLoc, className } = this.props;
+    const showLoc = leftLoc && rightLoc;
     const diffHTML = Diff2Html.getPrettyHtml(diffString, {
       inputFormat: 'diff',
       outputFormat: 'side-by-side',
@@ -29,12 +30,14 @@ class Diff extends PureComponent {
     });
     return (
       <div className={`diff ${className}`}>
-        <div className="diff__locs">
-          <div className="diff__loc left">{leftLoc} lines of code</div>
-          <div className="diff__loc right">{rightLoc} lines of code</div>
-        </div>
+        {showLoc && (
+          <div className="diff__locs">
+            <div className="diff__loc left">{leftLoc} lines of code</div>
+            <div className="diff__loc right">{rightLoc} lines of code</div>
+          </div>
+        )}
         <div
-          className="diff__content"
+          className={`diff__content ${showLoc ? '_with-loc' : ''}`}
           dangerouslySetInnerHTML={{ __html: diffHTML }}
         />
       </div>

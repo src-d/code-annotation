@@ -30,13 +30,14 @@ class Results extends Component {
     return (
       <Grid fluid className="review-results">
         <Row className="review-results__info">
-          <Col xs={4}>
+          <Col xs={12} className="review-results__info-col">
             <FormGroup>
               <Radio
                 inline
                 value="most"
                 checked={this.state.mode === 'most'}
                 onChange={this.onModeChange}
+                className={this.state.mode === 'most' ? '_checked' : ''}
               >
                 Most similar & disimilar Features
               </Radio>{' '}
@@ -45,16 +46,15 @@ class Results extends Component {
                 value="full"
                 checked={this.state.mode === 'full'}
                 onChange={this.onModeChange}
+                className={this.state.mode === 'full' ? '_checked' : ''}
               >
                 Full Output
               </Radio>
             </FormGroup>
-          </Col>
-          <Col xs={4} className="text-right">
-            Users Annotations: <b>{annotations.yes || 0} Similar</b> &{' '}
-            <b>{annotations.no || 0} Disimilar</b>
-          </Col>
-          <Col xs={4}>
+            <div className="review-results__stats">
+              Users Annotations: <b>{annotations.yes || 0} Similar</b> &{' '}
+              <b>{annotations.no || 0} Disimilar</b>
+            </div>
             <div className="review-results__score">
               Similarity Score: {score}
             </div>
@@ -73,6 +73,7 @@ class Results extends Component {
                     <FeaturesTable
                       title="Most Disimilar Features"
                       features={leastSimilarFeatures}
+                      bsStyle="danger"
                     />
                   </React.Fragment>
                 ) : (

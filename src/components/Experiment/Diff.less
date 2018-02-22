@@ -19,6 +19,10 @@
     margin-bottom: -5px;
 }
 
+.d2h-diff-tbody {
+    background: #fff;
+}
+
 .diff {
     // there is a bug in Chrome if I use flex here location div gets 0px height
     // but I can't reproduce it on simpler example
@@ -43,7 +47,9 @@
     }
 
     &__content {
-        padding-top: 20px;
         height: 100%;
+    }
+    &__content._with-loc {
+        padding-top: 20px;
     }
 }

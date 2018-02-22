@@ -1,7 +1,6 @@
 @import '../../../node_modules/bootstrap/less/variables.less';
 
 .review-results {
-    //height: 100%;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -9,12 +8,44 @@
     &__info {
         flex: 0 0;
         padding-top: 10px;
+        margin: 0 -30px 20px;
+    }
+
+    &__info-col {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-group {
+        margin: 0;
+    }
+
+    &__stats {
+        flex: 1;
+
+        padding: 0 36px;
+
+        text-align: right;
+        color: @gray-lighter;
+        font-weight: 300;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+
+        b {
+            white-space: nowrap;
+        }
     }
 
     &__score {
-        margin-top: -10px;
-        padding: 10px 20px;
-        background: @gray-lighter;
+        padding: 10px 36px;
+        color: @brand-success;
+        font-weight: 400;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: @gray-dark;
     }
 
     &__main {
@@ -64,5 +95,83 @@
         table:last-child {
             margin-bottom: 0;
         }
+    }
+
+    // bootstrap style overrides
+    .radio-inline {
+        color: @gray-lighter;
+        position: relative;
+        padding-left: 32px;
+        cursor: pointer;
+        line-height: 23px;
+        display: inline-block;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 300;
+        margin-right: 16px;
+
+        input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        &:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 22px;
+            height: 22px;
+            background: @gray-dark;
+            border-radius: 100%;
+        }
+
+        &._checked:after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: @brand-info;
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            border-radius: 100%;
+            transition: all 0.2s ease;
+        }
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+    .nav-tabs {
+        border-bottom: 1px solid transparent;
+    }
+
+    .nav-tabs > li > a,
+    .nav-tabs > li > a:hover,
+    .nav-tabs > li > a:focus {
+        background: @gray-dark;
+        color: @gray-lighter;
+        border: none;
+        border-radius: 0;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 300;
+        padding: 12px 26px;
+        margin-right: 6px;
+
+        &:hover {
+            color: @brand-info;
+        }
+    }
+
+    .nav-tabs > li.active > a,
+    .nav-tabs > li.active > a:hover,
+    .nav-tabs > li.active > a:focus {
+        background: @gray-darker;
+        color: @brand-info;
+        padding: 12px 40px;
     }
 }

@@ -2,9 +2,9 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 import './FeaturesTable.less';
 
-function FeaturesTable({ title, features }) {
+function FeaturesTable({ title, features, bsStyle }) {
   return (
-    <Table striped bordered condensed hover className="features-table">
+    <Table condensed className={`features-table ${bsStyle}`}>
       <thead>
         <tr>
           <th className="features-table__th-number" />
