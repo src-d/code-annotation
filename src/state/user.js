@@ -1,6 +1,7 @@
 import { LOCATION_CHANGED, replace, push } from 'redux-little-router';
 import api from '../api';
 import { add as addError } from './errors';
+import { makeUrl } from './routes';
 import TokenService from '../services/token';
 
 const initialState = {
@@ -77,7 +78,7 @@ export const authMiddleware = store => next => action => {
       }
       // redirect user from index page to experiment if user it authorized already
       if (user.loggedIn && result && result.name === 'index') {
-        return next(push('/exp/1'));
+        return next(push(makeUrl('dashboard')));
       }
       // hide pages that are meant only for users with the requester role
       if (user.role !== 'requester' && result && result.restrictReviewer) {
