@@ -34,7 +34,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        fileLoading: false,
         error: action.error,
       };
     case SET_EXPERIMENT:

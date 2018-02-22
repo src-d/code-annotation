@@ -32,7 +32,7 @@ describe('experiment/reducer', () => {
   it('LOAD_ERROR', () => {
     expect(
       reducer(
-        { ...initialState, loading: true, fileLoading: true },
+        { ...initialState, loading: true },
         { type: LOAD_ERROR, error: 'test error' }
       )
     ).toMatchSnapshot();
