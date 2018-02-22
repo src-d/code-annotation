@@ -80,6 +80,10 @@ function me() {
   return apiCall(`/api/me`);
 }
 
+function getExperiments() {
+  return apiCall(`/api/experiments`);
+}
+
 function getExperiment(experimentId) {
   return apiCall(`/api/experiments/${experimentId}`);
 }
@@ -134,6 +138,7 @@ function exportDownload(filename) {
 
 export default {
   me,
+  getExperiments,
   getExperiment,
   getAssignments,
   getFilePair,

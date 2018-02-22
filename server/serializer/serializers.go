@@ -68,28 +68,31 @@ func NewEmptyResponse() *Response {
 }
 
 type experimentResponse struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Progress    float32 `json:"progress"`
 }
 
 // NewExperimentResponse returns a Response for the passed Experiment
-func NewExperimentResponse(e *model.Experiment) *Response {
+func NewExperimentResponse(e *model.Experiment, progress float32) *Response {
 	return newResponse(experimentResponse{
 		ID:          e.ID,
 		Name:        e.Name,
 		Description: e.Description,
+		Progress:    progress,
 	})
 }
 
 // NewExperimentsResponse returns a Response with a list of Experiments
-func NewExperimentsResponse(experiments []*model.Experiment) *Response {
+func NewExperimentsResponse(experiments []*model.Experiment, progresses []float32) *Response {
 	result := make([]experimentResponse, len(experiments))
 	for i, e := range experiments {
 		result[i] = experimentResponse{
 			ID:          e.ID,
 			Name:        e.Name,
 			Description: e.Description,
+			Progress:    progresses[i],
 		}
 	}
 
