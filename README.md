@@ -73,18 +73,18 @@ For a complete reference of the PostgreSQL connection string, see the [documenta
 
 #### Set the Internal Database Connection
 
-Before starting the application you will need to set the `DB_CONNECTION` variable in the `.env` file. It should point to the database created with the `import` command.
+Before starting the application you will need to set the `CAT_DB_CONNECTION` variable in the `.env` file. It should point to the database created with the `import` command.
 
 This variable uses the same `DSN` string as the `import` command to point to a SQLite or PosgreSQL database.
 
 Some examples:
 
 ```
-DB_CONNECTION=sqlite:///home/user/internal.db
+CAT_DB_CONNECTION=sqlite:///home/user/internal.db
 ```
 
 ```
-DB_CONNECTION=postgres://testing:testing@localhost:5432/input?sslmode=disable
+CAT_DB_CONNECTION=postgres://testing:testing@localhost:5432/input?sslmode=disable
 ```
 
 ### Export Annotation Results
@@ -100,6 +100,7 @@ The DSN argument uses the same format as the `import` tool, see the previous sec
 In this case, origin will be the internal database, and destination the new database. This new database will have the same contents as the internal one.
 
 You can also download the results database from the web interface visiting:
+
 ```
 http://<your-hostname>/export
 ```
@@ -114,14 +115,14 @@ This is optional, if you don't set any restrictions all users with a valid GitHu
 
 To do so, set the following variables in your `.env` file:
 
-* `OAUTH_RESTRICT_ACCESS`
-* `OAUTH_RESTRICT_REQUESTER_ACCESS`
+* `CAT_OAUTH_RESTRICT_ACCESS`
+* `CAT_OAUTH_RESTRICT_REQUESTER_ACCESS`
 
 Both variables accept a string with either `org:<organization-name>` or `team:<team-id>`. For example:
 
 ```bash
-OAUTH_RESTRICT_ACCESS=org:my-organization
-OAUTH_RESTRICT_REQUESTER_ACCESS=team:123456
+CAT_OAUTH_RESTRICT_ACCESS=org:my-organization
+CAT_OAUTH_RESTRICT_REQUESTER_ACCESS=team:123456
 ```
 
 ## Contributing
