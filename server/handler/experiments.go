@@ -79,5 +79,9 @@ func experimentProgress(repo *repository.Assignments, experimentID int, userID i
 		return 0, fmt.Errorf("Error count of complete assigments from the DB: %v", err)
 	}
 
+	if countAll == 0 {
+		return 0, nil
+	}
+
 	return 100.0 * float32(countComplete) / float32(countAll), nil
 }
