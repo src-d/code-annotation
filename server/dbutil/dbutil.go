@@ -79,6 +79,8 @@ const (
 	alterExperimentsSequence = `ALTER SEQUENCE experiments_id_seq RESTART WITH 2`
 )
 
+const selectExperiment = `SELECT * FROM experiments WHERE id = $1`
+
 const selectFiles = `SELECT * FROM files`
 
 const insertFilePairs = `INSERT INTO file_pairs (
@@ -189,11 +191,20 @@ func (opts *Options) getLogger() *log.Logger {
 
 // ImportFiles imports pairs of files from the origin to the destination DB.
 // It copies the contents and processes the needed data (md5 hash, diff)
-func ImportFiles(originDB DB, destDB DB, opts Options) (success, failures int64, e error) {
+func ImportFiles(originDB DB, destDB DB, opts Options, experimentID int) (success, failures int64, e error) {
 
 	logger := opts.getLogger()
 
-	rows, err := originDB.Query(selectFiles)
+	rows, err := destDB.Query(selectExperiment, experimentID)
+	if err != nil {
+		return 0, 0, err
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return 0, 0, fmt.Errorf("Experiment with id %d doesn't exist", experimentID)
+	}
+
+	rows, err = originDB.Query(selectFiles)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -239,7 +250,7 @@ func ImportFiles(originDB DB, destDB DB, opts Options) (success, failures int64,
 			blobIDB, repositoryIDB, commitHashB, pathB, contentB, md5hash(contentB),
 			score,
 			diffText,
-			defaultExperimentID)
+			experimentID)
 
 		if err != nil {
 			logger.Printf("Failed to insert row\nerror: %v\n", err)
