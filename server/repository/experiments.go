@@ -19,7 +19,7 @@ func NewExperiments(db *sql.DB) *Experiments {
 
 // getWithQuery builds an Experiment from the given sql QueryRow. If the
 // Experiment does not exist, it returns nil, nil
-func (repo *Experiments) getWithQuery(queryRow *sql.Row) (*model.Experiment, error) {
+func (repo *Experiments) getWithQuery(queryRow scannable) (*model.Experiment, error) {
 	var exp model.Experiment
 
 	err := queryRow.Scan(&exp.ID, &exp.Name, &exp.Description)
@@ -34,10 +34,37 @@ func (repo *Experiments) getWithQuery(queryRow *sql.Row) (*model.Experiment, err
 	}
 }
 
-const selectExperimentsSQL = `SELECT * FROM experiments WHERE id=$1`
+const selectExperimentsWhereIDSQL = `SELECT * FROM experiments WHERE id=$1`
+const selectExperimentsSQL = `SELECT * FROM experiments`
 
 // GetByID returns the Experiment with the given ID. If the Experiment does not
 // exist, it returns nil, nil
 func (repo *Experiments) GetByID(id int) (*model.Experiment, error) {
-	return repo.getWithQuery(repo.db.QueryRow(selectExperimentsSQL, id))
+	return repo.getWithQuery(repo.db.QueryRow(selectExperimentsWhereIDSQL, id))
+}
+
+// GetAll returns all the Experiments
+func (repo *Experiments) GetAll() ([]*model.Experiment, error) {
+	rows, err := repo.db.Query(selectExperimentsSQL)
+	if err != nil {
+		return nil, fmt.Errorf("error getting experiments from the DB: %v", err)
+	}
+	defer rows.Close()
+
+	results := make([]*model.Experiment, 0)
+
+	for rows.Next() {
+		exp, err := repo.getWithQuery(rows)
+		if err != nil {
+			return nil, fmt.Errorf("DB error: %v", err)
+		}
+
+		results = append(results, exp)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("DB error: %v", err)
+	}
+
+	return results, nil
 }

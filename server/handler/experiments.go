@@ -28,3 +28,16 @@ func GetExperimentDetails(repo *repository.Experiments) RequestProcessFunc {
 		return serializer.NewExperimentResponse(experiment), nil
 	}
 }
+
+// GetExperiments returns a function that returns a *serializer.Response
+// with the list of existing experiments
+func GetExperiments(repo *repository.Experiments) RequestProcessFunc {
+	return func(r *http.Request) (*serializer.Response, error) {
+		experiments, err := repo.GetAll()
+		if err != nil {
+			return nil, err
+		}
+
+		return serializer.NewExperimentsResponse(experiments), nil
+	}
+}

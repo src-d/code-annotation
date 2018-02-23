@@ -61,6 +61,8 @@ func Router(
 
 		r.Get("/me", handler.Get(handler.Me(userRepo)))
 
+		r.Get("/experiments", handler.Get(handler.GetExperiments(experimentRepo)))
+
 		r.Route("/experiments/{experimentId}", func(r chi.Router) {
 
 			r.Get("/", handler.Get(handler.GetExperimentDetails(experimentRepo)))
