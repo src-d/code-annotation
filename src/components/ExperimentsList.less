@@ -1,0 +1,38 @@
+@import '../../node_modules/bootstrap/less/variables.less';
+
+.experiments-list {
+    &__actions {
+        text-align: center;
+    }
+
+    td {
+        vertical-align: middle !important;
+    }
+
+    tr:first-child > td {
+        border-top: 0;
+    }
+
+    &__name {
+        font-size: 16px;
+        white-space: nowrap;
+    }
+
+    &__percent {
+        font-size: 16px;
+        border-left: 1px solid @table-border-color;
+    }
+
+    &__additional-actions {
+        width: 100%;
+        text-align: right;
+    }
+
+    &__row.finished {
+        color: #ccc;
+    }
+
+    .btn {
+        width: 140px;
+    }
+}
