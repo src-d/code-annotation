@@ -59,46 +59,46 @@ func Router(
 	r.Route("/api", func(r chi.Router) {
 		r.Use(jwt.Middleware)
 
-		r.Get("/me", handler.Get(handler.Me(userRepo)))
+		r.Get("/me", handler.APIHandlerFunc(handler.Me(userRepo)))
 
-		r.Get("/experiments", handler.Get(handler.GetExperiments(experimentRepo, assignmentRepo)))
+		r.Get("/experiments", handler.APIHandlerFunc(handler.GetExperiments(experimentRepo, assignmentRepo)))
 
 		r.Route("/experiments/{experimentId}", func(r chi.Router) {
 
-			r.Get("/", handler.Get(handler.GetExperimentDetails(experimentRepo, assignmentRepo)))
+			r.Get("/", handler.APIHandlerFunc(handler.GetExperimentDetails(experimentRepo, assignmentRepo)))
 
 			r.Route("/assignments", func(r chi.Router) {
 
-				r.Get("/", handler.Get(handler.GetAssignmentsForUserExperiment(assignmentRepo)))
-				r.Put("/{assignmentId}", handler.Get(handler.SaveAssignment(assignmentRepo)))
+				r.Get("/", handler.APIHandlerFunc(handler.GetAssignmentsForUserExperiment(assignmentRepo)))
+				r.Put("/{assignmentId}", handler.APIHandlerFunc(handler.SaveAssignment(assignmentRepo)))
 			})
 
 			r.Route("/file-pairs", func(r chi.Router) {
 				r.Use(requesterACL.Middleware)
 
-				r.Get("/", handler.Get(handler.GetFilePairs(filePairRepo)))
-				r.Get("/{pairId}/annotations", handler.Get(handler.GetFilePairAnnotations(assignmentRepo)))
+				r.Get("/", handler.APIHandlerFunc(handler.GetFilePairs(filePairRepo)))
+				r.Get("/{pairId}/annotations", handler.APIHandlerFunc(handler.GetFilePairAnnotations(assignmentRepo)))
 			})
 
-			r.Get("/file-pairs/{pairId}", handler.Get(handler.GetFilePairDetails(filePairRepo)))
+			r.Get("/file-pairs/{pairId}", handler.APIHandlerFunc(handler.GetFilePairDetails(filePairRepo)))
 		})
 
 		r.Route("/features", func(r chi.Router) {
 			r.Use(requesterACL.Middleware)
 
-			r.Get("/{blobId}", handler.Get(handler.GetFeatures(featureRepo)))
+			r.Get("/{blobId}", handler.APIHandlerFunc(handler.GetFeatures(featureRepo)))
 		})
 
 		r.Route("/exports", func(r chi.Router) {
 			r.Use(requesterACL.Middleware)
 
-			r.Get("/", handler.Get(export.List))
-			r.Post("/", handler.Get(export.Create))
+			r.Get("/", handler.APIHandlerFunc(export.List))
+			r.Post("/", handler.APIHandlerFunc(export.Create))
 			r.Get("/{filename}/download", export.Download)
 		})
 	})
 
-	r.Get("/version", handler.Get(handler.Version(version)))
+	r.Get("/version", handler.APIHandlerFunc(handler.Version(version)))
 
 	r.Get("/static/*", static.ServeHTTP)
 	r.Get("/*", static.ServeHTTP)
