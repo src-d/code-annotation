@@ -147,11 +147,12 @@ export const middleware = store => next => action => {
 
   const result = next(action);
   const { payload } = action;
-  const expIdParam = +payload.params.experiment;
   const { experiment } = store.getState();
+  let expIdParam;
   let promise;
   switch (payload.route) {
     case namedRoutes.review:
+      expIdParam = +payload.params.experiment;
       return next(expLoad(expIdParam)).then(() =>
         next(load(expIdParam)).then(() => {
           const { filePairs } = store.getState();
@@ -169,6 +170,7 @@ export const middleware = store => next => action => {
         })
       );
     case namedRoutes.reviewPair:
+      expIdParam = +payload.params.experiment;
       promise = Promise.resolve();
       if (experiment.id !== expIdParam) {
         promise = next(expLoad(expIdParam)).then(() => next(load(expIdParam)));
