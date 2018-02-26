@@ -10,18 +10,20 @@ import (
 
 // Static contains handlers to serve static using go-bindata
 type Static struct {
-	dir       string
-	serverURL string
+	dir          string
+	serverURL    string
+	GaTrackingID string
 }
 
 // NewStatic creates new Static
-func NewStatic(dir, serverURL string) *Static {
-	return &Static{dir, serverURL}
+func NewStatic(dir, serverURL, GaTrackingID string) *Static {
+	return &Static{dir, serverURL, GaTrackingID}
 }
 
 type options struct {
-	ServerURL   string      `json:"SERVER_URL"`
-	InitalState interface{} `json:"initialState"`
+	ServerURL    string      `json:"SERVER_URL"`
+	GaTrackingID string      `json:"GA_TRACKING_ID"`
+	InitalState  interface{} `json:"initialState"`
 }
 
 // ServeHTTP serves any static file from static directory or fallbacks on index.hml

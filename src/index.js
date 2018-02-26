@@ -7,20 +7,26 @@ import { compose, createStore, applyMiddleware } from 'redux';
 import { initializeCurrentLocation } from 'redux-little-router';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
-import rootReducer, { middlewares } from './state';
+import rootReducer, { middlewares as stateMiddlewares } from './state';
 import { enhancer as routerEnhancer } from './state/routes';
 import { logIn } from './state/user';
 import TokenService from './services/token';
+import { load as loadGA, middleware as gaMiddleware } from './services/ga';
 import './override.less';
 import './index.less';
 import App from './App';
 
+const middlewares = [...stateMiddlewares, thunk];
+
+if (window.cas.GA_TRACKING_ID) {
+  loadGA(window.cas.GA_TRACKING_ID);
+  middlewares.push(gaMiddleware);
+}
+
 const store = createStore(
   rootReducer,
   window.cas.initialState || {},
-  composeWithDevTools(
-    compose(routerEnhancer, applyMiddleware(...[...middlewares, thunk]))
-  )
+  composeWithDevTools(compose(routerEnhancer, applyMiddleware(...middlewares)))
 );
 
 let promise = Promise.resolve();
