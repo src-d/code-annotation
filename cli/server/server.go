@@ -17,13 +17,14 @@ import (
 var version = "dev"
 
 type appConfig struct {
-	Env         string `envconfig:"ENV" default:"production"`
-	Host        string `envconfig:"HOST" default:"0.0.0.0"`
-	Port        int    `envconfig:"PORT" default:"8080"`
-	ServerURL   string `envconfig:"SERVER_URL"`
-	UIDomain    string `envconfig:"UI_DOMAIN"`
-	DBConn      string `envconfig:"DB_CONNECTION" default:"sqlite:///var/code-annotation/internal.db"`
-	ExportsPath string `envconfig:"EXPORTS_PATH" default:"./exports"`
+	Env          string `envconfig:"ENV" default:"production"`
+	Host         string `envconfig:"HOST" default:"0.0.0.0"`
+	Port         int    `envconfig:"PORT" default:"8080"`
+	ServerURL    string `envconfig:"SERVER_URL"`
+	UIDomain     string `envconfig:"UI_DOMAIN"`
+	DBConn       string `envconfig:"DB_CONNECTION" default:"sqlite:///var/code-annotation/internal.db"`
+	ExportsPath  string `envconfig:"EXPORTS_PATH" default:"./exports"`
+	GaTrackingID string `envconfig:"GA_TRACKING_ID" required:"false"`
 }
 
 func main() {
@@ -67,7 +68,7 @@ func main() {
 	envconfig.MustProcess("CAT_JWT", &jwtConfig)
 	jwt := service.NewJWT(jwtConfig.SigningKey)
 
-	static := handler.NewStatic("build", conf.ServerURL)
+	static := handler.NewStatic("build", conf.ServerURL, conf.GaTrackingID)
 
 	// start the router
 	router := server.Router(logger, jwt, oauth, static, conf.UIDomain, &db, conf.ExportsPath, version)

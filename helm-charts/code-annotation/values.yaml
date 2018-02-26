@@ -12,6 +12,7 @@ image:
   pullPolicy: IfNotPresent
 deployment:
     internalDatabasePath: "/var/code-annotation"
+    gaTrackingID: ""
 authorization:
     restrictAccessGroup: "org:src-d"
     restrictRequesterGroup: ""

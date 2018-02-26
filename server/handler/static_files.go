@@ -10,18 +10,26 @@ import (
 
 // Static contains handlers to serve static using go-bindata
 type Static struct {
-	dir       string
-	serverURL string
+	dir     string
+	options options
 }
 
 // NewStatic creates new Static
-func NewStatic(dir, serverURL string) *Static {
-	return &Static{dir, serverURL}
+func NewStatic(dir, serverURL, gaTrackingID string) *Static {
+	return &Static{
+		dir: dir,
+		options: options{
+			ServerURL:    serverURL,
+			GaTrackingID: gaTrackingID,
+		},
+	}
 }
 
+// struct which will be marshalled and exposed to frontend
 type options struct {
-	ServerURL   string      `json:"SERVER_URL"`
-	InitalState interface{} `json:"initialState"`
+	ServerURL    string      `json:"SERVER_URL"`
+	GaTrackingID string      `json:"GA_TRACKING_ID"`
+	InitalState  interface{} `json:"initialState"`
 }
 
 // ServeHTTP serves any static file from static directory or fallbacks on index.hml
@@ -45,10 +53,9 @@ func (s *Static) ServeIndexHTML(initialState interface{}) http.HandlerFunc {
 			return
 		}
 
-		bData, err := json.Marshal(options{
-			ServerURL:   s.serverURL,
-			InitalState: initialState,
-		})
+		options := s.options
+		options.InitalState = initialState
+		bData, err := json.Marshal(options)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
