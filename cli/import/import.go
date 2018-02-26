@@ -46,6 +46,7 @@ var opts struct {
 		Input  string `description:"SQLite database filepath"`
 		Output string `description:"SQLite or PostgreSQL Data Source Name"`
 	} `positional-args:"yes" required:"yes"`
+	ExperimentID int `long:"experiment-id" description:"Experiment ID to which files will be imported" required:"yes"`
 }
 
 func main() {
@@ -85,7 +86,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	success, failures, err := dbutil.ImportFiles(originDB, destDB, dbutil.Options{})
+	success, failures, err := dbutil.ImportFiles(originDB, destDB, dbutil.Options{}, opts.ExperimentID)
 	if err != nil {
 		log.Fatal(err)
 	}
