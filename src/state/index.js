@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import user, { authMiddleware } from './user';
+import experiments from './experiments';
 import experiment, { middleware as expMiddleware } from './experiment';
 import assignments, {
   middleware as assignmentsMiddleware,
@@ -21,6 +22,7 @@ export default combineReducers({
   router,
   errors,
   user,
+  experiments,
   experiment,
   assignments,
   filePairs,

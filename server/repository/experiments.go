@@ -9,12 +9,13 @@ import (
 
 // Experiments repository
 type Experiments struct {
-	db *sql.DB
+	db          *sql.DB
+	assignments *Assignments
 }
 
 // NewExperiments returns a new Experiments repository
 func NewExperiments(db *sql.DB) *Experiments {
-	return &Experiments{db: db}
+	return &Experiments{db: db, assignments: NewAssignments(db)}
 }
 
 // getWithQuery builds an Experiment from the given sql QueryRow. If the
@@ -24,14 +25,14 @@ func (repo *Experiments) getWithQuery(queryRow scannable) (*model.Experiment, er
 
 	err := queryRow.Scan(&exp.ID, &exp.Name, &exp.Description)
 
-	switch {
-	case err == sql.ErrNoRows:
+	if err == sql.ErrNoRows {
 		return nil, nil
-	case err != nil:
-		return nil, fmt.Errorf("Error getting experiment from the DB: %v", err)
-	default:
-		return &exp, nil
 	}
+	if err != nil {
+		return nil, fmt.Errorf("Error getting experiment from the DB: %v", err)
+	}
+
+	return &exp, nil
 }
 
 const selectExperimentsWhereIDSQL = `SELECT * FROM experiments WHERE id=$1`

@@ -5,14 +5,14 @@ import reducer, {
   LOAD,
   LOAD_SUCCESS,
   LOAD_ERROR,
-  SET_EXPERIMENT,
+  SET,
   load,
-} from './experiment';
+} from './experiments';
 import { ADD as ERROR_ADD } from './errors';
 
 const mockStore = configureMockStore([thunk]);
 
-describe('experiment/reducer', () => {
+describe('experiments/reducer', () => {
   it('LOAD', () => {
     expect(reducer(initialState, { type: LOAD })).toMatchSnapshot();
   });
@@ -38,26 +38,34 @@ describe('experiment/reducer', () => {
     ).toMatchSnapshot();
   });
 
-  it('SET_EXPERIMENT', () => {
+  it('SET', () => {
     expect(
-      reducer(initialState, { type: SET_EXPERIMENT, id: 1, name: 'test name' })
+      reducer(initialState, { type: SET, data: [{ some: 'data' }] })
     ).toMatchSnapshot();
   });
 });
 
-describe('experiment/actions', () => {
+describe('experiments/actions', () => {
   describe('load', () => {
     it('success', () => {
       const store = mockStore({
         experiment: initialState,
       });
 
+      const expList = [
+        {
+          id: 1,
+          name: 'experiment name',
+        },
+        {
+          id: 2,
+          name: 'experiment name',
+        },
+      ];
+
       fetch.mockResponse(
         JSON.stringify({
-          data: {
-            id: 1,
-            name: 'experiment name',
-          },
+          data: expList,
         })
       );
 
@@ -67,12 +75,11 @@ describe('experiment/actions', () => {
             type: LOAD,
           },
           {
-            type: 'ca/experiment/SET_EXPERIMENT',
-            id: 1,
-            name: 'experiment name',
+            type: SET,
+            data: expList,
           },
           {
-            type: 'ca/experiment/LOAD_SUCCESS',
+            type: LOAD_SUCCESS,
           },
         ]);
       });

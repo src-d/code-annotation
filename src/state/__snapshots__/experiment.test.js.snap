@@ -12,7 +12,6 @@ Object {
 exports[`experiment/reducer LOAD_ERROR 1`] = `
 Object {
   "error": "test error",
-  "fileLoading": false,
   "id": null,
   "loading": false,
   "name": null,

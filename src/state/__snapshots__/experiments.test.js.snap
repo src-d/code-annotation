@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`experiments/reducer LOAD 1`] = `
+Object {
+  "error": null,
+  "list": Array [],
+  "loading": true,
+}
+`;
+
+exports[`experiments/reducer LOAD_ERROR 1`] = `
+Object {
+  "error": "test error",
+  "list": Array [],
+  "loading": false,
+}
+`;
+
+exports[`experiments/reducer LOAD_SUCCESS 1`] = `
+Object {
+  "error": null,
+  "list": Array [],
+  "loading": false,
+}
+`;
+
+exports[`experiments/reducer SET 1`] = `
+Object {
+  "error": null,
+  "list": Array [
+    Object {
+      "some": "data",
+    },
+  ],
+  "loading": true,
+}
+`;
