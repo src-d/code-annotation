@@ -17,6 +17,16 @@ describe('routers', () => {
     expect(store.getActions()).toEqual([action]);
   });
 
+  it('not found', () => {
+    const store = MiddlewaredMockStore(reducer(undefined, {}));
+    const action = {
+      type: LOCATION_CHANGED,
+      payload: {},
+    };
+    store.dispatch(action);
+    expect(store.getActions()).toEqual([]);
+  });
+
   describe('experiment', () => {
     it('should load experiment and redirect to question page', () => {
       const store = MiddlewaredMockStore(
