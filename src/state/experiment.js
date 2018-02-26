@@ -4,8 +4,6 @@ import { namedRoutes } from './routes';
 import { add as addErrors } from './errors';
 import { load as loadAssigments, undoneAssigment } from './assignments';
 
-export const experimentId = 1; // hard-coded id for only experiment
-
 /* reducer */
 
 export const initialState = {
@@ -79,8 +77,10 @@ export const middleware = () => next => action => {
 
   const result = next(action);
   const { payload } = action;
+  let experimentId;
   switch (payload.route) {
     case namedRoutes.experiment:
+      experimentId = +payload.params.experiment;
       return next(load(experimentId))
         .then(() => next(loadAssigments(experimentId)))
         .then(() => next(undoneAssigment(experimentId, replace)));

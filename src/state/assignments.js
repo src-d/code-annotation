@@ -11,8 +11,6 @@ export const ANSWER_MAYBE = 'maybe';
 export const ANSWER_DIFFERENT = 'no';
 export const ANSWER_SKIP = 'skip';
 
-export const experimentId = 1; // hard-coded id for only experiment
-
 /* reducer */
 
 export const initialState = {
@@ -189,11 +187,13 @@ export const middleware = store => next => action => {
   const result = next(action);
   const { payload } = action;
   const { experiment } = store.getState();
+  let experimentId;
   let promise;
   switch (payload.route) {
     case namedRoutes.question:
+      experimentId = +payload.params.experiment;
       promise = Promise.resolve();
-      if (experiment.id !== +payload.params.experiment) {
+      if (experiment.id !== experimentId) {
         promise = next(expLoad(experimentId));
       }
       return promise
@@ -202,8 +202,9 @@ export const middleware = store => next => action => {
           next(selectAssigment(experimentId, +payload.params.question))
         );
     case namedRoutes.finish:
+      experimentId = +payload.params.experiment;
       promise = Promise.resolve();
-      if (experiment.id !== +payload.params.experiment) {
+      if (experiment.id !== experimentId) {
         promise = next(expLoad(experimentId));
       }
       return promise.then(() => next(load(experimentId)));

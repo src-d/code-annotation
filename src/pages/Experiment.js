@@ -11,7 +11,6 @@ import Diff from '../components/Experiment/Diff';
 import Selector from '../components/Experiment/Selector';
 import Actions from '../components/Experiment/Actions';
 import AdditionActions from '../components/Experiment/AdditionActions';
-import { experimentId } from '../state/experiment';
 import {
   markCurrent,
   ANSWER_SIMILAR,
@@ -82,6 +81,7 @@ class Experiment extends Component {
 
   renderContent() {
     const {
+      expId,
       fileLoading,
       diffString,
       leftLoc,
@@ -122,7 +122,7 @@ class Experiment extends Component {
               title="Previous"
               options={assignmentsOptions}
               value={currentAssigmentId}
-              onChange={e => selectAssigmentId(e.target.value)}
+              onChange={e => selectAssigmentId(expId, e.target.value)}
             />
           </Col>
           <Col xs={6} className="ex-page__actions">
@@ -133,7 +133,7 @@ class Experiment extends Component {
             />
           </Col>
           <Col xs={3} className="ex-page__additional-actions">
-            <AdditionActions skip={skip} finish={finish} />
+            <AdditionActions skip={skip} finish={() => finish(expId)} />
           </Col>
         </Row>
       </React.Fragment>
@@ -143,7 +143,7 @@ class Experiment extends Component {
 
 const mapStateToProps = state => {
   const { experiment, assignments } = state;
-  const { error, loading, name, description } = experiment;
+  const { error, loading, id, name, description } = experiment;
   const { list, currentAssigment } = assignments;
 
   const filePair = getCurrentFilePair(state);
@@ -157,6 +157,7 @@ const mapStateToProps = state => {
   return {
     error,
     loading,
+    expId: id,
     name,
     description,
     percent: getProgressPercent(state),
@@ -173,11 +174,9 @@ const mapDispatchToProps = dispatch => ({
   markMaybe: () => dispatch(markCurrent(ANSWER_MAYBE)),
   markDifferent: () => dispatch(markCurrent(ANSWER_DIFFERENT)),
   skip: () => dispatch(markCurrent(ANSWER_SKIP)),
-  selectAssigmentId: id =>
-    dispatch(
-      push(makeUrl('question', { experiment: experimentId, question: id }))
-    ),
-  finish: () => dispatch(push(makeUrl('finish', { experiment: experimentId }))),
+  selectAssigmentId: (expId, id) =>
+    dispatch(push(makeUrl('question', { experiment: expId, question: id }))),
+  finish: expId => dispatch(push(makeUrl('finish', { experiment: expId }))),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Experiment);
