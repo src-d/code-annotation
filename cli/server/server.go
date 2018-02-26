@@ -29,7 +29,7 @@ type appConfig struct {
 func main() {
 	// main configuration
 	var conf appConfig
-	envconfig.MustProcess("", &conf)
+	envconfig.MustProcess("CAT", &conf)
 	if conf.ServerURL == "" {
 		conf.ServerURL = fmt.Sprintf("//%s:%d", conf.Host, conf.Port)
 	}
@@ -57,14 +57,14 @@ func main() {
 
 	// create services
 	var oauthConfig service.OAuthConfig
-	envconfig.MustProcess("oauth", &oauthConfig)
+	envconfig.MustProcess("CAT_OAUTH", &oauthConfig)
 	oauth := service.NewOAuth(
 		oauthConfig.ClientID, oauthConfig.ClientSecret,
 		oauthConfig.RestrictAccess, oauthConfig.RestrictRequesterAccess,
 	)
 
 	var jwtConfig service.JWTConfig
-	envconfig.MustProcess("jwt", &jwtConfig)
+	envconfig.MustProcess("CAT_JWT", &jwtConfig)
 	jwt := service.NewJWT(jwtConfig.SigningKey)
 
 	static := handler.NewStatic("build", conf.ServerURL)
