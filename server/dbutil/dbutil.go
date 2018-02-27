@@ -199,10 +199,12 @@ func ImportFiles(originDB DB, destDB DB, opts Options, experimentID int) (succes
 	if err != nil {
 		return 0, 0, err
 	}
-	defer rows.Close()
+
 	if !rows.Next() {
+		rows.Close()
 		return 0, 0, fmt.Errorf("Experiment with id %d doesn't exist", experimentID)
 	}
+	rows.Close()
 
 	rows, err = originDB.Query(selectFiles)
 	if err != nil {
