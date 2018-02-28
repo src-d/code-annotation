@@ -23,11 +23,14 @@ DOCKER_OS = linux
 DOCKER_ARCH = amd64
 
 # Including ci Makefile
-CI_REPOSITORY ?= https://github.com/src-d/ci.git
+#CI_REPOSITORY ?= https://github.com/src-d/ci.git
+CI_REPOSITORY ?= https://github.com/carlosms/ci.git
+#CI_BRANCH ?= v1
+CI_BRANCH ?= add-drone-v1
 CI_PATH ?= $(shell pwd)/.ci
 MAKEFILE := $(CI_PATH)/Makefile.main
 $(MAKEFILE):
-	@git clone --quiet --depth 1 -b v1 $(CI_REPOSITORY) $(CI_PATH);
+	@git clone --quiet --depth 1 -b $(CI_BRANCH) $(CI_REPOSITORY) $(CI_PATH);
 -include $(MAKEFILE)
 
 # Set enviroment variables from .env file
