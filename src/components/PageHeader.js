@@ -11,20 +11,30 @@ function PageHeader({
   role,
   avatarUrl,
   onReviewClick,
+  onExportClick,
   onLogoutClick,
 }) {
-  let reviewItem = null;
-  if (role === 'requester') {
-    reviewItem = (
-      <MenuItem eventKey={1.1} onClick={onReviewClick}>
-        Review
-      </MenuItem>
-    );
-  }
-  let divider = null;
-  if (reviewItem) {
-    divider = <MenuItem divider />;
-  }
+  const menuItems = [
+    { name: 'Review', onClick: onReviewClick, role: 'requester' },
+    { name: 'Export', onClick: onExportClick, role: 'requester' },
+    { role: 'requester' },
+    { name: 'Logout', onClick: onLogoutClick },
+  ];
+
+  const items = menuItems.reduce((acc, item, i) => {
+    if (item.role && item.role !== role) {
+      return acc;
+    }
+    if (!item.name) {
+      return [...acc, <MenuItem divider key={i} />];
+    }
+    return [
+      ...acc,
+      <MenuItem eventKey={i} onClick={item.onClick} key={i}>
+        {item.name}
+      </MenuItem>,
+    ];
+  }, []);
 
   return (
     <Navbar fluid className="header">
@@ -43,11 +53,7 @@ function PageHeader({
       </Navbar.Header>
       <Nav pullRight>
         <NavDropdown eventKey={1} title="dashboard" id="nav-dropdown">
-          {reviewItem}
-          {divider}
-          <MenuItem eventKey={1.2} onClick={onLogoutClick}>
-            Logout
-          </MenuItem>
+          {items}
         </NavDropdown>
         <NavItem eventKey={2}>
           <img
@@ -63,5 +69,6 @@ function PageHeader({
 
 export default connect(state => state.user, {
   onReviewClick: () => push(makeUrl('review', { experiment: 1 })),
+  onExportClick: () => push(makeUrl('export')),
   onLogoutClick: logOut,
 })(PageHeader);
