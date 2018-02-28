@@ -39,7 +39,7 @@ class Results extends Component {
                 onChange={this.onModeChange}
                 className={this.state.mode === 'most' ? '_checked' : ''}
               >
-                Most similar & disimilar Features
+                Most similar & dissimilar Features
               </Radio>{' '}
               <Radio
                 inline
@@ -53,7 +53,7 @@ class Results extends Component {
             </FormGroup>
             <div className="review-results__stats">
               Users Annotations: <b>{annotations.yes || 0} Similar</b> &{' '}
-              <b>{annotations.no || 0} Disimilar</b>
+              <b>{annotations.no || 0} Dissimilar</b>
             </div>
             <div className="review-results__score">
               Similarity Score: {score}
@@ -71,7 +71,7 @@ class Results extends Component {
                       features={mostSimilarFeatures}
                     />
                     <FeaturesTable
-                      title="Most Disimilar Features"
+                      title="Most Dissimilar Features"
                       features={leastSimilarFeatures}
                       bsStyle="danger"
                     />
