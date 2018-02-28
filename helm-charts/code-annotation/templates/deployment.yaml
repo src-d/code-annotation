@@ -32,8 +32,6 @@ spec:
               value: "{{ .Values.authorization.restrictRequesterGroup }}"
             - name: CAT_SERVER_URL
               value: "//{{ .Values.ingress.hostname }}"
-            - name: CAT_UI_DOMAIN
-              value: "//{{ .Values.ingress.hostname }}"
             - name: CAT_DB_CONNECTION
               value: "sqlite://{{ .Values.deployment.internalDatabasePath }}/internal.db"
             - name: CAT_OAUTH_CLIENT_ID

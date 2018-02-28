@@ -23,7 +23,6 @@ func Router(
 	oauth *service.OAuth,
 	diffService *service.Diff,
 	static *handler.Static,
-	uiDomain string,
 	dbWrapper *dbutil.DB,
 	exportsPath string,
 	version string,
@@ -40,7 +39,7 @@ func Router(
 
 	// cors options
 	corsOptions := cors.Options{
-		AllowedOrigins:   []string{uiDomain},
+		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "OPTIONS"},
 		AllowedHeaders:   []string{"Location", "Authorization", "Content-Type"},
 		AllowCredentials: true,
