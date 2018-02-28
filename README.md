@@ -20,23 +20,44 @@ Source code annotation tool offers an UI to annotate source code and review thes
 
 ## Installation
 
-## Github OAuth tokens
+### Environment Variables
 
-1. You need an OAuth application on GitHub. See [how to create OAuth applications on GitHub](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/).
+The next sections make use of several environment variables to configure the application. In this table you will find all of them grouped as a quick reference:
 
-In order to be able to use this application while running the tool locally, make sure you add http://127.0.0.1:8080/oauth-callback to the authorization callback URL field.
+| Variable | Required | Default value | Meaning |
+| -- | -- | -- | -- |
+| `CAT_JWT_SIGNING_KEY` | YES | - | Key used to sign JWT (JSON Web Tokens) in the server |
+| `CAT_OAUTH_CLIENT_ID` | YES | - | GitHub application [OAuth credentials](#github-oauth-tokens) |
+| `CAT_OAUTH_CLIENT_SECRET` | YES | - | GitHub application [OAuth credentials](#github-oauth-tokens) |
+| `CAT_OAUTH_RESTRICT_ACCESS` | | - | [Application access control](#access-control) based on GitHub groups or teams |
+| `CAT_OAUTH_RESTRICT_REQUESTER_ACCESS` | | - | [User role control](#access-control) based on GitHub groups or teams |
+| `CAT_HOST` | | `0.0.0.0` | IP address to bind the HTTP server |
+| `CAT_PORT` | | `8080` | Port address to bind the HTTP server |
+| `CAT_SERVER_URL` | | `<CAT_HOST>:<CAT_PORT>` | URL used to access the application (i.e. public hostname) |
+| `CAT_UI_DOMAIN` | | `<CAT_HOST>:<CAT_PORT>` | URL used to access the frontend development server |
+| `CAT_DB_CONNECTION` | | `sqlite:///var/code-annotation/internal.db` | Points to the internal application database. [Read below](#importing-and-exporting-data) for the complete syntax |
+| `CAT_EXPORTS_PATH` | | `./exports` | Folder where the SQLite files will be created when requested from `http://<your-hostname>/export` |
+| `CAT_ENV` | | `production` | Sets the log level. Use `dev` to enable debug log messages |
 
-2. Copy `.env.tpl` to `.env`.
+### Github OAuth Tokens
 
-3. Retrieve the values for your application's Client ID and Client Secret from the [GitHub Developer Settings page](https://github.com/settings/developers) and add them to the end of the corresponding lines in .env.
+In order to authenticate users with their Github account, you need to set up an OAuth application on GitHub. See [how to create OAuth applications in their documentation](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/). Make sure the "Authorization callback URL" points to `http://<your-hostname>/oauth-callback`.
+
+Retrieve the values for your application's Client ID and Client Secret from the [GitHub Developer Settings page](https://github.com/settings/developers) and set them to the environment variables `CAT_OAUTH_CLIENT_ID` and `CAT_OAUTH_CLIENT_SECRET`.
 
 ### Docker
 
-docker run --env-file .env --rm -p 8080:8080 srcd/code-annotation
+```bash
+$ docker run \
+    -e CAT_OAUTH_CLIENT_ID=XXXX \
+    -e CAT_OAUTH_CLIENT_SECRET=YYYY \
+    -e CAT_JWT_SIGNING_KEY=ZZZZ \
+    --rm -p 8080:8080 srcd/code-annotation
+```
 
 ### Non-docker
 
-Download binary from [releases](https://github.com/src-d/code-annotation/releases) for your platform.
+Download the binary from [releases](https://github.com/src-d/code-annotation/releases) for your platform.
 
 ## Importing and Exporting Data
 
@@ -73,7 +94,7 @@ For a complete reference of the PostgreSQL connection string, see the [documenta
 
 #### Set the Internal Database Connection
 
-Before starting the application you will need to set the `CAT_DB_CONNECTION` variable in the `.env` file. It should point to the database created with the `import` command.
+Before starting the application you will need to set the `CAT_DB_CONNECTION` environment variable. It should point to the database created with the `import` command.
 
 This variable uses the same `DSN` string as the `import` command to point to a SQLite or PosgreSQL database.
 
@@ -107,13 +128,13 @@ http://<your-hostname>/export
 
 The annotations made by the users will be stored in the **`assignments`** table.
 
-## Access control
+## Access Control
 
 It is possible to restrict access and choose each user's role by adding their GitHub accounts to a specific [organization](https://help.github.com/articles/collaborating-with-groups-in-organizations/) or [team](https://help.github.com/articles/organizing-members-into-teams/).
 
 This is optional, if you don't set any restrictions all users with a valid GitHub account will be able to login as a Requester. You may also set a restriction only for Requester users, and leave open access to anyone as Workers.
 
-To do so, set the following variables in your `.env` file:
+To do so, set the following environment variables:
 
 * `CAT_OAUTH_RESTRICT_ACCESS`
 * `CAT_OAUTH_RESTRICT_REQUESTER_ACCESS`

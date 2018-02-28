@@ -46,8 +46,9 @@ plumbing: packp, Skip argument validations for unknown capabilities. Fixes #623
 
 ## Development
 
-> Please note: you will need a .env file configured with working GitHub OAuth credentials to run the application in development mode.
-> Please follow the [README Installation section](./README.md#installation) for instructions on how to do it.
+For convenience, you can create a `.env` file with all the environment variables described in the [README](./README.md). A template with a sample configuration suitable for development is provided in `.env.tpl`. You can copy it to `.env` and set up the variables there.
+
+_Note_: you will working GitHub OAuth credentials to run the application in development mode, either by setting the environment variables, or through the `.env` file. In order to be able to use this application while running the tool locally, make sure you use `http://127.0.0.1:8080/oauth-callback` as the "Authorization callback URL". Please follow the [README Installation section](./README.md#installation) for instructions on how to do it.
 
 ### Global dependencies
 
