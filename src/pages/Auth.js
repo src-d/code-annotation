@@ -1,49 +1,32 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-bootstrap';
+import { Helmet } from 'react-helmet';
+import PageHeader from '../components/PageHeader';
 import Loader from '../components/Loader';
-import TokenService from '../services/token';
 import { auth } from '../state/user';
+import './Auth.less';
 
 class Auth extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      error: '',
-    };
-  }
-
   componentDidMount() {
     this.props.auth();
   }
 
   render() {
-    const { error } = this.state;
-
-    if (error) {
-      return (
+    return (
+      <div className="auth-page">
+        <Helmet>
+          <title>Authorization</title>
+        </Helmet>
+        <PageHeader />
         <Grid>
-          <Row className="ex-page__oops">
-            <Col xs={12}>
-              Oops.<br />Something went wrong.
-            </Col>
-          </Row>
-          <Row style={{ paddingTop: '20px', paddingBottom: '20px' }}>
-            <Col xs={12}>
-              {error}
+          <Row>
+            <Col xs={12} className="auth-page__loader">
+              <Loader />
             </Col>
           </Row>
         </Grid>
-      );
-    }
-
-    return (
-      <Row className="ex-page__loader">
-        <Col xs={12}>
-          <Loader />
-        </Col>
-      </Row>
+      </div>
     );
   }
 }

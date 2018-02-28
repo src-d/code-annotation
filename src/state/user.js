@@ -58,20 +58,19 @@ export const logIn = () => dispatch =>
     });
 
 export const auth = () => (dispatch, getState) => {
-  const params = new URLSearchParams(window.location.search);
+  const { router } = getState();
   return api
-    .auth(params.get('state'), params.get('code'))
+    .auth(router.search)
     .then(data => {
       TokenService.set(data.token);
-      window.location.href = '/dashboard'
+      return dispatch(logIn());
     })
+    .then(() => dispatch(push('/dashboard')))
     .catch(e => {
-      this.setState({
-        error: e,
-      });
-      throw e;
-    })
-}
+      dispatch(addError(e));
+      return dispatch(logOut());
+    });
+};
 
 export const authMiddleware = store => next => action => {
   if (action.type !== LOCATION_CHANGED) {

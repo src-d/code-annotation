@@ -77,8 +77,8 @@ function apiCall(url, options = {}) {
     .catch(err => Promise.reject(normalizeErrors(err)));
 }
 
-function auth(state, code) {
-  return apiCall(`/oauth-callback?state=${state}&code=${code}`);
+function auth(queryString) {
+  return apiCall(`/api/auth${queryString}`);
 }
 
 function me() {
