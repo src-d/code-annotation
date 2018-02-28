@@ -42,10 +42,19 @@ DEV_PREFIX := dev
 VERSION ?= $(DEV_PREFIX)-$(COMMIT)$(GIT_DIRTY)
 
 # Travis CI
-ifneq ($(origin CI), undefined)
+ifeq ($(TRAVIS), true)
 	WORKDIR := $(TRAVIS_BUILD_DIR)
 	BUILD_PATH := $(WORKDIR)/build
 	VERSION := $(TRAVIS_BRANCH)
+endif
+
+# Drone CI
+ifeq ($(DRONE), true)
+	ifeq ($(DRONE_BUILD_EVENT), tag)
+		VERSION := $(DRONE_TAG)
+	else
+		VERSION := $(DRONE_BRANCH)
+	endif
 endif
 
 # Packages content
