@@ -121,3 +121,57 @@ func CreateExperiment(repo *repository.Experiments) RequestProcessFunc {
 		return serializer.NewExperimentResponse(experiment, 0), nil
 	}
 }
+
+type updateExperimentReq struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+// UpdateExperiment returns a function that updates the experiment as passed in the body request
+func UpdateExperiment(repo *repository.Experiments, assignmentsRepo *repository.Assignments) RequestProcessFunc {
+	return func(r *http.Request) (*serializer.Response, error) {
+		userID, err := service.GetUserID(r.Context())
+		if err != nil {
+			return nil, err
+		}
+
+		experimentID, err := urlParamInt(r, "experimentId")
+		if err != nil {
+			return nil, err
+		}
+
+		experiment, err := repo.GetByID(experimentID)
+		if err != nil {
+			return nil, err
+		}
+		if experiment == nil {
+			return nil, serializer.NewHTTPError(http.StatusNotFound, "no experiment found")
+		}
+
+		var updateExperimentReq updateExperimentReq
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			return nil, serializer.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+
+		err = json.Unmarshal(body, &updateExperimentReq)
+		if err != nil {
+			return nil, serializer.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+
+		experiment.Name = updateExperimentReq.Name
+		experiment.Description = updateExperimentReq.Description
+
+		err = repo.Update(experiment)
+		if err != nil {
+			return nil, err
+		}
+
+		progress, err := experimentProgress(assignmentsRepo, experiment.ID, userID)
+		if err != nil {
+			return nil, err
+		}
+
+		return serializer.NewExperimentResponse(experiment, progress), nil
+	}
+}

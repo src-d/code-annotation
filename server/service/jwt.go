@@ -75,7 +75,7 @@ func (j *JWT) Middleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		r = r.WithContext(context.WithValue(r.Context(), userIDKey, claims.ID))
+		r = r.WithContext(SetUserID(r.Context(), claims.ID))
 		next.ServeHTTP(w, r)
 	})
 }
@@ -85,6 +85,11 @@ func (j *JWT) Middleware(next http.Handler) http.Handler {
 func getUserInt(ctx context.Context) (int, bool) {
 	i, ok := ctx.Value(userIDKey).(int)
 	return i, ok
+}
+
+// SetUserID sets the user ID to the context
+func SetUserID(ctx context.Context, userID int) context.Context {
+	return context.WithValue(ctx, userIDKey, userID)
 }
 
 // GetUserID gets the user ID set by the JWT middleware in the Context

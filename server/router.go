@@ -68,6 +68,8 @@ func Router(
 		r.Route("/experiments/{experimentId}", func(r chi.Router) {
 
 			r.Get("/", handler.APIHandlerFunc(handler.GetExperimentDetails(experimentRepo, assignmentRepo)))
+			r.With(requesterACL.Middleware).
+				Put("/", handler.APIHandlerFunc(handler.UpdateExperiment(experimentRepo, assignmentRepo)))
 
 			r.Route("/assignments", func(r chi.Router) {
 

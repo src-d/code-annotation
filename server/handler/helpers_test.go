@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/pressly/lg"
 	"github.com/src-d/code-annotation/server/dbutil"
+	"github.com/src-d/code-annotation/server/service"
 )
 
 func testDB() *dbutil.DB {
@@ -39,5 +40,10 @@ func chiRequest(req *http.Request, params map[string]string) *http.Request {
 		}
 	}
 
+	return req.WithContext(ctx)
+}
+
+func reqWithUser(req *http.Request, userID int) *http.Request {
+	ctx := service.SetUserID(req.Context(), userID)
 	return req.WithContext(ctx)
 }
