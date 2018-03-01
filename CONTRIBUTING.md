@@ -91,7 +91,7 @@ If you want to benefit from frontend hot reloading feature:
 Run server. Execute:
 
 ```bash
-$ UI_DOMAIN=http://127.0.0.1:3000 make gorun
+$ make gorun
 ```
 
 And then run frontend in dev mode. Execute:

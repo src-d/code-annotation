@@ -21,7 +21,6 @@ type appConfig struct {
 	Host         string `envconfig:"HOST" default:"0.0.0.0"`
 	Port         int    `envconfig:"PORT" default:"8080"`
 	ServerURL    string `envconfig:"SERVER_URL"`
-	UIDomain     string `envconfig:"UI_DOMAIN"`
 	DBConn       string `envconfig:"DB_CONNECTION" default:"sqlite:///var/code-annotation/internal.db"`
 	ExportsPath  string `envconfig:"EXPORTS_PATH" default:"./exports"`
 	GaTrackingID string `envconfig:"GA_TRACKING_ID" required:"false"`
@@ -33,9 +32,6 @@ func main() {
 	envconfig.MustProcess("CAT", &conf)
 	if conf.ServerURL == "" {
 		conf.ServerURL = fmt.Sprintf("//%s:%d", conf.Host, conf.Port)
-	}
-	if conf.UIDomain == "" {
-		conf.UIDomain = fmt.Sprintf("//%s:%d", conf.Host, conf.Port)
 	}
 
 	// loger
@@ -71,7 +67,7 @@ func main() {
 	static := handler.NewStatic("build", conf.ServerURL, conf.GaTrackingID)
 
 	// start the router
-	router := server.Router(logger, jwt, oauth, static, conf.UIDomain, &db, conf.ExportsPath, version)
+	router := server.Router(logger, jwt, oauth, static, &db, conf.ExportsPath, version)
 	logger.Info("running...")
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), router)
 	logger.Fatal(err)

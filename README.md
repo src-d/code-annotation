@@ -41,7 +41,7 @@ The next sections make use of several environment variables to configure the app
 
 ### Github OAuth Tokens
 
-In order to authenticate users with their Github account, you need to set up an OAuth application on GitHub. See [how to create OAuth applications in their documentation](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/). Make sure the "Authorization callback URL" points to `http://<your-hostname>/oauth-callback`.
+In order to authenticate users with their Github account, you need to set up an OAuth application on GitHub. See [how to create OAuth applications in their documentation](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/). Make sure the "Authorization callback URL" points to `http://<your-hostname>/auth`.
 
 Retrieve the values for your application's Client ID and Client Secret from the [GitHub Developer Settings page](https://github.com/settings/developers) and set them to the environment variables `CAT_OAUTH_CLIENT_ID` and `CAT_OAUTH_CLIENT_SECRET`.
 

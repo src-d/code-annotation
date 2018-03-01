@@ -214,7 +214,16 @@ type versionResponse struct {
 	Version string `json:"version"`
 }
 
-// NewVersionResponse returns a Repsponse with current version of the server
+// NewVersionResponse returns a Response with current version of the server
 func NewVersionResponse(version string) *Response {
 	return newResponse(versionResponse{version})
+}
+
+type tokenResponse struct {
+	Token string `json:"token"`
+}
+
+// NewTokenResponse returns a Response with a token
+func NewTokenResponse(token string) *Response {
+	return newResponse(tokenResponse{token})
 }

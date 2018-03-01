@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { namedRoutes } from './state/routes';
 import Errors from './components/Errors';
 import Index from './pages/Index';
+import Auth from './pages/Auth';
 import Experiments from './pages/Experiments';
 import Experiment from './pages/Experiment';
 import Final from './pages/Final';
@@ -20,6 +21,9 @@ class App extends Component {
           <Errors />
           <Fragment forRoute={namedRoutes.index}>
             <Index />
+          </Fragment>
+          <Fragment forRoute={namedRoutes.auth}>
+            <Auth />
           </Fragment>
           <Fragment forRoute={namedRoutes.dashboard}>
             <Experiments />
