@@ -16,18 +16,18 @@ import (
 	"github.com/pmezard/go-difflib/difflib"
 )
 
-type driver int
+type Driver int
 
 const (
-	none driver = iota
-	sqlite
-	postgres
+	None Driver = iota
+	Sqlite
+	Postgres
 )
 
 // DB groups a sql.DB and the driver used to initialize it
 type DB struct {
 	*sql.DB
-	driver driver
+	Driver Driver
 }
 
 // SQLDB returns the *sql.DB
@@ -98,7 +98,7 @@ var (
 // sugar a sqlite://path string is also accepted
 func OpenSQLite(filepath string, checkExisting bool) (DB, error) {
 	if psReg.MatchString(filepath) {
-		return DB{nil, none}, fmt.Errorf(
+		return DB{nil, None}, fmt.Errorf(
 			"Invalid PostgreSQL connection string %q, a path to an SQLite file was expected",
 			filepath)
 	}
@@ -116,20 +116,20 @@ func Open(connection string, checkExisting bool) (DB, error) {
 	if conn := sqliteReg.FindStringSubmatch(connection); conn != nil {
 		if checkExisting {
 			if _, err := os.Stat(conn[1]); os.IsNotExist(err) {
-				return DB{nil, none}, fmt.Errorf("File %q does not exist", conn[1])
+				return DB{nil, None}, fmt.Errorf("File %q does not exist", conn[1])
 			}
 		}
 
 		db, err := sql.Open("sqlite3", conn[1])
-		return DB{db, sqlite}, err
+		return DB{db, Sqlite}, err
 	}
 
 	if psReg.MatchString(connection) {
 		db, err := sql.Open("postgres", connection)
-		return DB{db, postgres}, err
+		return DB{db, Postgres}, err
 	}
 
-	return DB{nil, none}, fmt.Errorf(`Connection string %q is not valid. It must be on of
+	return DB{nil, None}, fmt.Errorf(`Connection string %q is not valid. It must be on of
 sqlite:///path/to/db.db
 postgresql://[user[:password]@][netloc][:port][,...][/dbname]`, connection)
 }
@@ -142,10 +142,10 @@ func Bootstrap(db DB) error {
 
 	var colType string
 
-	switch db.driver {
-	case sqlite:
+	switch db.Driver {
+	case Sqlite:
 		colType = sqliteIncrementType
-	case postgres:
+	case Postgres:
 		colType = posgresIncrementType
 	default:
 		return fmt.Errorf("Unknown driver type")
@@ -166,7 +166,7 @@ func Bootstrap(db DB) error {
 // DB that is already initialized
 func Initialize(db DB) error {
 	_, err := db.Exec(insertExperiments, defaultExperimentID)
-	if db.driver == postgres && err == nil {
+	if db.Driver == Postgres && err == nil {
 		db.Exec(alterExperimentsSequence)
 	}
 

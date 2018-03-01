@@ -119,7 +119,7 @@ func genericVals(nColumns int) []interface{} {
 // This should not be needed for readonly DBs, but his way the DB is ready in
 // case new rows are added
 func fixSequences(db DB, logger *log.Logger) {
-	if db.driver != postgres {
+	if db.Driver != Postgres {
 		return
 	}
 

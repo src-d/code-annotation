@@ -37,6 +37,7 @@ func (repo *Experiments) getWithQuery(queryRow scannable) (*model.Experiment, er
 
 const selectExperimentsWhereIDSQL = `SELECT * FROM experiments WHERE id=$1`
 const selectExperimentsSQL = `SELECT * FROM experiments`
+const insertExperimentSQL = `INSERT INTO experiments (name, description) VALUES ($1, $2)`
 
 // GetByID returns the Experiment with the given ID. If the Experiment does not
 // exist, it returns nil, nil
@@ -68,4 +69,20 @@ func (repo *Experiments) GetAll() ([]*model.Experiment, error) {
 	}
 
 	return results, nil
+}
+
+// Create experiment model in database. On success the assigned ID is set
+func (repo *Experiments) Create(m *model.Experiment) error {
+	r, err := repo.db.Exec(insertExperimentSQL, m.Name, m.Description)
+	if err != nil {
+		return err
+	}
+	newID, err := r.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	m.ID = int(newID)
+
+	return nil
 }

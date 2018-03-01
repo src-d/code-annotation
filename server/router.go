@@ -62,6 +62,8 @@ func Router(
 		r.Get("/me", handler.APIHandlerFunc(handler.Me(userRepo)))
 
 		r.Get("/experiments", handler.APIHandlerFunc(handler.GetExperiments(experimentRepo, assignmentRepo)))
+		r.With(requesterACL.Middleware).
+			Post("/experiments", handler.APIHandlerFunc(handler.CreateExperiment(experimentRepo)))
 
 		r.Route("/experiments/{experimentId}", func(r chi.Router) {
 

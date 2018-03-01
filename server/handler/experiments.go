@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
+	"github.com/src-d/code-annotation/server/model"
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/serializer"
 	"github.com/src-d/code-annotation/server/service"
@@ -84,4 +87,37 @@ func experimentProgress(repo *repository.Assignments, experimentID int, userID i
 	}
 
 	return 100.0 * float32(countComplete) / float32(countAll), nil
+}
+
+type createExperimentReq struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+// CreateExperiment returns a function that saves the experiment as passed in the body request
+func CreateExperiment(repo *repository.Experiments) RequestProcessFunc {
+	return func(r *http.Request) (*serializer.Response, error) {
+		var createExperimentReq createExperimentReq
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			return nil, serializer.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+
+		err = json.Unmarshal(body, &createExperimentReq)
+		if err != nil {
+			return nil, serializer.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+
+		experiment := &model.Experiment{
+			Name:        createExperimentReq.Name,
+			Description: createExperimentReq.Description,
+		}
+
+		err = repo.Create(experiment)
+		if err != nil {
+			return nil, err
+		}
+
+		return serializer.NewExperimentResponse(experiment, 0), nil
+	}
 }
