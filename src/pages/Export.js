@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col, Button } from 'react-bootstrap';
-import PageHeader from '../components/PageHeader';
+import Page from './Page';
 import Loader from '../components/Loader';
 import { add as addErrors } from '../state/errors';
 import api from '../api';
@@ -52,25 +52,22 @@ class Export extends Component {
 
   render() {
     return (
-      <div className="export-page">
-        <PageHeader {...this.props.user} />
-        <Grid>
-          <Row style={{ paddingTop: '20px', paddingBottom: '20px' }}>
-            <Col xs={12}>
-              <Button
-                bsStyle="primary"
-                onClick={this.onCreateClick}
-                disabled={this.state.loading}
-              >
-                Create a new SQLite export
-              </Button>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>{this.filesList()}</Col>
-          </Row>
-        </Grid>
-      </div>
+      <Grid>
+        <Row style={{ paddingTop: '20px', paddingBottom: '20px' }}>
+          <Col xs={12}>
+            <Button
+              bsStyle="primary"
+              onClick={this.onCreateClick}
+              disabled={this.state.loading}
+            >
+              Create a new SQLite export
+            </Button>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>{this.filesList()}</Col>
+        </Row>
+      </Grid>
     );
   }
 
@@ -106,4 +103,10 @@ const mapStateToProps = state => ({
   user: state.user,
 });
 
-export default connect(mapStateToProps, { addErrors })(Export);
+export default connect(mapStateToProps, { addErrors })(
+  Page(Export, {
+    className: 'export-page',
+    titleFn: () => 'Export',
+    showHeader: true,
+  })
+);

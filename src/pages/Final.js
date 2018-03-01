@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-bootstrap';
-import { Helmet } from 'react-helmet';
-import PageHeader from '../components/PageHeader';
+import Page from './Page';
 import AnnotationResults from '../components/AnnotationResults';
 import {
   getIdenticalCount,
@@ -19,33 +18,25 @@ class Final extends Component {
     const { user, expName, ...resultsProps } = this.props;
 
     return (
-      <div className="final-page">
-        <Helmet>
-          <title>{expName}</title>
-        </Helmet>
-        <PageHeader />
-        <Grid>
-          <Row>
-            <Col xs={12}>
-              <h1 className="text-center">
-                You did it great, {user.username}!
-              </h1>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              <p className="text-center">
-                Here&#39;s an overview of {expName} experiment
-              </p>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={6} xsOffset={3}>
-              <AnnotationResults {...resultsProps} />
-            </Col>
-          </Row>
-        </Grid>
-      </div>
+      <Grid>
+        <Row>
+          <Col xs={12}>
+            <h1 className="text-center">You did it great, {user.username}!</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <p className="text-center">
+              Here&#39;s an overview of {expName} experiment
+            </p>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={6} xsOffset={3}>
+            <AnnotationResults {...resultsProps} />
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 }
@@ -65,4 +56,10 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(Final);
+export default connect(mapStateToProps)(
+  Page(Final, {
+    className: 'final-page',
+    titleFn: props => props.expName,
+    showHeader: true,
+  })
+);
