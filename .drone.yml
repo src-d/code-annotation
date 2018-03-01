@@ -4,6 +4,31 @@ workspace:
 
 branches: [master, staging, release/*]
 
+# ANCHORS
+
+build: &build
+  image: golang:1.9-alpine3.7
+  commands:
+    - apk --update upgrade
+    - apk add --no-cache
+        bash make curl git
+        ca-certificates build-base
+        libxml2-dev protobuf
+        yarn
+    - make build-app
+  debug: true
+
+docker_image: &docker_image
+  group: docker
+  image: plugins/docker
+  registry: docker.io
+  repo: srcd/code-annotation
+  secrets: [ docker_username, docker_password ]
+  dockerfile: Dockerfile
+  debug: true
+
+# PIPELINE STEPS
+
 pipeline:
 
   clone:
@@ -14,30 +39,15 @@ pipeline:
   # deployment to staging environment
 
   build_stg:
-    image: golang:1.9-alpine3.7
-    commands:
-      - apk --update upgrade
-      - apk add --no-cache
-          bash make curl git
-          ca-certificates build-base
-          libxml2-dev protobuf
-          yarn
-      - make build-app
-    debug: true
+    <<: *build
     when:
       branch: [staging]
       event: [push]
 
-  docker_stg:
-    group: docker
-    image: plugins/docker
-    registry: docker.io
-    repo: srcd/code-annotation
-    secrets: [ docker_username, docker_password ]
+  docker_image_stg:
+    <<: *docker_image
     # workaround for bug https://github.com/kubernetes/helm/issues/1707
     tag: 'commit-${DRONE_COMMIT_SHA:0:7}'
-    dockerfile: Dockerfile
-    debug: true
     when:
       branch: [staging]
       event: [push]
@@ -58,24 +68,20 @@ pipeline:
 
   # push build artifacts to GitHub release
 
-  build_stg:
-    image: golang:1.9-alpine3.7
-    environment:
-      - REACT_APP_SERVER_URL=//code-annotation-staging.srcd.run
-    commands:
-      - apk --update upgrade
-      - apk add --no-cache
-          bash make curl git
-          ca-certificates build-base
-          libxml2-dev protobuf
-          yarn
-      - make prepare-build
-      - make packages
-    debug: true
+  build_release:
+    <<: *build
     when:
       event: [tag]
 
-  github_release:
+  docker_image_release:
+    <<: *docker_image
+    tags:
+      - '${DRONE_TAG}'
+      - 'latest'
+    when:
+      event: [tag]
+
+  github_binary_release:
     image: plugins/github-release
     secrets: [ github_token ]
     files: build/*.tar.gz
