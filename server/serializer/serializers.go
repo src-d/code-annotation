@@ -214,7 +214,17 @@ type versionResponse struct {
 	Version string `json:"version"`
 }
 
-// NewVersionResponse returns a Repsponse with current version of the server
+// NewVersionResponse returns a Response with current version of the server
 func NewVersionResponse(version string) *Response {
 	return newResponse(versionResponse{version})
+}
+
+type filePairsUploadResponse struct {
+	Success  int64 `json:"success"`
+	Failures int64 `json:"failures"`
+}
+
+// NewFilePairsUploadResponse returns a Response with results of upload
+func NewFilePairsUploadResponse(success, failures int64) *Response {
+	return newResponse(filePairsUploadResponse{success, failures})
 }
