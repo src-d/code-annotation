@@ -4,10 +4,11 @@ import (
 	"crypto/md5"
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 
 	// loads the driver
 	_ "github.com/lib/pq"
@@ -177,16 +178,15 @@ func Initialize(db DB) error {
 // Options for the ImportFiles and Copy methods.
 // Logger is optional, if it is not provided the default stderr will be used.
 type Options struct {
-	Logger *log.Logger
+	Logger logrus.FieldLogger
 }
 
-func (opts *Options) getLogger() *log.Logger {
+func (opts *Options) getLogger() logrus.FieldLogger {
 	if opts.Logger != nil {
 		return opts.Logger
 	}
 
-	return log.New(os.Stderr, "", log.LstdFlags) // Default log to stderr
-
+	return logrus.StandardLogger()
 }
 
 // ImportFiles imports pairs of files from the origin to the destination DB.

@@ -79,6 +79,7 @@ func Router(
 				r.Use(requesterACL.Middleware)
 
 				r.Get("/", handler.APIHandlerFunc(handler.GetFilePairs(filePairRepo)))
+				r.Post("/", handler.APIHandlerFunc(handler.UploadFilePairs(dbWrapper)))
 				r.Get("/{pairId}/annotations", handler.APIHandlerFunc(handler.GetFilePairAnnotations(assignmentRepo)))
 			})
 

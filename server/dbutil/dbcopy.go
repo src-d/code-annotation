@@ -3,9 +3,10 @@ package dbutil
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -118,7 +119,7 @@ func genericVals(nColumns int) []interface{} {
 // fixSequences fixes the PostgreSQL sequences setting them to the max id found
 // This should not be needed for readonly DBs, but his way the DB is ready in
 // case new rows are added
-func fixSequences(db DB, logger *log.Logger) {
+func fixSequences(db DB, logger logrus.FieldLogger) {
 	if db.Driver != Postgres {
 		return
 	}
