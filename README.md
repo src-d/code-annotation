@@ -63,7 +63,7 @@ Download the binary from [releases](https://github.com/src-d/code-annotation/rel
 
 ### Import File Pairs for Annotation
 
-The file pairs must be provided via an [SQLite](https://sqlite.org/) database. The database **must follow the expected schema**, please [follow this link](./cli/import/examples/example.sql) to see an example.
+The pieces of code to be labeled are called _file pairs_. They must be provided via an [SQLite](https://sqlite.org/) database. The database **must follow the expected schema**, please [follow this link](./cli/import/examples/example.sql) to see an example.
 
 The `import` command will use those file pairs to create a new [SQLite](https://sqlite.org/) or [PostgreSQL](https://www.postgresql.org/) database that will be used internally by the Annotation Tool. The destination database does not need to be empty, new imported file pairs can be added to previous imports.
 
@@ -148,7 +148,7 @@ CAT_OAUTH_RESTRICT_REQUESTER_ACCESS=team:123456
 
 ## Contributing
 
-[Contributions](https://github.com/src-d/code-annotation/issues) are more than welcome, if you are interested please take a look to our [Contributing Guidelines](CONTRIBUTING.md).
+[Contributions](https://github.com/src-d/code-annotation/issues) are more than welcome, if you are interested please take a look to our [Contributing Guidelines](CONTRIBUTING.md). You have more information on how to run it locally for [development purposes here](CONTRIBUTING.md#Development).
 
 # Code of Conduct
 
