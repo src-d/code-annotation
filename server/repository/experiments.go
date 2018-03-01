@@ -38,6 +38,7 @@ func (repo *Experiments) getWithQuery(queryRow scannable) (*model.Experiment, er
 const selectExperimentsWhereIDSQL = `SELECT * FROM experiments WHERE id=$1`
 const selectExperimentsSQL = `SELECT * FROM experiments`
 const insertExperimentSQL = `INSERT INTO experiments (name, description) VALUES ($1, $2)`
+const updateExperimentSQL = `UPDATE experiments SET name=$1, description=$2 WHERE id=$3`
 
 // GetByID returns the Experiment with the given ID. If the Experiment does not
 // exist, it returns nil, nil
@@ -85,4 +86,10 @@ func (repo *Experiments) Create(m *model.Experiment) error {
 	m.ID = int(newID)
 
 	return nil
+}
+
+// Update experiment model in database
+func (repo *Experiments) Update(m *model.Experiment) error {
+	_, err := repo.db.Exec(updateExperimentSQL, m.Name, m.Description, m.ID)
+	return err
 }
