@@ -61,10 +61,16 @@ function apiCall(url, options = {}) {
       Authorization: `Bearer ${token}`,
     },
   };
+
   if (options.body) {
-    fetchOptions.body = JSON.stringify(options.body);
-    fetchOptions.headers['Content-Type'] = 'application/json';
+    if (options.formData) {
+      fetchOptions.body = options.body;
+    } else {
+      fetchOptions.body = JSON.stringify(options.body);
+      fetchOptions.headers['Content-Type'] = 'application/json';
+    }
   }
+
   return fetch(apiUrl(url), fetchOptions)
     .then(checkStatus)
     .then(resp => resp.json())
@@ -89,8 +95,33 @@ function getExperiments() {
   return apiCall(`/api/experiments`);
 }
 
+function createExperiment(name, description) {
+  return apiCall(`/api/experiments`, {
+    method: 'POST',
+    body: { name, description },
+  });
+}
+
+function updateExperiment(experimentId, name, description) {
+  return apiCall(`/api/experiments/${experimentId}`, {
+    method: 'PUT',
+    body: { name, description },
+  });
+}
+
 function getExperiment(experimentId) {
   return apiCall(`/api/experiments/${experimentId}`);
+}
+
+function uploadFilePairs(experimentId, file) {
+  const formData = new FormData();
+  formData.append('input_db', file);
+
+  return apiCall(`/api/experiments/${experimentId}/file-pairs`, {
+    method: 'POST',
+    formData: true,
+    body: formData,
+  });
 }
 
 function getAssignments(experimentId) {
@@ -145,7 +176,10 @@ export default {
   auth,
   me,
   getExperiments,
+  createExperiment,
+  updateExperiment,
   getExperiment,
+  uploadFilePairs,
   getAssignments,
   getFilePair,
   putAnswer,
