@@ -45,7 +45,6 @@ func (a *Assignment) AnswerStr() string {
 type FilePair struct {
 	ID           int
 	Score        float64
-	Diff         string
 	ExperimentID int
 	Left         File
 	Right        File

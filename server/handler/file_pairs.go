@@ -12,11 +12,12 @@ import (
 	"github.com/src-d/code-annotation/server/dbutil"
 	"github.com/src-d/code-annotation/server/repository"
 	"github.com/src-d/code-annotation/server/serializer"
+	"github.com/src-d/code-annotation/server/service"
 )
 
 // GetFilePairDetails returns a function that returns a *serializer.Response
 // with the details of the requested FilePair
-func GetFilePairDetails(repo *repository.FilePairs) RequestProcessFunc {
+func GetFilePairDetails(repo *repository.FilePairs, diff *service.Diff) RequestProcessFunc {
 	return func(r *http.Request) (*serializer.Response, error) {
 		pairID, err := urlParamInt(r, "pairId")
 		if err != nil {
@@ -32,13 +33,23 @@ func GetFilePairDetails(repo *repository.FilePairs) RequestProcessFunc {
 			return nil, serializer.NewHTTPError(http.StatusNotFound, "no file-pair found")
 		}
 
+		diffString, err := diff.Generate(
+			filePair.Left.Path,
+			filePair.Right.Path,
+			filePair.Left.Content,
+			filePair.Right.Content,
+		)
+		if err != nil {
+			return nil, err
+		}
+
 		leftLOC := len(strings.Split(filePair.Left.Content, "\n"))
 		rightLOC := len(strings.Split(filePair.Right.Content, "\n"))
 		if err != nil {
 			return nil, err
 		}
 
-		return serializer.NewFilePairResponse(filePair, leftLOC, rightLOC), nil
+		return serializer.NewFilePairResponse(filePair, diffString, leftLOC, rightLOC), nil
 	}
 }
 

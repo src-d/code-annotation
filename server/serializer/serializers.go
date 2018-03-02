@@ -152,9 +152,9 @@ type filePairResponse struct {
 }
 
 // NewFilePairResponse returns a Response for the given FilePair
-func NewFilePairResponse(fp *model.FilePair, leftLOC, rightLOC int) *Response {
+func NewFilePairResponse(fp *model.FilePair, diff string, leftLOC, rightLOC int) *Response {
 	return newResponse(filePairResponse{
-		fp.ID, fp.Diff, fp.Score, fp.Left.BlobID, fp.Right.BlobID, leftLOC, rightLOC})
+		fp.ID, diff, fp.Score, fp.Left.BlobID, fp.Right.BlobID, leftLOC, rightLOC})
 }
 
 type listFilePairResponse struct {
