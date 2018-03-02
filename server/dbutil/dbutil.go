@@ -13,8 +13,6 @@ import (
 	// loads the driver
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
-
-	"github.com/pmezard/go-difflib/difflib"
 )
 
 type Driver int
@@ -238,20 +236,11 @@ func ImportFiles(originDB DB, destDB DB, opts Options, experimentID int) (succes
 			continue
 		}
 
-		diffText, err := diff(pathA, pathB, contentA, contentB)
-		if err != nil {
-			logger.Printf(
-				"Failed to create diff for files:\n - %q\n - %q\nerror: %v\n",
-				pathA, pathB, err)
-			failures++
-			continue
-		}
-
 		res, err := insert.Exec(
 			blobIDA, repositoryIDA, commitHashA, pathA, contentA, md5hash(contentA),
 			blobIDB, repositoryIDB, commitHashB, pathB, contentB, md5hash(contentB),
 			score,
-			diffText,
+			"",
 			experimentID)
 
 		if err != nil {
@@ -273,16 +262,4 @@ func ImportFiles(originDB DB, destDB DB, opts Options, experimentID int) (succes
 
 func md5hash(text string) string {
 	return fmt.Sprintf("%x", md5.Sum([]byte(text)))
-}
-
-func diff(nameA, nameB, contentA, contentB string) (string, error) {
-	diff := difflib.UnifiedDiff{
-		A:        difflib.SplitLines(contentA),
-		B:        difflib.SplitLines(contentB),
-		FromFile: nameA,
-		ToFile:   nameB,
-		Context:  3,
-	}
-
-	return difflib.GetUnifiedDiffString(diff)
 }

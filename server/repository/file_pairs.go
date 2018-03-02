@@ -29,7 +29,7 @@ func (repo *FilePairs) getWithQuery(queryRow scannable) (*model.FilePair, error)
 		&pair.Right.BlobID, &pair.Right.RepositoryID, &pair.Right.CommitHash,
 		&pair.Right.Path, &pair.Right.Content, &pair.Right.Hash,
 
-		&pair.Score, &pair.Diff, &pair.ExperimentID)
+		&pair.Score, &pair.ExperimentID)
 
 	switch {
 	case err == sql.ErrNoRows:
@@ -42,8 +42,14 @@ func (repo *FilePairs) getWithQuery(queryRow scannable) (*model.FilePair, error)
 }
 
 const (
-	selectFilePairsSQL         = `SELECT * FROM file_pairs WHERE id=$1`
-	selectFilePairsWhereExpSQL = `SELECT * FROM file_pairs WHERE experiment_id=$1`
+	selectFilePairsSQL = `SELECT id,
+		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a,
+		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b,
+		score, experiment_id FROM file_pairs WHERE id=$1`
+	selectFilePairsWhereExpSQL = `SELECT id,
+		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a,
+		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b,
+		score, experiment_id FROM file_pairs WHERE experiment_id=$1`
 )
 
 // GetByID returns the FilePair with the given ID. If the FilePair does not
