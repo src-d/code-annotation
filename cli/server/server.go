@@ -68,10 +68,12 @@ func main() {
 	envconfig.MustProcess("CAT_JWT", &jwtConfig)
 	jwt := service.NewJWT(jwtConfig.SigningKey)
 
+	diffService := service.NewDiff()
+
 	static := handler.NewStatic("build", conf.ServerURL, conf.GaTrackingID)
 
 	// start the router
-	router := server.Router(logger, jwt, oauth, static, conf.UIDomain, &db, conf.ExportsPath, version)
+	router := server.Router(logger, jwt, oauth, diffService, static, conf.UIDomain, &db, conf.ExportsPath, version)
 	logger.Info("running...")
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", conf.Host, conf.Port), router)
 	logger.Fatal(err)

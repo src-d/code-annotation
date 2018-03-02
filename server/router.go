@@ -21,6 +21,7 @@ func Router(
 	logger *logrus.Logger,
 	jwt *service.JWT,
 	oauth *service.OAuth,
+	diffService *service.Diff,
 	static *handler.Static,
 	uiDomain string,
 	dbWrapper *dbutil.DB,
@@ -85,7 +86,7 @@ func Router(
 				r.Get("/{pairId}/annotations", handler.APIHandlerFunc(handler.GetFilePairAnnotations(assignmentRepo)))
 			})
 
-			r.Get("/file-pairs/{pairId}", handler.APIHandlerFunc(handler.GetFilePairDetails(filePairRepo)))
+			r.Get("/file-pairs/{pairId}", handler.APIHandlerFunc(handler.GetFilePairDetails(filePairRepo, diffService)))
 		})
 
 		r.Route("/features", func(r chi.Router) {
