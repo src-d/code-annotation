@@ -9,13 +9,21 @@ import (
 	"github.com/src-d/code-annotation/server/serializer"
 	"github.com/src-d/code-annotation/server/service"
 
+	"github.com/pressly/lg"
 	"github.com/sirupsen/logrus"
 )
 
 // Login handler redirects user to oauth provider
 func Login(oAuth *service.OAuth) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		url := oAuth.MakeAuthURL(w, r)
+		url, err := oAuth.MakeAuthURL(w, r)
+		if err != nil {
+			lg.RequestLog(r).Warn(err.Error())
+			http.Error(w,
+				http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError,
+			)
+		}
+
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	}
 }
