@@ -120,12 +120,17 @@ export const selectPair = (expId, id) => dispatch => {
 
 export const loadAnnotations = (expId, id) => dispatch => {
   dispatch({ type: LOAD_ANNOTATIONS });
-  return api.getFilePairAnnotations(expId, id).then(res =>
-    dispatch({
-      type: SET_ANNOTATIONS,
-      data: res,
-    })
-  );
+  return api
+    .getFilePairAnnotations(expId, id)
+    .then(res =>
+      dispatch({
+        type: SET_ANNOTATIONS,
+        data: res,
+      })
+    )
+    .catch(e => {
+      dispatch(addErrors(e));
+    });
 };
 
 /* Selectors */
@@ -180,7 +185,7 @@ export const middleware = store => next => action => {
         .then(() => next(loadAnnotations(expIdParam, +payload.params.pair)))
         .then(() => {
           const pair = getCurrentFilePair(store.getState());
-          return next(featuresLoad(pair.leftBlobId, pair.rightBlobId));
+          return pair && next(featuresLoad(pair.leftBlobId, pair.rightBlobId));
         });
     default:
       return result;
