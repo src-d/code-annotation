@@ -18,7 +18,6 @@ BINDATA = go-bindata
 
 # ci variables
 TRAVIS_BUILD_DIR ?= $(shell pwd)
-PKG_OS = linux
 DOCKER_OS = linux
 DOCKER_ARCH = amd64
 
