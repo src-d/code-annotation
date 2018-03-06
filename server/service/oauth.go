@@ -68,16 +68,22 @@ type GithubUser struct {
 }
 
 // MakeAuthURL returns string for redirect to provider
-func (o *OAuth) MakeAuthURL(w http.ResponseWriter, r *http.Request) string {
+func (o *OAuth) MakeAuthURL(w http.ResponseWriter, r *http.Request) (string, error) {
 	b := make([]byte, 16)
 	rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)
 
-	session, _ := o.store.Get(r, "sess")
-	session.Values["state"] = state
-	session.Save(r, w)
+	session, err := o.store.Get(r, "sess")
+	if err != nil {
+		return "", fmt.Errorf("could not save state under the current session: %s", err)
+	}
 
-	return o.config.AuthCodeURL(state)
+	session.Values["state"] = state
+	if err := session.Save(r, w); err != nil {
+		return "", fmt.Errorf("could not save state under the current session: %s", err)
+	}
+
+	return o.config.AuthCodeURL(state), nil
 }
 
 // ValidateState protects the user from CSRF attacks
@@ -87,8 +93,9 @@ func (o *OAuth) ValidateState(r *http.Request, state string) error {
 		return fmt.Errorf("can't get session: %s", err)
 	}
 
-	if state != session.Values["state"] {
-		return fmt.Errorf("incorrect state: %s", state)
+	expectedState := session.Values["state"]
+	if state != expectedState {
+		return fmt.Errorf("incorrect state: %s; expected: %s", state, expectedState)
 	}
 
 	return nil

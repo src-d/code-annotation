@@ -228,3 +228,12 @@ type filePairsUploadResponse struct {
 func NewFilePairsUploadResponse(success, failures int64) *Response {
 	return newResponse(filePairsUploadResponse{success, failures})
 }
+
+type tokenResponse struct {
+	Token string `json:"token"`
+}
+
+// NewTokenResponse returns a Response with a token
+func NewTokenResponse(token string) *Response {
+	return newResponse(tokenResponse{token})
+}

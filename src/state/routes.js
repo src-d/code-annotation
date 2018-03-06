@@ -29,6 +29,10 @@ const routes = {
         name: 'question',
       },
     },
+    '/oauth-callback': {
+      name: 'auth',
+      public: true,
+    },
     '/export': {
       name: 'export',
       restrictReviewer: true,

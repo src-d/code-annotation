@@ -57,36 +57,44 @@ export const logIn = () => dispatch =>
       return dispatch(logOut());
     });
 
+export const auth = () => (dispatch, getState) => {
+  const { router } = getState();
+  return api
+    .auth(router.search)
+    .then(data => {
+      TokenService.set(data.token);
+      return dispatch(logIn());
+    })
+    .then(() => dispatch(push('/dashboard')))
+    .catch(e => {
+      dispatch(addError(e));
+      return dispatch(logOut());
+    });
+};
+
 export const authMiddleware = store => next => action => {
   if (action.type !== LOCATION_CHANGED) {
     return next(action);
   }
-  const { query } = action.payload;
-  let promise = Promise.resolve();
-  if (query && query.token) {
-    TokenService.set(query.token);
-    promise = next(logIn());
+
+  // redirect to / if try to access not public route wihout being logged in
+  const { user } = store.getState();
+  const { result } = action.payload;
+  if (!user.loggedIn && result && !result.public) {
+    return next(replace('/'));
   }
 
-  return promise
-    .then(() => {
-      // redirect to / if try to access not public route wihout being logged in
-      const { user } = store.getState();
-      const { result } = action.payload;
-      if (!user.loggedIn && result && !result.public) {
-        return next(replace('/'));
-      }
-      // redirect user from index page to experiment if user it authorized already
-      if (user.loggedIn && result && result.name === 'index') {
-        return next(push(makeUrl('dashboard')));
-      }
-      // hide pages that are meant only for users with the requester role
-      if (user.role !== 'requester' && result && result.restrictReviewer) {
-        return next(replace('/forbidden'));
-      }
-      return next(action);
-    })
-    .catch(e => next(addError(e)));
+  // redirect user from index page to experiment if user it authorized already
+  if (user.loggedIn && result && result.name === 'index') {
+    return next(push(makeUrl('dashboard')));
+  }
+
+  // hide pages that are meant only for users with the requester role
+  if (user.role !== 'requester' && result && result.restrictReviewer) {
+    return next(replace('/forbidden'));
+  }
+
+  return next(action);
 };
 
 export default reducer;

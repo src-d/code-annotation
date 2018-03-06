@@ -24,7 +24,9 @@ describe('routers', () => {
       payload: {},
     };
     store.dispatch(action);
-    expect(store.getActions()).toEqual([]);
+    expect(store.getActions()).toEqual([
+      { payload: {}, type: 'ROUTER_LOCATION_CHANGED' },
+    ]);
   });
 
   describe('experiment', () => {

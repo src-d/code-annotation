@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/src-d/code-annotation/server/serializer"
+
 	"github.com/go-chi/chi"
 	"github.com/pressly/lg"
-	"github.com/src-d/code-annotation/server/serializer"
 )
 
 // RequestProcessFunc is a function that takes an http.Request, and returns a serializer.Response and an error

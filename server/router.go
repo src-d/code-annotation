@@ -23,7 +23,6 @@ func Router(
 	oauth *service.OAuth,
 	diffService *service.Diff,
 	static *handler.Static,
-	uiDomain string,
 	dbWrapper *dbutil.DB,
 	exportsPath string,
 	version string,
@@ -40,9 +39,10 @@ func Router(
 
 	// cors options
 	corsOptions := cors.Options{
-		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{"GET", "POST", "PUT", "OPTIONS"},
-		AllowedHeaders: []string{"Location", "Authorization", "Content-Type"},
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "OPTIONS"},
+		AllowedHeaders:   []string{"Location", "Authorization", "Content-Type"},
+		AllowCredentials: true,
 	}
 
 	requesterACL := service.NewACL(userRepo, model.Requester)
@@ -55,7 +55,7 @@ func Router(
 	r.Use(lg.RequestLogger(logger))
 
 	r.Get("/login", handler.Login(oauth))
-	r.Get("/oauth-callback", handler.OAuthCallback(oauth, jwt, userRepo, uiDomain, logger))
+	r.Get("/api/auth", handler.APIHandlerFunc(handler.OAuthCallback(oauth, jwt, userRepo, logger)))
 
 	r.Route("/api", func(r chi.Router) {
 		r.Use(jwt.Middleware)
