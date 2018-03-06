@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { Grid, Row, Col } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { push } from 'redux-little-router';
-import { Helmet } from 'react-helmet';
-import PageHeader from '../components/PageHeader';
+import Page from './Page';
 import Loader from '../components/Loader';
 import Breadcrumbs from '../components/Breadcrumbs';
 import Progress from '../components/Experiment/Progress';
@@ -25,18 +24,6 @@ import './Experiment.less';
 
 class Experiment extends Component {
   render() {
-    return (
-      <div className="ex-page">
-        <Helmet>
-          <title>{this.props.name}</title>
-        </Helmet>
-        <PageHeader />
-        {this.renderMain()}
-      </div>
-    );
-  }
-
-  renderMain() {
     const { error, loading, name, description, percent } = this.props;
 
     if (error) {
@@ -66,7 +53,7 @@ class Experiment extends Component {
 
     return (
       <Grid fluid className="ex-page__main">
-        <Row className="ex-page__header">
+        <Row className="ex-page__header" onMouseEnter={this.props.showHeader}>
           <Col xs={9} className="ex-page__info">
             <Breadcrumbs items={breadcrumbsOptions} />
           </Col>
@@ -106,7 +93,7 @@ class Experiment extends Component {
 
     return (
       <React.Fragment>
-        <Row className="ex-page__content">
+        <Row className="ex-page__content" onMouseEnter={this.props.hideHeader}>
           <Col xs={12} className="ex-page__diff-col">
             <Diff
               diffString={diffString}
@@ -179,4 +166,6 @@ const mapDispatchToProps = dispatch => ({
   finish: expId => dispatch(push(makeUrl('finish', { experiment: expId }))),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Experiment);
+export default connect(mapStateToProps, mapDispatchToProps)(
+  Page(Experiment, { className: 'ex-page', titleFn: props => props.name })
+);

@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-bootstrap';
 import SplitPane from 'react-split-pane';
-import { Helmet } from 'react-helmet';
-import PageHeader from '../components/PageHeader';
+import Page from './Page';
 import Loader from '../components/Loader';
 import Breadcrumbs from '../components/Breadcrumbs';
 import Selector from '../components/Experiment/Selector';
@@ -15,18 +14,6 @@ import './Review.less';
 
 class Review extends Component {
   render() {
-    return (
-      <div className="review-page">
-        <Helmet>
-          <title>{`Review for experiment ${this.props.name}`}</title>
-        </Helmet>
-        <PageHeader />
-        {this.renderMain()}
-      </div>
-    );
-  }
-
-  renderMain() {
     const { loading, name, filePairsOptions, onSelect } = this.props;
 
     if (loading) {
@@ -41,7 +28,10 @@ class Review extends Component {
 
     return (
       <Grid fluid className="review-page__grid">
-        <Row className="review-page__header">
+        <Row
+          className="review-page__header"
+          onMouseEnter={this.props.showHeader}
+        >
           <Col xs={8} className="review-page__breadcrumbs">
             <Breadcrumbs
               items={[{ name, link: '#' }, { name: 'review', link: '#' }]}
@@ -81,7 +71,10 @@ class Review extends Component {
     }
 
     return (
-      <Row className="review-page__main-row">
+      <Row
+        className="review-page__main-row"
+        onMouseEnter={this.props.hideHeader}
+      >
         <Col xs={12} className="review-page__main-col">
           {/* we need this wrapper because SplitPane hard coded width 100% */}
           <div className="review-page__split">
@@ -144,4 +137,9 @@ const mapDispatchToProps = dispatch => ({
   onSelect: pairId => dispatch(selectPair(experimentId, pairId)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Review);
+export default connect(mapStateToProps, mapDispatchToProps)(
+  Page(Review, {
+    className: 'review-page',
+    titleFn: props => `Review for experiment ${props.name}`,
+  })
+);

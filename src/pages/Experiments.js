@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-bootstrap';
-import { Helmet } from 'react-helmet';
-import PageHeader from '../components/PageHeader';
+import Page from './Page';
 import Loader from '../components/Loader';
 import ExperimentsList from '../components/ExperimentsList';
 import { load as experimentsLoad } from '../state/experiments';
@@ -13,15 +12,7 @@ class Experiments extends Component {
   }
 
   render() {
-    return (
-      <div className="experiments-page">
-        <Helmet>
-          <title>Experiments</title>
-        </Helmet>
-        <PageHeader />
-        <Grid>{this.renderContent()}</Grid>
-      </div>
-    );
+    return <Grid>{this.renderContent()}</Grid>;
   }
 
   renderContent() {
@@ -79,4 +70,10 @@ const mapStateToProps = state => ({
   experiments: state.experiments,
 });
 
-export default connect(mapStateToProps, { load: experimentsLoad })(Experiments);
+export default connect(mapStateToProps, { load: experimentsLoad })(
+  Page(Experiments, {
+    className: 'experiments-page',
+    titleFn: () => 'Experiments',
+    showHeader: true,
+  })
+);
