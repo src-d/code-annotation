@@ -48,8 +48,8 @@ const (
 	// TODO: consider a unique constrain to avoid importing identical pairs
 	createFilePairs = `CREATE TABLE IF NOT EXISTS file_pairs (
 		id <INCREMENT_TYPE>,
-		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, hash_a TEXT,
-		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, hash_b TEXT,
+		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, hash_a TEXT, uast_a BLOB,
+		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, hash_b TEXT, uast_b BLOB,
 		score DOUBLE PRECISION, diff TEXT, experiment_id INTEGER,
 		PRIMARY KEY (id),
 		FOREIGN KEY(experiment_id) REFERENCES experiments(id))`
@@ -83,10 +83,10 @@ const selectExperiment = `SELECT * FROM experiments WHERE id = $1`
 const selectFiles = `SELECT * FROM files`
 
 const insertFilePairs = `INSERT INTO file_pairs (
-		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a,
-		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b,
+		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a, uast_a,
+		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b, uast_b,
 		score, diff, experiment_id ) VALUES
-		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
+		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`
 
 var (
 	sqliteReg = regexp.MustCompile(`^sqlite://(.+)$`)
@@ -223,11 +223,12 @@ func ImportFiles(originDB DB, destDB DB, opts Options, experimentID int) (succes
 	for rows.Next() {
 		var blobIDA, repositoryIDA, commitHashA, pathA, contentA,
 			blobIDB, repositoryIDB, commitHashB, pathB, contentB string
+		var uastA, uastB []byte
 		var score float64
 
 		err := rows.Scan(
-			&blobIDA, &repositoryIDA, &commitHashA, &pathA, &contentA,
-			&blobIDB, &repositoryIDB, &commitHashB, &pathB, &contentB,
+			&blobIDA, &repositoryIDA, &commitHashA, &pathA, &contentA, &uastA,
+			&blobIDB, &repositoryIDB, &commitHashB, &pathB, &contentB, &uastB,
 			&score)
 
 		if err != nil {
@@ -237,8 +238,8 @@ func ImportFiles(originDB DB, destDB DB, opts Options, experimentID int) (succes
 		}
 
 		res, err := insert.Exec(
-			blobIDA, repositoryIDA, commitHashA, pathA, contentA, md5hash(contentA),
-			blobIDB, repositoryIDB, commitHashB, pathB, contentB, md5hash(contentB),
+			blobIDA, repositoryIDA, commitHashA, pathA, contentA, uastA, md5hash(contentA),
+			blobIDB, repositoryIDB, commitHashB, pathB, contentB, uastB, md5hash(contentB),
 			score,
 			"",
 			experimentID)

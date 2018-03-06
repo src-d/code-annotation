@@ -4,8 +4,8 @@ Sample DB for the import command. You can create an sqlite DB with the command:
 $ sqlite3 example.db < example.sql
 */
 CREATE TABLE files (
-		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT,
-		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT,
+		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, uast_a BLOB,
+		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, uast_b BLOB,
 		score DOUBLE PRECISION);
 
 INSERT INTO files values (
@@ -14,6 +14,7 @@ INSERT INTO files values (
 '922e922e922e922e922e922e922e922e922e922e',
 'project/src/a',
 'Some text',
+'uast1',
 
 '3a6e3a6e3a6e3a6e3a6e3a6e3a6e3a6e3a6e3a6e',
 'github.com/bblfsh/dashboard.git',
@@ -21,6 +22,7 @@ INSERT INTO files values (
 'other_project/src/b',
 'Some text
 ',
+'uast2',
 
 0.9512810301340767
 );
@@ -130,6 +132,7 @@ export function version(serverUrl) {
       return Promise.reject([err].map(normalizeError));
     });
 }',
+'',
 
 '3a6e3a6e3a6e3a6e3a6e3a6e3a6e3a6e3a6e3a6e',
 'github.com/bblfsh/dashboard.git',
@@ -193,5 +196,6 @@ function normalizeError(err) {
 
   return null;
 }',
+'',
 
 0.9512810301340767);
