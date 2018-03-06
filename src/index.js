@@ -18,14 +18,14 @@ import App from './App';
 
 const middlewares = [...stateMiddlewares, thunk];
 
-if (window.cas.GA_TRACKING_ID) {
-  loadGA(window.cas.GA_TRACKING_ID);
+if (window.cat.GA_TRACKING_ID) {
+  loadGA(window.cat.GA_TRACKING_ID);
   middlewares.push(gaMiddleware);
 }
 
 const store = createStore(
   rootReducer,
-  window.cas.initialState || {},
+  window.cat.initialState || {},
   composeWithDevTools(compose(routerEnhancer, applyMiddleware(...middlewares)))
 );
 
