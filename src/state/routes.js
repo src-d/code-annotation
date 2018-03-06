@@ -29,7 +29,7 @@ const routes = {
         name: 'question',
       },
     },
-    '/auth': {
+    '/oauth-callback': {
       name: 'auth',
       public: true,
     },
