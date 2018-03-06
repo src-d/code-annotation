@@ -1,6 +1,6 @@
 import TokenService from '../services/token';
 
-export const serverUrl = window.cas.SERVER_URL || 'http://127.0.0.1:8080';
+export const serverUrl = window.cat.SERVER_URL || 'http://127.0.0.1:8080';
 
 const apiUrl = url => `${serverUrl}${url}`;
 
