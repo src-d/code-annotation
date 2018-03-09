@@ -8,6 +8,7 @@ import reducer, {
   mostSimilar,
   leastSimilar,
 } from './features';
+import { ADD as ERROR_ADD } from './errors';
 
 const mockStore = configureMockStore([thunk]);
 
@@ -67,6 +68,31 @@ describe('features/actions', () => {
               { name: 'feature2', weightA: 0.8, weightB: 0 },
               { name: 'feature3', weightA: 0, weightB: 0.1 },
             ],
+          },
+        ]);
+      });
+    });
+
+    it('error', () => {
+      const blobIdA = 1;
+      const blobIdB = 2;
+      const store = mockStore({
+        features: {
+          ...initialState,
+        },
+      });
+
+      const errText = 'some error';
+      fetch.mockReject(errText);
+
+      return store.dispatch(load(blobIdA, blobIdB)).then(() => {
+        expect(store.getActions()).toEqual([
+          {
+            type: LOAD,
+          },
+          {
+            type: ERROR_ADD,
+            error: errText,
           },
         ]);
       });

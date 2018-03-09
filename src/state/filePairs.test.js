@@ -162,6 +162,28 @@ describe('filePairs/actions', () => {
         ]);
       });
     });
+
+    it('error', () => {
+      const store = mockStore({
+        filePairs: {
+          ...initialState,
+          pairs: { 1: 'pair' },
+        },
+      });
+
+      const errText = 'some error';
+      fetch.mockReject(errText);
+
+      return store.dispatch(loadAnnotations(1, 1)).then(() => {
+        expect(store.getActions()).toEqual([
+          { type: LOAD_ANNOTATIONS },
+          {
+            type: ERROR_ADD,
+            error: errText,
+          },
+        ]);
+      });
+    });
   });
 });
 
