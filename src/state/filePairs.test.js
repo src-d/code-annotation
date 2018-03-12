@@ -11,6 +11,7 @@ import reducer, {
   SET_ANNOTATIONS,
   load,
   getCurrentFilePair,
+  loadFilePair,
   selectPair,
   loadAnnotations,
 } from './filePairs';
@@ -111,12 +112,91 @@ describe('filePairs/actions', () => {
     });
   });
 
+  describe('loadFilePair', () => {
+    it('success', () => {
+      const store = mockStore({
+        user: {
+          showInvisible: false,
+        },
+      });
+      const res = { id: 1 };
+
+      const mockedFn = fetch.mockResponse(
+        JSON.stringify({
+          data: res,
+        })
+      );
+
+      return store.dispatch(loadFilePair(1, 1)).then(() => {
+        expect(store.getActions()).toEqual([
+          { type: LOAD_FILE_PAIR },
+          { type: SET_FILE_PAIR, ...res },
+        ]);
+        expect(mockedFn).toHaveBeenCalledWith(
+          'http://127.0.0.1:8080/api/experiments/1/file-pairs/1',
+          { credentials: 'include', headers: { Authorization: 'Bearer null' } }
+        );
+      });
+    });
+
+    it('success with spaces', () => {
+      const store = mockStore({
+        user: {
+          showInvisible: true,
+        },
+      });
+      const res = { id: 1 };
+
+      const mockedFn = fetch.mockResponse(
+        JSON.stringify({
+          data: res,
+        })
+      );
+
+      return store.dispatch(loadFilePair(1, 1)).then(() => {
+        expect(store.getActions()).toEqual([
+          { type: LOAD_FILE_PAIR },
+          { type: SET_FILE_PAIR, ...res },
+        ]);
+        expect(mockedFn).toHaveBeenCalledWith(
+          'http://127.0.0.1:8080/api/experiments/1/file-pairs/1?showInvisible=1',
+          { credentials: 'include', headers: { Authorization: 'Bearer null' } }
+        );
+      });
+    });
+
+    it('error', () => {
+      const store = mockStore({
+        user: {
+          showInvisible: false,
+        },
+      });
+      const err = 'some error';
+
+      fetch.mockReject(err);
+
+      let failed = false;
+      return store
+        .dispatch(loadFilePair(1, 1))
+        .catch(() => {
+          failed = true;
+        })
+        .then(() => {
+          expect(failed).toBeTruthy();
+          expect(store.getActions()).toEqual([{ type: LOAD_FILE_PAIR }]);
+        });
+    });
+  });
+
   describe('selectPair', () => {
     it('success', () => {
       const store = mockStore({
         filePairs: {
           ...initialState,
           pairs: { 1: 'pair' },
+        },
+        user: {
+          showInvisible: false,
         },
       });
       return store.dispatch(selectPair(1, 1)).then(() => {
@@ -127,6 +207,9 @@ describe('filePairs/actions', () => {
     it('error', () => {
       const store = mockStore({
         filePairs: initialState,
+        user: {
+          showInvisible: false,
+        },
       });
 
       fetch.mockReject('some error');

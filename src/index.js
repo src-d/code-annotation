@@ -9,7 +9,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import rootReducer, { middlewares as stateMiddlewares } from './state';
 import { enhancer as routerEnhancer } from './state/routes';
-import { logIn } from './state/user';
+import { logIn, loadOptions } from './state/user';
 import TokenService from './services/token';
 import { load as loadGA, middleware as gaMiddleware } from './services/ga';
 import './override.less';
@@ -23,9 +23,16 @@ if (window.cat.GA_TRACKING_ID) {
   middlewares.push(gaMiddleware);
 }
 
+const initialState = window.cat.initialState || {};
 const store = createStore(
   rootReducer,
-  window.cat.initialState || {},
+  {
+    ...initialState,
+    user: {
+      ...initialState.user,
+      ...loadOptions(),
+    },
+  },
   composeWithDevTools(compose(routerEnhancer, applyMiddleware(...middlewares)))
 );
 

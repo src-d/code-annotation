@@ -97,8 +97,14 @@ function getAssignments(experimentId) {
   return apiCall(`/api/experiments/${experimentId}/assignments`);
 }
 
-function getFilePair(experimentId, pairId) {
-  return apiCall(`/api/experiments/${experimentId}/file-pairs/${pairId}`);
+function getFilePair(experimentId, pairId, showInvisible = false) {
+  let queryStr = '';
+  if (showInvisible) {
+    queryStr = '?showInvisible=1';
+  }
+  return apiCall(
+    `/api/experiments/${experimentId}/file-pairs/${pairId}${queryStr}`
+  );
 }
 
 function putAnswer(experimentId, assignmentId, answer) {

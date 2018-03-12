@@ -69,6 +69,7 @@ Object {
   "pairs": Object {
     "1": Object {
       "diff": "content",
+      "id": 1,
       "leftBlobId": "id1",
       "leftLoc": 1,
       "rightBlobId": "id2",

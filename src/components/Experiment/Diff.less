@@ -30,7 +30,9 @@
     // works in FF but doesn't work in Chrome now
     position: relative;
 
-    &__locs {
+    margin-top: 3px;
+
+    &__top {
         position: absolute;
         top: 0;
         left: 0;
@@ -40,16 +42,33 @@
         flex: 0;
     }
 
+    &__switch {
+        width: 25%;
+
+        .react-toggle {
+            margin-top: -3px;
+            margin-right: 5px;
+        }
+
+        label {
+            vertical-align: top;
+            font-weight: normal;
+        }
+    }
+
     &__loc {
-        width: 50%;
+        width: 25%;
         text-align: right;
         padding-right: 10px;
     }
 
-    &__content {
-        height: 100%;
+    &__loc.right {
+        width: 50%;
+        flex: 1 0;
     }
-    &__content._with-loc {
-        padding-top: 20px;
+
+    &__content {
+        padding-top: 24px;
+        height: 100%;
     }
 }

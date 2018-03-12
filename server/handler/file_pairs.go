@@ -33,11 +33,18 @@ func GetFilePairDetails(repo *repository.FilePairs, diff *service.Diff) RequestP
 			return nil, serializer.NewHTTPError(http.StatusNotFound, "no file-pair found")
 		}
 
+		var preprocessors []service.DiffPreprocessorFunc
+
+		if r.URL.Query().Get("showInvisible") == "1" {
+			preprocessors = append(preprocessors, service.ReplaceInvisible)
+		}
+
 		diffString, err := diff.Generate(
 			filePair.Left.Path,
 			filePair.Right.Path,
 			filePair.Left.Content,
 			filePair.Right.Content,
+			preprocessors...,
 		)
 		if err != nil {
 			return nil, err
@@ -45,9 +52,6 @@ func GetFilePairDetails(repo *repository.FilePairs, diff *service.Diff) RequestP
 
 		leftLOC := len(strings.Split(filePair.Left.Content, "\n"))
 		rightLOC := len(strings.Split(filePair.Right.Content, "\n"))
-		if err != nil {
-			return nil, err
-		}
 
 		return serializer.NewFilePairResponse(filePair, diffString, leftLOC, rightLOC), nil
 	}

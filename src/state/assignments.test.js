@@ -159,6 +159,9 @@ describe('assignments/actions', () => {
         filePairs: {
           pairs: { 1: 'do not care about content here' },
         },
+        user: {
+          showInvisible: false,
+        },
       });
 
       return store.dispatch(selectAssigment(expId, 1)).then(() => {
@@ -179,6 +182,9 @@ describe('assignments/actions', () => {
         },
         filePairs: {
           pairs: {},
+        },
+        user: {
+          showInvisible: false,
         },
       });
 
@@ -217,6 +223,9 @@ describe('assignments/actions', () => {
         },
         filePairs: {
           pairs: {},
+        },
+        user: {
+          showInvisible: false,
         },
       });
 
