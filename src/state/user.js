@@ -4,15 +4,26 @@ import { add as addError } from './errors';
 import { makeUrl } from './routes';
 import TokenService from '../services/token';
 
-const initialState = {
+const options = {
+  showInvisible: false,
+};
+
+export const initialState = {
   loggedIn: false,
   userId: null,
   username: null,
   avatarUrl: null,
+
+  ...options,
 };
 
 export const LOG_IN = 'ca/user/LOG_IN';
 export const LOG_OUT = 'ca/user/LOG_OUT';
+export const SET_OPTION = 'ca/user/SET_OPTION';
+
+function makeKey(name) {
+  return `user_option_${name}`;
+}
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -28,6 +39,16 @@ const reducer = (state = initialState, action) => {
     case LOG_OUT: {
       return initialState;
     }
+
+    case SET_OPTION:
+      window.localStorage.setItem(
+        makeKey(action.name),
+        JSON.stringify(action.value)
+      );
+      return {
+        ...state,
+        [action.name]: action.value,
+      };
 
     default:
       return state;
@@ -72,6 +93,15 @@ export const auth = () => (dispatch, getState) => {
     });
 };
 
+export const toggleInvisible = () => (dispatch, getState) => {
+  const { user } = getState();
+  return dispatch({
+    type: SET_OPTION,
+    name: 'showInvisible',
+    value: !user.showInvisible,
+  });
+};
+
 export const authMiddleware = store => next => action => {
   if (action.type !== LOCATION_CHANGED) {
     return next(action);
@@ -96,5 +126,12 @@ export const authMiddleware = store => next => action => {
 
   return next(action);
 };
+
+export const loadOptions = () =>
+  Object.keys(options).reduce((acc, name) => {
+    acc[name] =
+      JSON.parse(window.localStorage.getItem(makeKey(name))) || options[name];
+    return acc;
+  }, {});
 
 export default reducer;

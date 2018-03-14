@@ -46,6 +46,7 @@ const reducer = (state = initialState, action) => {
         pairs: {
           ...state.pairs,
           [action.id]: {
+            id: action.id,
             diff: action.diff,
             score: action.score,
             leftBlobId: action.leftBlobId,
@@ -91,20 +92,26 @@ export const load = expId => dispatch => {
   );
 };
 
+export const loadFilePair = (expId, id) => (dispatch, getState) => {
+  dispatch({ type: LOAD_FILE_PAIR });
+
+  const { showInvisible } = getState().user;
+
+  return api.getFilePair(expId, id, showInvisible).then(res =>
+    dispatch({
+      type: SET_FILE_PAIR,
+      ...res,
+    })
+  );
+};
+
 export const loadFilePairIfNeeded = (expId, id) => (dispatch, getState) => {
   const { filePairs } = getState();
   if (filePairs.pairs[id]) {
     return Promise.resolve();
   }
 
-  dispatch({ type: LOAD_FILE_PAIR });
-
-  return api.getFilePair(expId, id).then(res =>
-    dispatch({
-      type: SET_FILE_PAIR,
-      ...res,
-    })
-  );
+  return dispatch(loadFilePair(expId, id));
 };
 
 export const selectPair = (expId, id) => dispatch => {

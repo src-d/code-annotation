@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Diff2Html } from 'diff2html';
+import Toggle from 'react-toggle';
 import 'diff2html/dist/diff2html.css';
+import 'react-toggle/style.css';
 import './Diff.less';
 
 class Diff extends PureComponent {
@@ -18,8 +20,14 @@ class Diff extends PureComponent {
   }
 
   render() {
-    const { diffString, leftLoc, rightLoc, className } = this.props;
-    const showLoc = leftLoc && rightLoc;
+    const {
+      diffString,
+      leftLoc,
+      rightLoc,
+      showInvisible,
+      toggleInvisible,
+      className,
+    } = this.props;
     const diffHTML = Diff2Html.getPrettyHtml(diffString, {
       inputFormat: 'diff',
       outputFormat: 'side-by-side',
@@ -30,14 +38,23 @@ class Diff extends PureComponent {
     });
     return (
       <div className={`diff ${className}`}>
-        {showLoc && (
-          <div className="diff__locs">
-            <div className="diff__loc left">{leftLoc} lines of code</div>
-            <div className="diff__loc right">{rightLoc} lines of code</div>
+        <div className="diff__top">
+          <div className="diff__switch">
+            <Toggle
+              checked={showInvisible}
+              icons={false}
+              onChange={toggleInvisible}
+              id="showInvisible"
+            />
+            <label htmlFor="showInvisible">
+              Show new lines, tabs and spaces
+            </label>
           </div>
-        )}
+          <div className="diff__loc left">{leftLoc} lines of code</div>
+          <div className="diff__loc right">{rightLoc} lines of code</div>
+        </div>
         <div
-          className={`diff__content ${showLoc ? '_with-loc' : ''}`}
+          className="diff__content"
           dangerouslySetInnerHTML={{ __html: diffHTML }}
         />
       </div>

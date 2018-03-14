@@ -88,3 +88,7 @@ export const middleware = () => next => action => {
       return result;
   }
 };
+
+/* Selectors */
+
+export const getCurrentExperiment = state => state.experiment.id;

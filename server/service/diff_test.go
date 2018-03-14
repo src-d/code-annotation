@@ -39,6 +39,20 @@ func (suite *DiffSuite) TestDiff() {
 	assert.Equal(ac, acDiff)
 }
 
+func (suite *DiffSuite) TestDiffReplaceInvisible() {
+	assert := suite.Assert()
+	inputStr := "line\r\n" +
+		"\ttabbed line\n" +
+		"    spaced line\n"
+
+	assert.Equal(
+		service.ReplaceInvisible(inputStr),
+		"line^M↵\n"+
+			"→tabbed·line↵\n"+
+			"····spaced·line↵\n",
+	)
+}
+
 func readFile(filename string) (string, error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {

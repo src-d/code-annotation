@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`user/reducer SET_OPTION 1`] = `
+Object {
+  "avatarUrl": null,
+  "loading": true,
+  "loggedIn": false,
+  "showInvisible": true,
+  "userId": null,
+  "username": null,
+}
+`;

@@ -19,6 +19,8 @@ import {
   getProgressPercent,
   getCurrentFilePair,
 } from '../state/assignments';
+import { toggleInvisible } from '../state/user';
+import { loadFilePair } from '../state/filePairs';
 import { makeUrl } from '../state/routes';
 import './Experiment.less';
 
@@ -74,7 +76,7 @@ class Experiment extends Component {
       leftLoc,
       rightLoc,
       assignmentsOptions,
-      currentAssigmentId,
+      currentAssigment,
       selectAssigmentId,
       markSimilar,
       markMaybe,
@@ -96,10 +98,14 @@ class Experiment extends Component {
         <Row className="ex-page__content" onMouseEnter={this.props.hideHeader}>
           <Col xs={12} className="ex-page__diff-col">
             <Diff
+              className="ex-page__diff"
               diffString={diffString}
               leftLoc={leftLoc}
               rightLoc={rightLoc}
-              className="ex-page__diff"
+              showInvisible={this.props.showInvisible}
+              toggleInvisible={() =>
+                this.props.toggleInvisible(expId, currentAssigment.pairId)
+              }
             />
           </Col>
         </Row>
@@ -108,7 +114,7 @@ class Experiment extends Component {
             <Selector
               title="Previous"
               options={assignmentsOptions}
-              value={currentAssigmentId}
+              value={currentAssigment.id}
               onChange={e => selectAssigmentId(expId, e.target.value)}
             />
           </Col>
@@ -129,9 +135,10 @@ class Experiment extends Component {
 }
 
 const mapStateToProps = state => {
-  const { experiment, assignments } = state;
+  const { experiment, assignments, user } = state;
   const { error, loading, id, name, description } = experiment;
   const { list, currentAssigment } = assignments;
+  const { showInvisible } = user;
 
   const filePair = getCurrentFilePair(state);
   const diff = filePair ? filePair.diff : null;
@@ -151,8 +158,9 @@ const mapStateToProps = state => {
     diffString: diff,
     leftLoc: filePair ? filePair.leftLoc : 0,
     rightLoc: filePair ? filePair.rightLoc : 0,
-    currentAssigmentId: currentAssigment ? currentAssigment.id : null,
+    currentAssigment,
     assignmentsOptions,
+    showInvisible,
   };
 };
 
@@ -164,6 +172,10 @@ const mapDispatchToProps = dispatch => ({
   selectAssigmentId: (expId, id) =>
     dispatch(push(makeUrl('question', { experiment: expId, question: id }))),
   finish: expId => dispatch(push(makeUrl('finish', { experiment: expId }))),
+  toggleInvisible: (expId, id) => {
+    dispatch(toggleInvisible());
+    return dispatch(loadFilePair(expId, id));
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(
