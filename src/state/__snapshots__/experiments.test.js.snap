@@ -1,31 +1,80 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`experiments/reducer LOAD 1`] = `
+exports[`experiments/reducer CREATE 1`] = `
 Object {
+  "createInProgress": true,
   "error": null,
   "list": Array [],
   "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
+}
+`;
+
+exports[`experiments/reducer CREATE_ERROR 1`] = `
+Object {
+  "createInProgress": false,
+  "error": "test error",
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
+}
+`;
+
+exports[`experiments/reducer CREATE_SUCCESS 1`] = `
+Object {
+  "createInProgress": false,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
+}
+`;
+
+exports[`experiments/reducer LOAD 1`] = `
+Object {
+  "createInProgress": false,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
 }
 `;
 
 exports[`experiments/reducer LOAD_ERROR 1`] = `
 Object {
+  "createInProgress": false,
   "error": "test error",
   "list": Array [],
   "loading": false,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
 }
 `;
 
 exports[`experiments/reducer LOAD_SUCCESS 1`] = `
 Object {
+  "createInProgress": false,
   "error": null,
   "list": Array [],
   "loading": false,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
 }
 `;
 
 exports[`experiments/reducer SET 1`] = `
 Object {
+  "createInProgress": false,
   "error": null,
   "list": Array [
     Object {
@@ -33,5 +82,92 @@ Object {
     },
   ],
   "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
+}
+`;
+
+exports[`experiments/reducer UPDATE 1`] = `
+Object {
+  "createInProgress": false,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": true,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
+}
+`;
+
+exports[`experiments/reducer UPDATE_ERROR 1`] = `
+Object {
+  "createInProgress": false,
+  "error": "test error",
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
+}
+`;
+
+exports[`experiments/reducer UPDATE_SUCCESS 1`] = `
+Object {
+  "createInProgress": false,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
+}
+`;
+
+exports[`experiments/reducer UPLOAD 1`] = `
+Object {
+  "createInProgress": false,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": true,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
+}
+`;
+
+exports[`experiments/reducer UPLOAD_ERROR 1`] = `
+Object {
+  "createInProgress": false,
+  "error": "test error",
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_FAILURE",
+}
+`;
+
+exports[`experiments/reducer UPLOAD_RESULT_RESET 1`] = `
+Object {
+  "createInProgress": false,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_NONE",
+}
+`;
+
+exports[`experiments/reducer UPLOAD_SUCCESS 1`] = `
+Object {
+  "createInProgress": false,
+  "error": null,
+  "list": Array [],
+  "loading": true,
+  "updateInProgress": false,
+  "uploadInProgress": false,
+  "uploadResult": "ca/experiments/UPLOAD_RES_SUCCESS",
 }
 `;
