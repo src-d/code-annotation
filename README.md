@@ -145,6 +145,10 @@ CAT_OAUTH_RESTRICT_ACCESS=org:my-organization
 CAT_OAUTH_RESTRICT_REQUESTER_ACCESS=team:123456
 ```
 
+## Deployment
+
+This site is deployed in `production` and in `staging` following our [web application deployment workflow](https://github.com/src-d/guide/blob/master/engineering/continuous-delivery.md)
+
 ## Contributing
 
 [Contributions](https://github.com/src-d/code-annotation/issues) are more than welcome, if you are interested please take a look to our [Contributing Guidelines](CONTRIBUTING.md). You have more information on how to run it locally for [development purposes here](CONTRIBUTING.md#Development).

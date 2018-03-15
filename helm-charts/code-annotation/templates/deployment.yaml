@@ -50,7 +50,7 @@ spec:
                   name: {{ $secretName  }}
                   key: jwt_signing_key
             - name: CAT_GA_TRACKING_ID
-              value: "{{ .Values.deployment.gaTrackingID }}"
+              value: "{{ required "gaTrackingID is required" .Values.deployment.gaTrackingID }}"
           ports:
             - containerPort: {{ .Values.service.codeAnnotation.internalPort }}
           volumeMounts:

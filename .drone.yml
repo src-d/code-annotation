@@ -2,7 +2,7 @@ workspace:
   base: /go
   path: src/github.com/src-d/code-annotation
 
-branches: [master, staging, release/*]
+branches: [master, staging]
 
 # ANCHORS
 
@@ -27,6 +27,14 @@ docker_image: &docker_image
   dockerfile: Dockerfile
   debug: true
 
+helm_deploy: &helm_deploy
+  image: quay.io/ipedrazas/drone-helm
+  skip_tls_verify: true
+  chart: ./helm-charts/code-annotation
+  release: code-annotation
+  tiller_ns: kube-system
+  wait: true
+
 # PIPELINE STEPS
 
 pipeline:
@@ -36,7 +44,7 @@ pipeline:
     debug: true
 
 
-  # deployment to staging environment
+  # deployment to staging environment when staging is pushed
 
   build_stg:
     <<: *build
@@ -53,20 +61,17 @@ pipeline:
       event: [push]
 
   helm_deploy_stg:
-    image: quay.io/ipedrazas/drone-helm
-    skip_tls_verify: true
-    chart: ./helm-charts/code-annotation
-    release: code-annotation
+    <<: *helm_deploy
     prefix: STG
     secrets: [ STG_API_SERVER, STG_KUBERNETES_TOKEN ]
-    values: ingress.globalStaticIpName=code-annotation-staging,ingress.hostname=code-annotation-staging.srcd.run,image.tag=commit-${DRONE_COMMIT_SHA:0:7},secretName=code-annotation-drone-workaround
-    tiller_ns: kube-system
-    wait: true
+    values: ingress.globalStaticIpName=code-annotation-staging,ingress.hostname=code-annotation-staging.srcd.run,image.tag=commit-${DRONE_COMMIT_SHA:0:7},deployment.gaTrackingID=UA-109494282-2,secretName=code-annotation-drone-workaround
     when:
       branch: [staging]
       event: [push]
 
-  # push build artifacts to GitHub release
+  # deployment to Production environment when a new tag is created; it will also:
+  # - push to GitHub release, the compiled binaries,
+  # - push to DockerHub, the docker image
 
   build_release:
     <<: *build
@@ -85,5 +90,13 @@ pipeline:
     image: plugins/github-release
     secrets: [ github_token ]
     files: build/*.tar.gz
+    when:
+      event: [tag]
+
+  helm_deploy_release_prod:
+    <<: *helm_deploy
+    prefix: PROD
+    secrets: [ PROD_API_SERVER, PROD_KUBERNETES_TOKEN ]
+    values: ingress.globalStaticIpName=code-annotation-production,ingress.hostname=code-annotation.sourced.tech,image.tag=${DRONE_TAG},deployment.gaTrackingID=UA-109494282-2,secretName=code-annotation-drone-workaround
     when:
       event: [tag]
