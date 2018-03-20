@@ -15,8 +15,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// Driver used
 type Driver int
 
+// Available drivers
 const (
 	None Driver = iota
 	Sqlite
