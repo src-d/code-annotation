@@ -82,7 +82,10 @@ const (
 
 const selectExperiment = `SELECT * FROM experiments WHERE id = $1`
 
-const selectFiles = `SELECT * FROM files`
+const selectFiles = `SELECT
+	blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, uast_a,
+	blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, uast_b,
+	score FROM files`
 
 const insertFilePairs = `INSERT INTO file_pairs (
 		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a, uast_a,
