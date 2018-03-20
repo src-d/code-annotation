@@ -238,8 +238,8 @@ func ImportFiles(originDB DB, destDB DB, opts Options, experimentID int) (succes
 		}
 
 		res, err := insert.Exec(
-			blobIDA, repositoryIDA, commitHashA, pathA, contentA, uastA, md5hash(contentA),
-			blobIDB, repositoryIDB, commitHashB, pathB, contentB, uastB, md5hash(contentB),
+			blobIDA, repositoryIDA, commitHashA, pathA, contentA, md5hash(contentA), uastA,
+			blobIDB, repositoryIDB, commitHashB, pathB, contentB, md5hash(contentB), uastB,
 			score,
 			"",
 			experimentID)

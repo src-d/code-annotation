@@ -24,10 +24,10 @@ func (repo *FilePairs) getWithQuery(queryRow scannable) (*model.FilePair, error)
 
 	err := queryRow.Scan(&pair.ID,
 		&pair.Left.BlobID, &pair.Left.RepositoryID, &pair.Left.CommitHash,
-		&pair.Left.Path, &pair.Left.Content, &pair.Left.UAST, &pair.Left.Hash,
+		&pair.Left.Path, &pair.Left.Content, &pair.Left.Hash, &pair.Left.UAST,
 
 		&pair.Right.BlobID, &pair.Right.RepositoryID, &pair.Right.CommitHash,
-		&pair.Right.Path, &pair.Right.Content, &pair.Right.UAST, &pair.Right.Hash,
+		&pair.Right.Path, &pair.Right.Content, &pair.Right.Hash, &pair.Right.UAST,
 
 		&pair.Score, &pair.ExperimentID)
 
