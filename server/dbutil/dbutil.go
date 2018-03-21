@@ -54,9 +54,10 @@ const (
 	// TODO: consider a unique constrain to avoid importing identical pairs
 	createFilePairs = `CREATE TABLE IF NOT EXISTS file_pairs (
 		id <INCREMENT_TYPE>,
-		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, hash_a TEXT, uast_a <BLOB_TYPE>,
-		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, hash_b TEXT, uast_b <BLOB_TYPE>,
+		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, hash_a TEXT,
+		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, hash_b TEXT,
 		score DOUBLE PRECISION, diff TEXT, experiment_id INTEGER,
+		uast_a <BLOB_TYPE>, uast_b <BLOB_TYPE>,
 		PRIMARY KEY (id),
 		FOREIGN KEY(experiment_id) REFERENCES experiments(id))`
 	createAssignments = `CREATE TABLE IF NOT EXISTS assignments (
