@@ -41,6 +41,10 @@ const (
 	sqliteIncrementType      = "INTEGER"
 	posgresIncrementType     = "SERIAL"
 
+	blobTypePlaceholder = "<BLOB_TYPE>"
+	sqliteBlobType      = "BLOB"
+	posgresBlobType     = "BYTEA"
+
 	createUsers = `CREATE TABLE IF NOT EXISTS users (
 			id <INCREMENT_TYPE>, login TEXT UNIQUE, username TEXT, avatar_url TEXT, role TEXT,
 			PRIMARY KEY (id))`
@@ -50,8 +54,8 @@ const (
 	// TODO: consider a unique constrain to avoid importing identical pairs
 	createFilePairs = `CREATE TABLE IF NOT EXISTS file_pairs (
 		id <INCREMENT_TYPE>,
-		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, hash_a TEXT, uast_a BLOB,
-		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, hash_b TEXT, uast_b BLOB,
+		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, hash_a TEXT, uast_a <BLOB_TYPE>,
+		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, hash_b TEXT, uast_b <BLOB_TYPE>,
 		score DOUBLE PRECISION, diff TEXT, experiment_id INTEGER,
 		PRIMARY KEY (id),
 		FOREIGN KEY(experiment_id) REFERENCES experiments(id))`
@@ -145,18 +149,22 @@ func Bootstrap(db DB) error {
 		createFilePairs, createAssignments, createFeatures}
 
 	var colType string
+	var blobType string
 
 	switch db.Driver {
 	case Sqlite:
 		colType = sqliteIncrementType
+		blobType = sqliteBlobType
 	case Postgres:
 		colType = posgresIncrementType
+		blobType = posgresBlobType
 	default:
 		return fmt.Errorf("Unknown driver type")
 	}
 
 	for _, table := range tables {
 		cmd := strings.Replace(table, incrementTypePlaceholder, colType, 1)
+		cmd = strings.Replace(cmd, blobTypePlaceholder, blobType, -1)
 
 		if _, err := db.Exec(cmd); err != nil {
 			return err
