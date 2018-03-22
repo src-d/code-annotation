@@ -85,8 +85,16 @@ func (r Role) Value() (driver.Value, error) {
 
 // Scan sets the Role with the passed string
 func (r *Role) Scan(value interface{}) error {
-	if v, ok := value.([]byte); ok && isValidRole(Role(string(v))) {
-		*r = Role(v)
+	var role string
+	switch v := value.(type) {
+	case []byte:
+		role = string(v)
+	case string:
+		role = v
+	}
+
+	if role != "" && isValidRole(Role(role)) {
+		*r = Role(role)
 		return nil
 	}
 
