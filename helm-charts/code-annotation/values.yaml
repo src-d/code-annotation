@@ -12,7 +12,7 @@ image:
   pullPolicy: IfNotPresent
 deployment:
     internalDatabasePath: "/var/code-annotation"
-    gaTrackingID: "UA-109494282-2"
+    # gaTrackingID must be received as a parameter
 authorization:
     restrictAccessGroup: "org:src-d"
     restrictRequesterGroup: ""
@@ -28,7 +28,7 @@ ingress:
     kubernetes.io/ingress.class: gce
   tls: true
   # below values are required
-  # hostname: "code-annotation-staging.srcd.run"
+  # hostname: "code-annotation.sourced.tech"
   # globalStaticIpName: "code-annotation-ip"
 
 # Provide with 'helm install', and do NOT change it when doing 'helm upgrade'
