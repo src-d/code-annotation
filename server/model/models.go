@@ -57,6 +57,7 @@ type File struct {
 	CommitHash   string
 	Path         string
 	Content      string
+	UAST         []byte
 	Hash         string
 }
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/pressly/lg"
+	"github.com/sirupsen/logrus"
 	"github.com/src-d/code-annotation/server/dbutil"
 	"github.com/src-d/code-annotation/server/service"
 )
@@ -30,7 +31,7 @@ func testDB() *dbutil.DB {
 }
 
 func chiRequest(req *http.Request, params map[string]string) *http.Request {
-	ctx := lg.WithLoggerContext(req.Context(), lg.DefaultLogger)
+	ctx := lg.WithLoggerContext(req.Context(), logrus.StandardLogger())
 
 	c := chi.NewRouteContext()
 	if params != nil {

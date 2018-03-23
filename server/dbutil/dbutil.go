@@ -15,8 +15,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// Driver used
 type Driver int
 
+// Available drivers
 const (
 	None Driver = iota
 	Sqlite
@@ -39,6 +41,10 @@ const (
 	sqliteIncrementType      = "INTEGER"
 	posgresIncrementType     = "SERIAL"
 
+	blobTypePlaceholder = "<BLOB_TYPE>"
+	sqliteBlobType      = "BLOB"
+	posgresBlobType     = "BYTEA"
+
 	createUsers = `CREATE TABLE IF NOT EXISTS users (
 			id <INCREMENT_TYPE>, login TEXT UNIQUE, username TEXT, avatar_url TEXT, role TEXT,
 			PRIMARY KEY (id))`
@@ -51,6 +57,7 @@ const (
 		blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, hash_a TEXT,
 		blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, hash_b TEXT,
 		score DOUBLE PRECISION, diff TEXT, experiment_id INTEGER,
+		uast_a <BLOB_TYPE>, uast_b <BLOB_TYPE>,
 		PRIMARY KEY (id),
 		FOREIGN KEY(experiment_id) REFERENCES experiments(id))`
 	createAssignments = `CREATE TABLE IF NOT EXISTS assignments (
@@ -80,13 +87,16 @@ const (
 
 const selectExperiment = `SELECT * FROM experiments WHERE id = $1`
 
-const selectFiles = `SELECT * FROM files`
+const selectFiles = `SELECT
+	blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, uast_a,
+	blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, uast_b,
+	score FROM files`
 
 const insertFilePairs = `INSERT INTO file_pairs (
-		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a,
-		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b,
+		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a, uast_a,
+		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b, uast_b,
 		score, diff, experiment_id ) VALUES
-		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
+		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`
 
 var (
 	sqliteReg = regexp.MustCompile(`^sqlite://(.+)$`)
@@ -140,18 +150,22 @@ func Bootstrap(db DB) error {
 		createFilePairs, createAssignments, createFeatures}
 
 	var colType string
+	var blobType string
 
 	switch db.Driver {
 	case Sqlite:
 		colType = sqliteIncrementType
+		blobType = sqliteBlobType
 	case Postgres:
 		colType = posgresIncrementType
+		blobType = posgresBlobType
 	default:
 		return fmt.Errorf("Unknown driver type")
 	}
 
 	for _, table := range tables {
 		cmd := strings.Replace(table, incrementTypePlaceholder, colType, 1)
+		cmd = strings.Replace(cmd, blobTypePlaceholder, blobType, -1)
 
 		if _, err := db.Exec(cmd); err != nil {
 			return err
@@ -223,11 +237,12 @@ func ImportFiles(originDB DB, destDB DB, opts Options, experimentID int) (succes
 	for rows.Next() {
 		var blobIDA, repositoryIDA, commitHashA, pathA, contentA,
 			blobIDB, repositoryIDB, commitHashB, pathB, contentB string
+		var uastA, uastB []byte
 		var score float64
 
 		err := rows.Scan(
-			&blobIDA, &repositoryIDA, &commitHashA, &pathA, &contentA,
-			&blobIDB, &repositoryIDB, &commitHashB, &pathB, &contentB,
+			&blobIDA, &repositoryIDA, &commitHashA, &pathA, &contentA, &uastA,
+			&blobIDB, &repositoryIDB, &commitHashB, &pathB, &contentB, &uastB,
 			&score)
 
 		if err != nil {
@@ -237,8 +252,8 @@ func ImportFiles(originDB DB, destDB DB, opts Options, experimentID int) (succes
 		}
 
 		res, err := insert.Exec(
-			blobIDA, repositoryIDA, commitHashA, pathA, contentA, md5hash(contentA),
-			blobIDB, repositoryIDB, commitHashB, pathB, contentB, md5hash(contentB),
+			blobIDA, repositoryIDA, commitHashA, pathA, contentA, md5hash(contentA), uastA,
+			blobIDB, repositoryIDB, commitHashB, pathB, contentB, md5hash(contentB), uastB,
 			score,
 			"",
 			experimentID)
