@@ -185,7 +185,8 @@ packages: build
 	@cd $(BUILD_PATH); \
 	for os in $(PKG_OS); do \
 		for arch in $(PKG_ARCH); do \
-			tar -cvzf $(PROJECT)_$(VERSION)_$${os}_$${arch}.tar.gz $(PROJECT)_$${os}_$${arch}/; \
+			TAR_VERSION=`echo $(VERSION) | tr "/" "-"`; \
+			tar -cvzf $(PROJECT)_$(TAR_VERSION)_$${os}_$${arch}.tar.gz $(PROJECT)_$${os}_$${arch}/; \
 		done; \
 	done
 
