@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/src-d/ci/examples/basic"
+	"github.com/src-d/code-annotation/examples/basic"
 )
 
 var (
