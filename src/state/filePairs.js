@@ -192,7 +192,7 @@ export const middleware = store => next => action => {
         .then(() => next(loadAnnotations(expIdParam, +payload.params.pair)))
         .then(() => {
           const pair = getCurrentFilePair(store.getState());
-          return pair && next(featuresLoad(pair.leftBlobId, pair.rightBlobId));
+          return pair && next(featuresLoad(pair.id));
         });
     default:
       return result;

@@ -288,17 +288,14 @@ describe('routers', () => {
           }),
           { status: 200 },
         ],
-        // features left
+        // features
         [
           JSON.stringify({
-            data: [],
-          }),
-          { status: 200 },
-        ],
-        // features right
-        [
-          JSON.stringify({
-            data: [],
+            data: {
+              featuresA: [],
+              featuresB: [],
+              score: {},
+            },
           }),
           { status: 200 },
         ]
