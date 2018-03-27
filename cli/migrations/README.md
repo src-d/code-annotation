@@ -4,6 +4,12 @@ These scripts are <u>**not real migrations**</u>. There is no up/down rules. The
 
 These scripts were needed to migrate the Database between different states.
 
+- [Vacuum database](command-vacuum.go)
+```shell
+# rebuilds the database to defragment it
+go run cli/migrations/*.go vacuum internal.db
+```
+
 - [Add UAST nullable columns](command-UAST-add-columns.go)
 ```shell
 # prepares the current "internal.db". Adds "uast_a" and "uast_b" nulable cols
