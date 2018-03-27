@@ -15,3 +15,9 @@ go run cli/migrations/*.go uast-add-cols internal.db
 # import UASTs into "internal.db" reading from "source.db"
 go run cli/migrations/*.go uast-import internal.db source.db
 ```
+
+- [Remove diff column from a database](command-diff-remove-column.go)
+```shell
+# prepares the current "internal.db". Remove "diff" col
+go run cli/migrations/*.go diff-rm-col internal.db
+```

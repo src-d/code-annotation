@@ -17,6 +17,7 @@ func main() {
 	parser := flags.NewParser(nil, flags.Default)
 	addCommand(parser, &uastColsOpts)
 	addCommand(parser, &uastImportOpts)
+	addCommand(parser, &diffRmColOpts)
 	parse(parser, description)
 }
 
