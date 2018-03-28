@@ -1,3 +1,5 @@
+import log from '../services/log';
+
 export const initialState = [];
 
 export const ADD = 'ca/errors/ADD';
@@ -18,7 +20,7 @@ const reducer = (state = initialState, action) => {
 };
 
 export const add = error => dispatch => {
-  console.error(error);
+  log.error(error);
   if (Array.isArray(error)) {
     error.forEach(e =>
       dispatch({
