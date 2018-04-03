@@ -18,6 +18,7 @@ func main() {
 	addCommand(parser, &uastColsOpts)
 	addCommand(parser, &uastImportOpts)
 	addCommand(parser, &diffRmColOpts)
+	addCommand(parser, &featureDropOpts)
 	addCommand(parser, &vacuumOpts)
 	parse(parser, description)
 }

@@ -27,3 +27,9 @@ go run cli/migrations/*.go uast-import internal.db source.db
 # prepares the current "internal.db". Remove "diff" col
 go run cli/migrations/*.go diff-rm-col internal.db
 ```
+
+- [Remove features table from a database](command-features-drop-table.go)
+```shell
+# drops the 'features' table from the current "internal.db"
+go run cli/migrations/*.go features-drop-table internal.db
+```
