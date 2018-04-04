@@ -97,6 +97,6 @@ pipeline:
     <<: *helm_deploy
     prefix: PROD
     secrets: [ PROD_API_SERVER, PROD_KUBERNETES_TOKEN ]
-    values: ingress.globalStaticIpName=code-annotation-production,ingress.hostname=code-annotation.sourced.tech,image.tag=${DRONE_TAG},deployment.gaTrackingID=UA-109494282-2,secretName=code-annotation-drone-workaround
+    values: ingress.globalStaticIpName=code-annotation-production,ingress.hostname=code-annotation.srcd.run,image.tag=${DRONE_TAG},deployment.gaTrackingID=UA-109494282-2,secretName=code-annotation-drone-workaround
     when:
       event: [tag]
