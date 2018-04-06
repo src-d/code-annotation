@@ -9,8 +9,8 @@ postgresql://[user[:password]@][netloc][:port][,...][/dbname]
 
 The origin database is assumed to have the following table:
 CREATE TABLE files (
-	blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT,
-	blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT,
+	blob_id_a TEXT, repository_id_a TEXT, commit_hash_a TEXT, path_a TEXT, content_a TEXT, uast_a BLOB,
+	blob_id_b TEXT, repository_id_b TEXT, commit_hash_b TEXT, path_b TEXT, content_b TEXT, uast_b BLOB,
 	score DOUBLE PRECISION);
 */
 package main

@@ -24,10 +24,10 @@ func (repo *FilePairs) getWithQuery(queryRow scannable) (*model.FilePair, error)
 
 	err := queryRow.Scan(&pair.ID,
 		&pair.Left.BlobID, &pair.Left.RepositoryID, &pair.Left.CommitHash,
-		&pair.Left.Path, &pair.Left.Content, &pair.Left.Hash,
+		&pair.Left.Path, &pair.Left.Content, &pair.Left.Hash, &pair.Left.UAST,
 
 		&pair.Right.BlobID, &pair.Right.RepositoryID, &pair.Right.CommitHash,
-		&pair.Right.Path, &pair.Right.Content, &pair.Right.Hash,
+		&pair.Right.Path, &pair.Right.Content, &pair.Right.Hash, &pair.Right.UAST,
 
 		&pair.Score, &pair.ExperimentID)
 
@@ -43,12 +43,12 @@ func (repo *FilePairs) getWithQuery(queryRow scannable) (*model.FilePair, error)
 
 const (
 	selectFilePairsSQL = `SELECT id,
-		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a,
-		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b,
+		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a, uast_a,
+		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b, uast_b,
 		score, experiment_id FROM file_pairs WHERE id=$1`
 	selectFilePairsWhereExpSQL = `SELECT id,
-		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a,
-		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b,
+		blob_id_a, repository_id_a, commit_hash_a, path_a, content_a, hash_a, uast_a,
+		blob_id_b, repository_id_b, commit_hash_b, path_b, content_b, hash_b, uast_b,
 		score, experiment_id FROM file_pairs WHERE experiment_id=$1`
 )
 
