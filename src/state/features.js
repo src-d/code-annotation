@@ -33,11 +33,14 @@ const reducer = (state = initialState, action) => {
 
 // Actions
 
-export const load = (blobIdA, blobIdB) => dispatch => {
+export const load = filePairId => dispatch => {
   dispatch({ type: LOAD });
 
-  return Promise.all([api.getFeatures(blobIdA), api.getFeatures(blobIdB)])
-    .then(([featuresA, featuresB]) => {
+  return api
+    .getFeatures(filePairId)
+    .then(res => {
+      const { featuresA, featuresB, score } = res;
+
       // collect names from both responses
       const names = featuresA.map(f => f.name);
       featuresB.forEach(f => {
@@ -57,11 +60,16 @@ export const load = (blobIdA, blobIdB) => dispatch => {
       }, {});
 
       // merge features by name
-      const features = names.map(name => ({
+      const individualFeatures = names.map(name => ({
         name,
         weightA: mapA[name] || 0,
         weightB: mapB[name] || 0,
       }));
+
+      const features = {
+        features: individualFeatures,
+        score: score.weight,
+      };
 
       return dispatch({ type: LOAD_SUCCESS, features });
     })
@@ -72,7 +80,11 @@ export const load = (blobIdA, blobIdB) => dispatch => {
 
 // Selectors
 
-export const getFeatures = state => state.features.features;
+export const getFeatures = state =>
+  (state.features.features && state.features.features.features) || [];
+
+export const getScore = state =>
+  (state.features.features && state.features.features.score) || 0;
 
 export const mostSimilar = createSelector(getFeatures, features => {
   // copy because sort mutates array

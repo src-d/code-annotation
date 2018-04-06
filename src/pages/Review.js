@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-bootstrap';
+import { push } from 'redux-little-router';
 import SplitPane from 'react-split-pane';
 import Page from './Page';
 import Loader from '../components/Loader';
@@ -8,12 +9,14 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import Selector from '../components/Experiment/Selector';
 import Diff from '../components/Experiment/Diff';
 import Results from '../components/Review/Results';
+import { makeUrl } from '../state/routes';
+import { getCurrentFilePair, loadFilePair } from '../state/filePairs';
 import {
-  getCurrentFilePair,
-  selectPair,
-  loadFilePair,
-} from '../state/filePairs';
-import { getFeatures, mostSimilar, leastSimilar } from '../state/features';
+  getFeatures,
+  mostSimilar,
+  leastSimilar,
+  getScore,
+} from '../state/features';
 import { toggleInvisible } from '../state/user';
 import './Review.less';
 
@@ -64,6 +67,7 @@ class Review extends Component {
       mostSimilarFeatures,
       leastSimilarFeatures,
       features,
+      score,
     } = this.props;
 
     if (fileLoading || !filePair) {
@@ -102,7 +106,7 @@ class Review extends Component {
               />
               <Results
                 className="results"
-                score={filePair.score}
+                score={score}
                 annotations={annotations}
                 features={features}
                 mostSimilarFeatures={mostSimilarFeatures}
@@ -127,6 +131,7 @@ const mapStateToProps = state => {
     name: `(${i + 1})`,
   }));
 
+  const score = getScore(state);
   const features = getFeatures(state);
   // keep only 100 results
   // it will be improved (most probably with pagination) later
@@ -146,13 +151,17 @@ const mapStateToProps = state => {
     mostSimilarFeatures,
     leastSimilarFeatures,
     features,
+    score,
     showInvisible,
   };
 };
 
 const experimentId = 1;
 const mapDispatchToProps = dispatch => ({
-  onSelect: pairId => dispatch(selectPair(experimentId, pairId)),
+  onSelect: pairId =>
+    dispatch(
+      push(makeUrl('reviewPair', { experiment: experimentId, pair: pairId }))
+    ),
   toggleInvisible: (expId, id) => {
     dispatch(toggleInvisible());
     return dispatch(loadFilePair(expId, id));

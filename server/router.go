@@ -89,10 +89,10 @@ func Router(
 			r.Get("/file-pairs/{pairId}", handler.APIHandlerFunc(handler.GetFilePairDetails(filePairRepo, diffService)))
 		})
 
-		r.Route("/features", func(r chi.Router) {
+		r.Route("/file-pair", func(r chi.Router) {
 			r.Use(requesterACL.Middleware)
 
-			r.Get("/{blobId}", handler.APIHandlerFunc(handler.GetFeatures(featureRepo)))
+			r.Get("/{pairId}/features", handler.APIHandlerFunc(handler.GetFeatures(filePairRepo, featureRepo)))
 		})
 
 		r.Route("/exports", func(r chi.Router) {

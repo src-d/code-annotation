@@ -158,8 +158,8 @@ function getFilePairAnnotations(experimentId, id) {
   );
 }
 
-function getFeatures(blobId) {
-  return apiCall(`/api/features/${blobId}`);
+function getFeatures(filePairId) {
+  return apiCall(`/api/file-pair/${filePairId}/features`);
 }
 
 function exportList() {

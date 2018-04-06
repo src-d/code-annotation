@@ -192,13 +192,29 @@ type featureResponse struct {
 	Weight float64 `json:"weight"`
 }
 
-// NewFeaturesResponse returns a Response for the passed Features
-func NewFeaturesResponse(fs []*model.Feature) *Response {
-	features := make([]featureResponse, len(fs))
-	for i, f := range fs {
-		features[i] = featureResponse(*f)
+type featuresResponse struct {
+	Object1 []featureResponse `json:"featuresA"`
+	Object2 []featureResponse `json:"featuresB"`
+	Pair    featureResponse   `json:"score"`
+}
+
+// NewFeaturesResponse returns a Response for the passed Features and score
+func NewFeaturesResponse(fsA []*model.Feature, fsB []*model.Feature, s *model.Feature) *Response {
+	featuresA := make([]featureResponse, len(fsA))
+	for i, f := range fsA {
+		featuresA[i] = featureResponse(*f)
 	}
-	return newResponse(features)
+
+	featuresB := make([]featureResponse, len(fsB))
+	for i, f := range fsB {
+		featuresB[i] = featureResponse(*f)
+	}
+
+	return newResponse(featuresResponse{
+		Object1: featuresA,
+		Object2: featuresB,
+		Pair:    featureResponse(*s),
+	})
 }
 
 type countResponse struct {
