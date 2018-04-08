@@ -80,6 +80,7 @@ bindata:
 		build/*.json \
 		build/*.png \
 		build/*.svg \
+		build/*.ico \
 		build/index.html
 
 prepare-build: | build-frontend build-backend bindata
