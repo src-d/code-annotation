@@ -28,7 +28,7 @@ ingress:
     kubernetes.io/ingress.class: gce
   tls: true
   # below values are required
-  # hostname: "code-annotation.sourced.tech"
+  # hostname: "code-annotation.srcd.run"
   # globalStaticIpName: "code-annotation-ip"
 
 # Provide with 'helm install', and do NOT change it when doing 'helm upgrade'

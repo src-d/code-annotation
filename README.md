@@ -145,9 +145,9 @@ CAT_OAUTH_RESTRICT_ACCESS=org:my-organization
 CAT_OAUTH_RESTRICT_REQUESTER_ACCESS=team:123456
 ```
 
-## Deployment
+## source{d} internal deployment
 
-This site is deployed in `production` and in `staging` following our [web application deployment workflow](https://github.com/src-d/guide/blob/master/engineering/continuous-delivery.md)
+This application is deployed in `production` and `staging` sourced{d} environments following our [web application deployment workflow](https://github.com/src-d/guide/blob/master/engineering/continuous-delivery.md)
 
 ## Contributing
 
