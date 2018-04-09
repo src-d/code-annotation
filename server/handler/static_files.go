@@ -4,20 +4,26 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 
 	"github.com/src-d/code-annotation/server/assets"
+
+	"github.com/koding/websocketproxy"
 )
 
 // Static contains handlers to serve static using go-bindata
 type Static struct {
-	dir     string
-	options options
+	dir         string
+	proxyTarget string
+	options     options
 }
 
 // NewStatic creates new Static
-func NewStatic(dir, serverURL, gaTrackingID string) *Static {
+func NewStatic(dir, serverURL, gaTrackingID string, proxyTarget string) *Static {
 	return &Static{
-		dir: dir,
+		dir:         dir,
+		proxyTarget: proxyTarget,
 		options: options{
 			ServerURL:    serverURL,
 			GaTrackingID: gaTrackingID,
@@ -34,6 +40,11 @@ type options struct {
 
 // ServeHTTP serves any static file from static directory or fallbacks on index.hml
 func (s *Static) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if s.proxyTarget != "" {
+		s.proxy(w, r)
+		return
+	}
+
 	filepath := s.dir + r.URL.Path
 	b, err := assets.Asset(filepath)
 	if err != nil {
@@ -71,4 +82,15 @@ func (s *Static) serveAsset(w http.ResponseWriter, r *http.Request, filepath str
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(content))
+}
+
+func (s *Static) proxy(w http.ResponseWriter, r *http.Request) {
+	upgrade := r.Header["Upgrade"]
+	if len(upgrade) > 0 && upgrade[0] == "websocket" {
+		target, _ := url.Parse("ws://" + s.proxyTarget)
+		websocketproxy.ProxyHandler(target).ServeHTTP(w, r)
+		return
+	}
+	target, _ := url.Parse("http://" + s.proxyTarget)
+	httputil.NewSingleHostReverseProxy(target).ServeHTTP(w, r)
 }

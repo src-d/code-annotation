@@ -7,6 +7,7 @@ DEPENDENCIES = \
 	github.com/golang/lint/golint
 GO_LINTABLE_PACKAGES = $(shell go list ./... | grep -v '/vendor/')
 
+PORT ?= 8080
 YARN_PRODUCTION ?= true
 
 # Tools
@@ -55,7 +56,10 @@ build-frontend: dependencies-frontend
 	$(YARN) build
 
 dev-frontend: dependencies-frontend
-	$(YARN) start
+# BROWSER="none" disable opening new browser window with wrong port
+# sed disables TTY to avoid cleaning console on start
+# and set correct port in startup message
+	BROWSER="none" $(YARN) start | sed -e 's/:3000\//:$(PORT)\//g'
 
 # Backend
 
@@ -93,6 +97,12 @@ gorun:
 
 ## Compiles the assets, and serve the tool through its API
 serve: | build-frontend build-backend gorun
+
+# need to be separate rule to be killed correctly by ctrl-C
+gorun-bg:
+	go run cli/server/server.go &
+
+dev: | gorun-bg dev-frontend
 
 .PHONY: dependencies-frontend build-frontend dev-frontend \
 		dependencies-frontend-development prepare-build build-app \

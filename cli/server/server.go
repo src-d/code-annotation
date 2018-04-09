@@ -17,13 +17,14 @@ import (
 var version = "dev"
 
 type appConfig struct {
-	Env          string `envconfig:"ENV" default:"production"`
-	Host         string `envconfig:"HOST" default:"0.0.0.0"`
-	Port         int    `envconfig:"PORT" default:"8080"`
-	ServerURL    string `envconfig:"SERVER_URL"`
-	DBConn       string `envconfig:"DB_CONNECTION" default:"sqlite:///var/code-annotation/internal.db"`
-	ExportsPath  string `envconfig:"EXPORTS_PATH" default:"./exports"`
-	GaTrackingID string `envconfig:"GA_TRACKING_ID" required:"false"`
+	Env               string `envconfig:"ENV" default:"production"`
+	Host              string `envconfig:"HOST" default:"0.0.0.0"`
+	Port              int    `envconfig:"PORT" default:"8080"`
+	ServerURL         string `envconfig:"SERVER_URL"`
+	StaticProxyTarget string `envconfig:"STATIC_PROXY_TARGET"`
+	DBConn            string `envconfig:"DB_CONNECTION" default:"sqlite:///var/code-annotation/internal.db"`
+	ExportsPath       string `envconfig:"EXPORTS_PATH" default:"./exports"`
+	GaTrackingID      string `envconfig:"GA_TRACKING_ID" required:"false"`
 }
 
 func main() {
@@ -66,7 +67,7 @@ func main() {
 
 	diffService := service.NewDiff()
 
-	static := handler.NewStatic("build", conf.ServerURL, conf.GaTrackingID)
+	static := handler.NewStatic("build", conf.ServerURL, conf.GaTrackingID, conf.StaticProxyTarget)
 
 	// start the router
 	router := server.Router(logger, jwt, oauth, diffService, static, &db, conf.ExportsPath, version)
