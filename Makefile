@@ -4,7 +4,7 @@ COMMANDS = cli/server
 DEPENDENCIES = \
 	github.com/golang/dep/cmd/dep \
 	github.com/jteeuwen/go-bindata \
-	github.com/golang/lint/golint
+	golang.org/x/lint/golint
 GO_LINTABLE_PACKAGES = $(shell go list ./... | grep -v '/vendor/')
 
 YARN_PRODUCTION ?= true
