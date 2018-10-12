@@ -59,8 +59,7 @@ dev-frontend: dependencies-frontend
 
 # Backend
 
-dependencies-backend: $(DEPENDENCIES)
-	$(GODEP) ensure
+dependencies-backend: $(DEPENDENCIES) godep
 
 build-backend: dependencies-backend
 
