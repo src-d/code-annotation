@@ -3,7 +3,7 @@
 
 # Source Code Annotation Tool
 
-Training Machine Learning models often requires large datasets to be duly annotated.
+Training Machine Learning models often require large datasets to be duly annotated.
 The nature of these annotations vary depending on the dataset considered: they can be
 the number to be recognized in the [MNIST dataset](http://yann.lecun.com/exdb/mnist/),
 the coordinates of the box containing the objects to be identified in an object detection problem, etc.
@@ -11,10 +11,10 @@ the coordinates of the box containing the objects to be identified in an object 
 This tool provides a simple UI to add annotations to existing datasets, a command line tool
 to fetch more elements to be annotated, and an export mechanism.
 
-Currently, the project provides one single example consisting on labeling two pieces of code
+Currently, the project provides one single example consisting of labeling two pieces of code
 as being identical, similar, or different.
 
-Source code annotation tool offers an UI to annotate source code and review these annotations, and a CLI to define the code to be annotated and export the annotations.
+Source code annotation tool offers a UI to annotate source code and review these annotations, and a CLI to define the code to be annotated and export the annotations.
 
 ![Screenshot](.github/screenshot.png?raw=true)
 
@@ -95,7 +95,7 @@ For a complete reference of the PostgreSQL connection string, see the [documenta
 
 Before starting the application you will need to set the `CAT_DB_CONNECTION` environment variable. It should point to the database created with the `import` command.
 
-This variable uses the same `DSN` string as the `import` command to point to a SQLite or PosgreSQL database.
+This variable uses the same `DSN` string as the `import` command to point to an SQLite or PostgreSQL database.
 
 Some examples:
 
@@ -131,7 +131,7 @@ The annotations made by the users will be stored in the **`assignments`** table.
 
 It is possible to restrict access and choose each user's role by adding their GitHub accounts to a specific [organization](https://help.github.com/articles/collaborating-with-groups-in-organizations/) or [team](https://help.github.com/articles/organizing-members-into-teams/).
 
-This is optional, if you don't set any restrictions all users with a valid GitHub account will be able to login as a Requester. You may also set a restriction only for Requester users, and leave open access to anyone as Workers.
+This is optional if you don't set any restrictions all users with a valid GitHub account will be able to log in as a Requester. You may also set a restriction only for Requester users, and leave open access to anyone as Workers.
 
 To do so, set the following environment variables:
 
@@ -151,7 +151,7 @@ This application is deployed in `production` and `staging` sourced{d} environmen
 
 ## Contributing
 
-[Contributions](https://github.com/src-d/code-annotation/issues) are more than welcome, if you are interested please take a look to our [Contributing Guidelines](CONTRIBUTING.md). You have more information on how to run it locally for [development purposes here](CONTRIBUTING.md#Development).
+[Contributions](https://github.com/src-d/code-annotation/issues) are more than welcome, if you are interested please take a look at our [Contributing Guidelines](CONTRIBUTING.md). You have more information on how to run it locally for [development purposes here](CONTRIBUTING.md#Development).
 
 # Code of Conduct
 
