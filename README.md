@@ -131,7 +131,7 @@ The annotations made by the users will be stored in the **`assignments`** table.
 
 It is possible to restrict access and choose each user's role by adding their GitHub accounts to a specific [organization](https://help.github.com/articles/collaborating-with-groups-in-organizations/) or [team](https://help.github.com/articles/organizing-members-into-teams/).
 
-This is optional if you don't set any restrictions all users with a valid GitHub account will be able to log in as a Requester. You may also set a restriction only for Requester users, and leave open access to anyone as Workers.
+This is optional, but if you don't set any restrictions, all users with a valid GitHub account will be able to log in as a Requester. You may also set a restriction only for Requester users, and leave open access to anyone as Workers.
 
 To do so, set the following environment variables:
 
