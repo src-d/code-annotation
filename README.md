@@ -3,7 +3,7 @@
 
 # Source Code Annotation Tool
 
-Training Machine Learning models often require large datasets to be duly annotated.
+Training Machine Learning models often requires large datasets to be duly annotated.
 The nature of these annotations vary depending on the dataset considered: they can be
 the number to be recognized in the [MNIST dataset](http://yann.lecun.com/exdb/mnist/),
 the coordinates of the box containing the objects to be identified in an object detection problem, etc.
