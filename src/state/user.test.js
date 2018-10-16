@@ -5,6 +5,10 @@ import reducer, { initialState, SET_OPTION, toggleInvisible } from './user';
 const mockStore = configureMockStore([thunk]);
 
 describe('user/reducer', () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it('SET_OPTION', () => {
     expect(
       reducer(
