@@ -64,7 +64,8 @@ pipeline:
     <<: *helm_deploy
     prefix: STG
     secrets: [ STG_API_SERVER, STG_KUBERNETES_TOKEN ]
-    values: ingress.globalStaticIpName=code-annotation-staging,ingress.hostname=code-annotation-staging.srcd.run,image.tag=commit-${DRONE_COMMIT_SHA:0:7},deployment.gaTrackingID=UA-115770171-1,authorization.restrictAccessGroup=team:1819537,secretName=code-annotation-drone-workaround
+    values_files: [ .helm-staging.yml ]
+    values: image.tag=commit-${DRONE_COMMIT_SHA:0:7}
     when:
       branch: [staging]
       event: [push]
@@ -97,6 +98,7 @@ pipeline:
     <<: *helm_deploy
     prefix: PROD
     secrets: [ PROD_API_SERVER, PROD_KUBERNETES_TOKEN ]
-    values: ingress.globalStaticIpName=code-annotation-production,ingress.hostname=code-annotation.srcd.run,image.tag=${DRONE_TAG},deployment.gaTrackingID=UA-109494282-2,secretName=code-annotation-drone-workaround
+    values_files: [ .helm-production.yml ]
+    values: image.tag=${DRONE_TAG}
     when:
       event: [tag]

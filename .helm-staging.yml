@@ -1,0 +1,10 @@
+secretName: code-annotation-drone-workaround
+authorization:
+  restrictAccessGroup: "team:1819537"
+deployment: 
+  gaTrackingID: UA-115770171-1
+ingress:
+  hostname: code-annotation-staging.srcd.run
+  globalStaticIpName: code-annotation-staging
+nodeSelector:
+  cloud.google.com/gke-nodepool: default-pool
