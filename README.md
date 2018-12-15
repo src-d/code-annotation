@@ -22,7 +22,7 @@ Source code annotation tool offers a UI to annotate source code and review these
 
 ### Environment Variables
 
-The next sections make use of several environment variables to configure the application. In this table you will find all of them grouped as a quick reference:
+The next sections make use of several environment variables to configure the application. In this table, you will find all of them grouped as a quick reference:
 
 | Variable | Required | Default value | Meaning |
 | -- | -- | -- | -- |
@@ -38,9 +38,9 @@ The next sections make use of several environment variables to configure the app
 | `CAT_EXPORTS_PATH` | | `./exports` | Folder where the SQLite files will be created when requested from `http://<your-hostname>/export` |
 | `CAT_ENV` | | `production` | Sets the log level. Use `dev` to enable debug log messages |
 
-### Github OAuth Tokens
+### GitHub OAuth Tokens
 
-In order to authenticate users with their Github account, you need to set up an OAuth application on GitHub. See [how to create OAuth applications in their documentation](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/). Make sure the "Authorization callback URL" points to `http://<your-hostname>/oauth-callback`.
+In order to authenticate users with their GitHub account, you need to set up an OAuth application on GitHub. See [how to create OAuth applications in their documentation](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/). Make sure the "Authorization callback URL" points to `http://<your-hostname>/oauth-callback`.
 
 Retrieve the values for your application's Client ID and Client Secret from the [GitHub Developer Settings page](https://github.com/settings/developers) and set them to the environment variables `CAT_OAUTH_CLIENT_ID` and `CAT_OAUTH_CLIENT_SECRET`.
 
@@ -147,7 +147,7 @@ CAT_OAUTH_RESTRICT_REQUESTER_ACCESS=team:123456
 
 ## source{d} internal deployment
 
-This application is deployed in `production` and `staging` sourced{d} environments following our [web application deployment workflow](https://github.com/src-d/guide/blob/master/engineering/continuous-delivery.md)
+This application is deployed in `production` and `staging` sourced{d} environments following our [web application deployment workflow](https://github.com/src-d/guide/blob/master/engineering/continuous-delivery.md).
 
 ## Contributing
 
