@@ -23,9 +23,9 @@ service:
     internalPort: 8080
     name: code-annotation
 ingress:
-  kcmClass: default
   annotations:
     kubernetes.io/ingress.class: gce
+    kubernetes.io/tls-acme: "true"
   tls: true
   # below values are required
   # hostname: "code-annotation.srcd.run"
