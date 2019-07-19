@@ -28,7 +28,7 @@ docker_image: &docker_image
   debug: true
 
 helm_deploy: &helm_deploy
-  image: quay.io/ipedrazas/drone-helm:master-9b37211
+  image: quay.io/ipedrazas/drone-helm@sha256:43a6e6f907e68925fdb46601981242d68c41eb3e67154d8675627e19fd78f216
   skip_tls_verify: true
   chart: ./helm-charts/code-annotation
   release: code-annotation
