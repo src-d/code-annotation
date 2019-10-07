@@ -1,8 +1,10 @@
-FROM alpine:3.7
+FROM debian:buster-slim
 ADD ./build/bin /bin
 
-RUN apk --update upgrade && \
-    apk add --no-cache ca-certificates
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends --no-install-suggests \
+    ca-certificates \
+    && apt-get clean
 RUN mkdir /var/code-annotation
 
 ENTRYPOINT ["/bin/server"]
