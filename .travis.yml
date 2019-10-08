@@ -54,4 +54,4 @@ jobs:
     - name: 'Deploy to production'
       stage: release-helm
       script:
-        - B64_CA_CRT=$PRODUCTION_B64_CA_CRT SERVICE_ACCOUNT_TOKEN=$PRODUCTION_SERVICE_ACCOUNT_TOKEN CLUSTER_ENDPOINT=$PRODUCTION_CLUSTER_ENDPOINT HELM_RELEASE=code-annotatation HELM_CHART=code-annotation K8S_NAMESPACE=default HELM_ARGS="--repo https://src-d.github.io/charts/infra/ --version 0.1.0 --set image.tag=$TRAVIS_TAG -f .helm-production.yml" make deploy
+        - B64_CA_CRT=$PRODUCTION_B64_CA_CRT SERVICE_ACCOUNT_TOKEN=$PRODUCTION_SERVICE_ACCOUNT_TOKEN CLUSTER_ENDPOINT=$PRODUCTION_CLUSTER_ENDPOINT HELM_RELEASE=code-annotation HELM_CHART=code-annotation K8S_NAMESPACE=default HELM_ARGS="--repo https://src-d.github.io/charts/infra/ --version 0.1.0 --set image.tag=$TRAVIS_TAG -f .helm-production.yml" make deploy
