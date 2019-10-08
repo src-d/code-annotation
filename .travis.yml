@@ -9,14 +9,49 @@ before_install:
   - nvm use 8
   - npm install -g yarn
 
+stages:
+  - name: test-linters-build
+  - name: staging
+    if: branch = staging AND type = push
+  - name: release
+    if: tag IS present
+  - name: release-helm
+    if: tag IS present
+
 jobs:
   include:
-    - stage: Tests, linters and build
+    - name: 'Tests and linters'
+      stage: test-linters-build
       script:
         - make lint-frontend
         - make test-frontend
         - make lint-backend
         - make test
         - make validate-commit
-    - script:
+    - name: 'Build'
+      stage: test-linters-build
+      script:
         - make build-app
+    - name: 'Deploy to staging'
+      stage: staging
+      script:
+        # Do not allow for subsequents script steps to run in case previous one fails
+        - make build-app && VERSION=commit-${TRAVIS_COMMIT:0:7} make docker-push && HELM_RELEASE=code-annotation HELM_CHART=code-annotation K8S_NAMESPACE=default HELM_ARGS="--repo https://src-d.github.io/charts/infra/ --version 0.1.0 --set image.tag=commit-${TRAVIS_COMMIT:0:7} -f .helm-staging.yml" make deploy
+    - name: 'Release'
+      stage: release
+      script:
+        - make build-app
+        - DOCKER_PUSH_LATEST=true make docker-push
+      deploy:
+        provider: releases
+        api_key: $GITHUB_TOKEN
+        file_glob: true
+        file: build/*.tar.gz
+        skip_cleanup: true
+        on:
+          tags: true
+          go: 1.9.x
+    - name: 'Deploy to production'
+      stage: release-helm
+      script:
+        - B64_CA_CRT=$PRODUCTION_B64_CA_CRT SERVICE_ACCOUNT_TOKEN=$PRODUCTION_SERVICE_ACCOUNT_TOKEN CLUSTER_ENDPOINT=$PRODUCTION_CLUSTER_ENDPOINT HELM_RELEASE=code-annotation HELM_CHART=code-annotation K8S_NAMESPACE=default HELM_ARGS="--repo https://src-d.github.io/charts/infra/ --version 0.1.0 --set image.tag=$TRAVIS_TAG -f .helm-production.yml" make deploy
